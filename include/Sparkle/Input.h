@@ -5,7 +5,6 @@
 #ifndef SPARKLE_SOLUTION_INPUT_H
 #define SPARKLE_SOLUTION_INPUT_H
 
-#include "GamepadController.h"
 #include "PlayerInputController.h"
 #include <SDL.h>
 
@@ -21,6 +20,9 @@
 
 namespace Sparkle
 {
+    // TODO: Fix this
+    struct Vector2 {float x; float y;
+        float& operator[](int index){return x;}};
     /// Input Manager
     /// Central point to inspect Input Related actions
     /// Get the Player Controllers, Gamepad or Mouse and keyboard to inspect the state or Bind event actions

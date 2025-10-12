@@ -6,14 +6,18 @@
 #define SPARKLE_SOLUTION_KEYBOARDCONTROLLER_H
 
 #include <memory>
+#include <array>
+
+#include "Sparkle/Event.h"
 #include "InputController.h"
 #include "InputEvent.h"
-#include <array>
 
 namespace Sparkle
 {
     class Input;
-    class KeyboardController : std::enable_shared_from_this<KeyboardController>, public InputController
+    class KeyboardInputProcess;
+    class InputKeyboardButtonEvent;
+    class KeyboardController : public std::enable_shared_from_this<KeyboardController>, public InputController
     {
         friend class Sparkle::Input;
 
@@ -22,15 +26,18 @@ namespace Sparkle
         std::array<bool, (int)KeyboardButton::Count> Buttons;
         std::array<bool, (int)KeyboardButton::Count> LastButtons;
 
+        std::unique_ptr<KeyboardInputProcess> InputProcess;
+
     protected:
+        bool ProcessInput(const InputEvent &event, const InputAction &action) override;
         void Update() override;
 
     public:
-        explicit KeyboardController() : Buttons(), LastButtons()
-        {
-            std::fill(LastButtons.begin(), LastButtons.end(), false);
-            std::fill(Buttons.begin(), Buttons.end(), false);
-        }
+        explicit KeyboardController();
+        virtual ~KeyboardController();
+
+        void Initialize();
+
         inline bool IsActive() override { return true; }
 
         /// Check if Keyboard button is pressed
@@ -61,6 +68,13 @@ namespace Sparkle
             auto index = static_cast<unsigned int>(key);
             return !Buttons[index] && LastButtons[index];
         }
+
+        EventBinder<const unsigned int&, const InputAction&, const InputKeyboardButtonEvent&>& BinderForButton(const InputAction& action);
+
+        template<typename T>
+        void RemoveBind(T *t);
+
+        void Clear();
     };
 }
 

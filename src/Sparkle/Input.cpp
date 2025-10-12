@@ -2,14 +2,15 @@
 // Created by z3r0_ on 11/01/2024.
 //
 
-#include "Input.h"
-#include "PlayerInputController.h"
+#include "Sparkle/Input.h"
+#include "SDL.h"
 
 namespace Sparkle
 {
     Input::Input()
     {
         KeyboardController = std::make_shared<class KeyboardController>();
+        KeyboardController->Initialize();
     }
 
     std::shared_ptr<GamepadController> Input::GetInactiveOrNewGamepadController(int device)
@@ -22,6 +23,7 @@ namespace Sparkle
             {
                 auto gamepad = std::make_shared<GamepadController>();
                 gamepad->GamepadIndex = i;
+                gamepad->Initialize();
                 GamepadControllers[i] = gamepad;
                 return gamepad;
             }
@@ -121,7 +123,6 @@ namespace Sparkle
         std::shared_ptr<PlayerInputController> input = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
         PlayerInputControllers[index] = input;
         input->KeyboardController = KeyboardController;
-        input->Initialize();
         return input;
     }
 

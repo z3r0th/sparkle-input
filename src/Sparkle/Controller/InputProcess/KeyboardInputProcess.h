@@ -7,7 +7,7 @@
 
 #include "Sparkle/Event.h"
 #include "InputProcess.h"
-#include "Sparkle/KeyboardController.h"
+#include "../../../../include/Sparkle/KeyboardController.h"
 
 namespace Sparkle
 {
@@ -19,7 +19,7 @@ namespace Sparkle
     public:
         explicit KeyboardInputProcess() : KeyboardController() {}
 
-        void SetKeyboardController(std::weak_ptr<class KeyboardController> keyboardController) { KeyboardController = keyboardController;}
+        void SetKeyboardController(std::weak_ptr<class KeyboardController> controller) { KeyboardController = controller;}
 
         bool UpdateInput(const Sparkle::InputEvent &event, const InputAction &action) override
         {
@@ -49,6 +49,17 @@ namespace Sparkle
         EventBinder<const unsigned int&, const InputAction&, const InputKeyboardButtonEvent&>& BinderForButton(const InputAction& action)
         {
             return OnKeyEvent.GetBinder();
+        }
+
+        void Clear()
+        {
+            OnKeyEvent.RemoveAll();
+        }
+
+        template<typename T>
+        void RemoveBind(T* t)
+        {
+            OnKeyEvent.Remove(t);
         }
     };
 

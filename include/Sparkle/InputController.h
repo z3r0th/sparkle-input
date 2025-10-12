@@ -7,6 +7,9 @@
 
 namespace Sparkle
 {
+    class InputEvent;
+    class InputAction;
+
     class InputController
     {
         friend class PlayerInputController;
@@ -14,6 +17,7 @@ namespace Sparkle
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         virtual void Update() = 0;
+        virtual bool ProcessInput(const InputEvent &event, const InputAction &action) = 0;
 
     public:
         /// Is this controller active to the player?

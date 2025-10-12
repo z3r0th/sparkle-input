@@ -1,16 +1,14 @@
 #ifndef SPARKLE_SOLUTION_PLAYER_INPUT_CONTROLLER_H
 #define SPARKLE_SOLUTION_PLAYER_INPUT_CONTROLLER_H
 
-#include "input_process/GamepadInputProcess.h"
-#include "GamepadController.h"
+#include "Sparkle/KeyboardController.h"
+#include "Sparkle/GamepadController.h"
+#include "Sparkle/Event.h"
 #include "InputMap.h"
-#include "KeyboardController.h"
-#include "input_process/KeyboardInputProcess.h"
-#include <Sparkle/Event.h>
 
-#include <memory>
 #include <functional>
 #include <utility>
+#include <memory>
 #include <string>
 #include <map>
 
@@ -45,8 +43,7 @@ namespace Sparkle
 
         std::shared_ptr<KeyboardController> KeyboardController = nullptr;
         std::shared_ptr<GamepadController> GamepadController = nullptr;
-        KeyboardInputProcess KeyboardInputProcess;
-        GamepadInputProcess GamepadInputProcess;
+
         bool RequestGamepad = false;
 
         Sparkle::InputMap InputMap;
@@ -57,8 +54,6 @@ namespace Sparkle
 
         /// Private constructor that Input (friend class) can access
         explicit PlayerInputController(unsigned int index) :
-                GamepadInputProcess(),
-                KeyboardInputProcess(),
                 PlayerInputIndex(index),
                 OnGamepadConnectedEvent(std::string(PLAYER_CONTROLLER_CONNECTED_EVENT_NAME) + std::to_string(index)),
                 OnGamepadDisconnectedEvent(std::string(PLAYER_CONTROLLER_DISCONNECTED_EVENT_NAME) + std::to_string(index)),
@@ -82,11 +77,6 @@ namespace Sparkle
         /// Disconnects from events and sets the GamepadController to null (reset)
         /// Raises `OnGamepadDisconnectedEvent`
         void RemoveGamepadController();
-
-        /// Initialize the PlayerInputController.
-        /// Some of the properties are only ready after the constructor finishes - like the weak_from_this()
-        /// This method must be called just after the Constructor from the Input class (same frame)
-        void Initialize();
 
     public:
         /// PlayerInputController cannot be directly created, get it from Input
@@ -168,7 +158,7 @@ namespace Sparkle
         /// \return EventBinder for OnGamepadButton
         EventBinder<const unsigned int&, const Sparkle::InputAction&, const Sparkle::InputGamepadButtonEvent&>& OnGamepadButton(const InputAction& action)
         {
-            return GamepadInputProcess.BinderForButton(action);
+            return GamepadController->BinderForButton(action);
         }
 
         /// Binding to Gamepad Axis event for the specific InputAction
@@ -181,7 +171,7 @@ namespace Sparkle
         /// \return EventBinder for OnGamepadAxis
         EventBinder<const unsigned int&, const float&, const Sparkle::InputAction&, const Sparkle::InputGamepadAxisEvent&>& OnGamepadAxis(const InputAction& action)
         {
-            return GamepadInputProcess.BinderForAxis(action);
+            return GamepadController->BinderForAxis(action);
         }
 
         /// Binding to Gamepad Stick event for the specific InputAction
@@ -194,23 +184,24 @@ namespace Sparkle
         /// \return EventBinder for OnGamepadStick
         EventBinder<const unsigned int&, const Vector2&, const InputAction&, const Sparkle::InputGamepadStickEvent&>& OnGamepadStick(const InputAction& action)
         {
-            return GamepadInputProcess.BinderForStick(action);
+            return GamepadController->BinderForStick(action);
         }
 
 #pragma endregion Gamepad Methods
 
         EventBinder<const unsigned int&, const Sparkle::InputAction&, const Sparkle::InputKeyboardButtonEvent&>& OnKeyboardButton(const InputAction& action)
         {
-            return KeyboardInputProcess.BinderForButton(action);
+            return KeyboardController->BinderForButton(action);
         }
 
         /// Clears all callbacks including input connection, input map update and gamepad/kbm input
         void Clear()
         {
+            if (GamepadController) GamepadController->Clear();
+            if (KeyboardController) KeyboardController->Clear();
             OnGamepadDisconnectedEvent.RemoveAll();
             OnGamepadConnectedEvent.RemoveAll();
             OnInputMapUpdatedEvent.RemoveAll();
-            GamepadInputProcess.Clear();
         }
 
         /// Removes all callbacks for the `t` object related to this PlayerInputController callbacks
@@ -219,7 +210,8 @@ namespace Sparkle
         template<typename T>
         [[maybe_unused]] void RemoveBind(T* const t)
         {
-            GamepadInputProcess.RemoveBind(t);
+            if (GamepadController) GamepadController->RemoveBind(t);
+            if (KeyboardController) KeyboardController->RemoveBind(t);
             OnGamepadDisconnectedEvent.Remove(t);
             OnGamepadConnectedEvent.Remove(t);
             OnInputMapUpdatedEvent.Remove(t);

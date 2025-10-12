@@ -2,7 +2,7 @@
 // Created by z3r0_ on 10/01/2024.
 //
 
-#include "PlayerInputController.h"
+#include "Sparkle/PlayerInputController.h"
 
 namespace Sparkle
 {
@@ -13,7 +13,7 @@ namespace Sparkle
             auto event = ButtonAction.first;
             if (GamepadController != nullptr && GamepadController->IsActive())
             {
-                GamepadInputProcess.UpdateInput(event, ButtonAction.second);
+                static_cast<InputController*>(GamepadController.get())->ProcessInput(event, ButtonAction.second);
             }
         }
 
@@ -22,7 +22,7 @@ namespace Sparkle
             auto event = ButtonAction.first;
             if (KeyboardController != nullptr && KeyboardController->IsActive())
             {
-                KeyboardInputProcess.UpdateInput(event, ButtonAction.second);
+                static_cast<InputController*>(KeyboardController.get())->ProcessInput(event, ButtonAction.second);
             }
         }
     }
@@ -48,11 +48,5 @@ namespace Sparkle
         GamepadController->OnConnected().Remove(this);
         GamepadController->OnDisconnected().Remove(this);
         GamepadController.reset();
-    }
-
-    void PlayerInputController::Initialize()
-    {
-        GamepadInputProcess.SetPlayerInputController(weak_from_this());
-        KeyboardInputProcess.SetKeyboardController(KeyboardController);
     }
 } // Sparkle

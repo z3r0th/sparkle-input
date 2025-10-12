@@ -5,15 +5,15 @@
 #ifndef SPARKLE_SOLUTION_GAMEPAD_CONTROLLER_H
 #define SPARKLE_SOLUTION_GAMEPAD_CONTROLLER_H
 
-#include <SDL_gamecontroller.h>
+#include "SDL2/SDL_gamecontroller.h"
 #include <cassert>
 #include <array>
 #include <limits>
 #include <memory>
 
-#include "InputEvent.h"
 #include "InputController.h"
-#include <Sparkle/Event.h>
+#include "Sparkle/InputEvent.h"
+#include "Sparkle/Event.h"
 
 #define RawGameController SDL_GameController
 
@@ -22,7 +22,15 @@
 
 namespace Sparkle
 {
+    class GamepadInputProcess;
+    class InputAction;
+    class InputEvent;
+    class Vector2;
     class Input;
+
+    struct InputGamepadButtonEvent;
+    struct InputGamepadStickEvent;
+    struct InputGamepadAxisEvent;
 
     /// GamepadController to represent a Gamepad device
     /// This connects to an actual Gamepad and expose an interface to check the Gamepad status (buttons, axis, etc)
@@ -45,6 +53,8 @@ namespace Sparkle
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
 
+        std::unique_ptr<GamepadInputProcess> InputProcess;
+
         /// Sets a GameController
         /// It MUST HAVE been opened before
         /// \param controller
@@ -57,27 +67,15 @@ namespace Sparkle
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         void Update() override;
+        bool ProcessInput(const InputEvent &event, const InputAction &action) override;
 
     public:
-        explicit GamepadController(RawGameController *controller): InternalGameController(controller), Buttons(), LastButtons(),OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
-                                                                   OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
-        {
-            std::fill(Buttons.begin(), Buttons.end(), false);
-            std::fill(LastButtons.begin(), LastButtons.end(), false);
+        explicit GamepadController(RawGameController *controller);
 
-            std::fill(Axis.begin(), Axis.end(), false);
-            std::fill(LastAxis.begin(), LastAxis.end(), false);
-        }
+        explicit GamepadController();
+        virtual ~GamepadController();
 
-        explicit GamepadController(): InternalGameController(nullptr), Buttons(), LastButtons(),OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
-                                      OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
-        {
-            std::fill(Buttons.begin(), Buttons.end(), false);
-            std::fill(LastButtons.begin(), LastButtons.end(), false);
-
-            std::fill(Axis.begin(), Axis.end(), false);
-            std::fill(LastAxis.begin(), LastAxis.end(), false);
-        }
+        void Initialize();
 
         Sparkle::Event<std::weak_ptr<GamepadController>>& OnDisconnected() { return OnDisconnectedEvent; }
         Sparkle::Event<std::weak_ptr<GamepadController>>& OnConnected() { return OnConnectedEvent; }
@@ -145,6 +143,13 @@ namespace Sparkle
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
         }
+
+        EventBinder<const unsigned int&, const InputAction&, const InputGamepadButtonEvent&>& BinderForButton(const InputAction& action);
+        EventBinder<const unsigned int&, const float&, const InputAction&, const InputGamepadAxisEvent&>& BinderForAxis(const InputAction& action);
+        EventBinder<const unsigned int&, const Vector2&, const InputAction&, const InputGamepadStickEvent&>& BinderForStick(const InputAction& action);
+        void Clear();
+        template<typename T>
+        void RemoveBind(T* t);
     };
 }
 

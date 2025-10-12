@@ -9,7 +9,6 @@
 #include "Sparkle/InputMap.h"
 #include <Sparkle/Event.h>
 #include <memory>
-#include "Sparkle/GamepadController.h"
 
 namespace Sparkle
 {
