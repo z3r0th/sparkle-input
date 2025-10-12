@@ -144,8 +144,8 @@ namespace Sparkle
             return false;
         }
         RemoveGamepadFromPlayer(it->second->GamepadController);
-        PlayerInputControllers.erase(it);
         it->second.reset();
+        PlayerInputControllers.erase(it);
         return true;
     }
 
@@ -223,17 +223,21 @@ namespace Sparkle
 
     Input::~Input()
     {
-        for (auto it : PlayerInputControllers)
+        if (!PlayerInputControllers.empty())
         {
-            RemovePlayerInputController(it.second);
+            std::vector<std::shared_ptr<PlayerInputController>> inputControllers;
+            for (auto it: PlayerInputControllers)
+            {
+                inputControllers.push_back(it.second);
+            }
+            for (auto& controller : inputControllers)
+            {
+                RemovePlayerInputController(controller);
+            }
+            inputControllers.clear();
+            PlayerInputControllers.clear();
         }
-        PlayerInputControllers.clear();
-
-        // when deleting a GamepadController, it should close any SDL_Controller associated with it
-        for (auto it : GamepadControllers)
-        {
-            it.second.reset();
-        }
+        KeyboardController.reset();
         GamepadControllers.clear();
     }
 
