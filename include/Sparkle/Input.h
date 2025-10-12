@@ -5,19 +5,20 @@
 #ifndef SPARKLE_SOLUTION_INPUT_H
 #define SPARKLE_SOLUTION_INPUT_H
 
-#include "GamepadController.h"
 #include "PlayerInputController.h"
+#include "InputAction.h"
+#include "InputEvent.h"
+#include "InputMap.h"
+
 #include <SDL.h>
 
 #define MAX_LOCAL_PLAYER_CONTROLLERS 100
 
-// TODO: Separate header files from implementation
-// TODO: Fix the Vector2 issue
-// TODO: Reorganize files
-// TODO: Make gamepad example
-// TODO: Make keyboard example
 // TODO: Make mouse example
 // TODO: Make at least one complete example
+
+using ControllerDeviceEvent = SDL_ControllerDeviceEvent;
+using InputEvent = SDL_Event;
 
 namespace Sparkle
 {
@@ -31,23 +32,27 @@ namespace Sparkle
         std::map<unsigned int, std::shared_ptr<GamepadController>> GamepadControllers;
         std::shared_ptr<KeyboardController> KeyboardController;
 
-        void RemoveGamepadFromPlayer(std::weak_ptr<GamepadController>);
+        void RemoveGamepadFromPlayer(const std::weak_ptr<GamepadController>&);
         std::shared_ptr<GamepadController> GetInactiveOrNewGamepadController(int device);
         std::shared_ptr<GamepadController> GetUnassignedGamepadController();
         unsigned int GetNextPlayerIndex();
 
-        void HandlePlayerInputControllerRequest(std::weak_ptr<PlayerInputController>);
+        void HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>&);
 
-        void GamepadControllerDisconnected(const SDL_ControllerDeviceEvent& event);
-        void GamepadControllerConnected(const SDL_ControllerDeviceEvent& event);
+        void GamepadControllerDisconnected(const ControllerDeviceEvent& event);
+        void GamepadControllerConnected(const ControllerDeviceEvent& event);
 
-        void Update();
+        void UpdateGamepad();
+        void UpdateKeyboard();
 
     public:
+        void UpdateEvent(InputEvent& event);
+        void Update();
+
         explicit Input();
         ~Input();
 
-        void UpdateEvent(SDL_Event& event);
+        std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
 
         // Gamepad access functions
         // These are Proxy to access gamepad controller functions
@@ -95,7 +100,7 @@ namespace Sparkle
         /// The Controllers (GamepadController, Mouse, Keyboard) are **not** destroyed, but put back to the pool.
         /// Removing a player does not change the index of current players, but it might be reused again if a new one is created
         /// \return true if able to destroy, false otherwise
-        [[maybe_unused]] bool RemovePlayerInputController(std::weak_ptr<PlayerInputController>);
+        [[maybe_unused]] bool RemovePlayerInputController(const std::weak_ptr<PlayerInputController>&);
 
         /// Remove player by index. Remove any controller associated with this Player input and destroy it (PlayerInputController).
         /// The Controllers (GamepadController, Mouse, Keyboard) are **not** destroyed, but put back to the pool.
@@ -104,9 +109,9 @@ namespace Sparkle
         /// \return true if able to destroy, false otherwise
         [[maybe_unused]][[nodiscard]] bool RemovePlayerInputController(unsigned int index);
 
-        [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(std::weak_ptr<GamepadController>);
+        [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(const std::weak_ptr<GamepadController>&);
 
-        [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(std::weak_ptr<GamepadController>, std::weak_ptr<PlayerInputController>);
+        [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(const std::weak_ptr<GamepadController>&, const std::weak_ptr<PlayerInputController>&);
 
         /// Get a new PlayerInputController. This Input Manager is responsible to manage, destroy and remove it.
         /// When deleting it, call `RemovePlayerInputController`
@@ -122,7 +127,7 @@ namespace Sparkle
         /// \return the amount of PlayerInputControllers
         [[maybe_unused]][[nodiscard]] inline unsigned int PlayerInputControllerCount() const { return PlayerInputControllers.size(); }
 
-        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetAssignedPlayerInputController(std::weak_ptr<GamepadController> gamepad);
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad);
     };
 
 } // Sparkle

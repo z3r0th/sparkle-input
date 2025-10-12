@@ -7,10 +7,11 @@
 
 namespace Sparkle
 {
+    class InputTrigger;
+    class InputAction;
+
     class InputController
     {
-        friend class PlayerInputController;
-
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         virtual void Update() = 0;
@@ -19,7 +20,6 @@ namespace Sparkle
         /// Is this controller active to the player?
         /// \return true if active
         [[nodiscard]] virtual inline bool IsActive() = 0;
-
     };
 
 } // Sparkle

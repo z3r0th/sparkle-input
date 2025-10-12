@@ -2,8 +2,7 @@
 // Created by z3r0_ on 11/01/2024.
 //
 
-#include "Input.h"
-#include "PlayerInputController.h"
+#include "Sparkle/Input.h"
 
 namespace Sparkle
 {
@@ -16,7 +15,7 @@ namespace Sparkle
     {
         for (unsigned int i = 0 ; i < SDL_NumJoysticks() ; ++i)
         {
-            // reach an index that do not have a Gamepad controller
+            // reach an index that does not have a Gamepad controller,
             // this means that we already check any other index
             if (GamepadControllers.count(i) == 0)
             {
@@ -37,7 +36,6 @@ namespace Sparkle
 
         // should never reach this part of code
         assert(false);
-        return nullptr;
     }
 
     std::shared_ptr<GamepadController> Input::GetController(unsigned int index) const
@@ -77,10 +75,9 @@ namespace Sparkle
 
         // should never reach this part of code
         assert(false);
-        return 0;
     }
 
-    void Input::GamepadControllerDisconnected(const SDL_ControllerDeviceEvent &event)
+    void Input::GamepadControllerDisconnected(const ControllerDeviceEvent &event)
     {
         auto device = event.which;
         for (auto & GamepadController : GamepadControllers)
@@ -95,7 +92,7 @@ namespace Sparkle
         }
     }
 
-    void Input::GamepadControllerConnected(const SDL_ControllerDeviceEvent &event)
+    void Input::GamepadControllerConnected(const ControllerDeviceEvent &event)
     {
         auto device = event.which;
         if (!SDL_IsGameController(device))
@@ -107,7 +104,7 @@ namespace Sparkle
         auto gamepad = GetInactiveOrNewGamepadController(device);
         if (gamepad->IsActive())
         {
-            // it can be the case when a controller is reconnected too quickly, that it doesn't get disconnected.
+            // it can be the case when a controller is reconnected too quickly that it doesn't get disconnected.
             // In such cases, the gamepad still holds the reference and should not call SetController again
             return;
         }
@@ -118,14 +115,11 @@ namespace Sparkle
     {
         auto index = GetNextPlayerIndex();
         assert(PlayerInputControllers.find(index) == PlayerInputControllers.end());
-        std::shared_ptr<PlayerInputController> input = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
-        PlayerInputControllers[index] = input;
-        input->KeyboardController = KeyboardController;
-        input->Initialize();
-        return input;
+        PlayerInputControllers[index] = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
+        return { PlayerInputControllers[index] };
     }
 
-    bool Input::RemovePlayerInputController(std::weak_ptr<PlayerInputController> inputControllerPtr)
+    bool Input::RemovePlayerInputController(const std::weak_ptr<PlayerInputController>& inputControllerPtr)
     {
         if (auto inputController = inputControllerPtr.lock())
         {
@@ -143,12 +137,12 @@ namespace Sparkle
             return false;
         }
         RemoveGamepadFromPlayer(it->second->GamepadController);
-        PlayerInputControllers.erase(it);
         it->second.reset();
+        PlayerInputControllers.erase(it);
         return true;
     }
 
-    void Input::RemoveGamepadFromPlayer(std::weak_ptr<GamepadController> gamepad)
+    void Input::RemoveGamepadFromPlayer(const std::weak_ptr<GamepadController>& gamepad)
     {
         if (gamepad.expired())
         {
@@ -183,23 +177,19 @@ namespace Sparkle
 
     void Input::Update()
     {
-        for (auto & gamepadController : GamepadControllers)
-        {
-            gamepadController.second->Update();
-        }
-
-        KeyboardController->Update();
-
         for (auto & playerInputControllersPair : PlayerInputControllers)
         {
             std::shared_ptr<PlayerInputController> playerInputController = playerInputControllersPair.second;
-            HandlePlayerInputControllerRequest(playerInputController);
+            HandlePlayerInputControllerRequest(playerInputController->weak_from_this());
 
             playerInputController->Update();
         }
+
+        UpdateGamepad();
+        UpdateKeyboard();
     }
 
-    void Input::HandlePlayerInputControllerRequest(std::weak_ptr<PlayerInputController> playerInputControllerPtr)
+    void Input::HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>& playerInputControllerPtr)
     {
         if (auto playerInputController = playerInputControllerPtr.lock())
         {
@@ -212,27 +202,44 @@ namespace Sparkle
                     playerInputController->SetGamepadController(gamepadController);
                 }
             }
+            if (playerInputController->RequestKeyboard && playerInputController->KeyboardController == nullptr)
+            {
+                playerInputController->RequestKeyboard = false;
+                playerInputController->KeyboardController = KeyboardController;
+            }
         }
     }
 
-    void Input::UpdateEvent(SDL_Event& event)
+    void Input::UpdateEvent(InputEvent& event)
     {
-        Update();
+        // Update Gamepad Events
+        if (event.type == SDL_CONTROLLERDEVICEADDED)
+        {
+            GamepadControllerConnected(event.cdevice);
+        }
+        else if (event.type == SDL_CONTROLLERDEVICEREMOVED)
+        {
+            GamepadControllerDisconnected(event.cdevice);
+        }
     }
 
     Input::~Input()
     {
-        for (auto it : PlayerInputControllers)
+        if (!PlayerInputControllers.empty())
         {
-            RemovePlayerInputController(it.second);
+            std::vector<std::shared_ptr<PlayerInputController>> inputControllers;
+            for (const auto& it: PlayerInputControllers)
+            {
+                inputControllers.push_back(it.second);
+            }
+            for (const auto& controller : inputControllers)
+            {
+                RemovePlayerInputController(controller);
+            }
+            inputControllers.clear();
+            PlayerInputControllers.clear();
         }
-        PlayerInputControllers.clear();
-
-        // when deleting a GamepadController, it should close any SDL_Controller associated with it
-        for (auto it : GamepadControllers)
-        {
-            it.second.reset();
-        }
+        KeyboardController.reset();
         GamepadControllers.clear();
     }
 
@@ -280,11 +287,11 @@ namespace Sparkle
         return controller->GetAxis(axis);
     }
 
-    std::weak_ptr<PlayerInputController> Input::GetAssignedPlayerInputController(std::weak_ptr<GamepadController> gamepad)
+    std::weak_ptr<PlayerInputController> Input::GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad)
     {
         if (auto gamepadController = gamepad.lock())
         {
-            for (auto it: PlayerInputControllers)
+            for (const auto& it: PlayerInputControllers)
             {
                 if (it.second->GamepadController == gamepadController) return it.second;
             }
@@ -293,27 +300,36 @@ namespace Sparkle
         return std::weak_ptr<PlayerInputController>();
     }
 
-    bool Input::IsGamepadAssigned(std::weak_ptr<GamepadController> gamepad)
+    bool Input::IsGamepadAssigned(const std::weak_ptr<GamepadController>& gamepad)
     {
         if (gamepad.expired()) return false;
-        for (auto pair: PlayerInputControllers)
-        {
-            if (IsGamepadAssigned(gamepad, pair.second)) return true;
-        }
-
-        return false;
+        return std::any_of(PlayerInputControllers.begin(), PlayerInputControllers.end(),
+                           [&](const auto& it) { return IsGamepadAssigned(gamepad, it.second); });
     }
 
-    bool Input::IsGamepadAssigned(std::weak_ptr<GamepadController> gamepad, std::weak_ptr<PlayerInputController> player)
+    bool Input::IsGamepadAssigned(const std::weak_ptr<GamepadController>& gamepad, const std::weak_ptr<PlayerInputController>& player)
     {
         if (auto playerInputController = player.lock())
         {
             auto gamepadAssignedIt = PlayerInputControllers.find(playerInputController->GetPlayerInputIndex());
             if (gamepadAssignedIt == PlayerInputControllers.end()) return false;
-            auto gamepadAssigned = *gamepadAssignedIt;
+            const auto& gamepadAssigned = *gamepadAssignedIt;
             return gamepadAssigned.second->GamepadController == gamepad.lock();
         }
 
         return false;
+    }
+
+    void Input::UpdateGamepad()
+    {
+        for (auto & gamepadController : GamepadControllers)
+        {
+            gamepadController.second->Update();
+        }
+    }
+
+    void Input::UpdateKeyboard()
+    {
+        KeyboardController->Update();
     }
 } // Sparkle

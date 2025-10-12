@@ -8,34 +8,34 @@ option(SPARKLE_INPUT_BUILD_TESTS "Build SparkleInputs test cases" ON)
 option(SPARKLE_INPUT_BUILD_EXAMPLES "Build SparkleInputs examples" ON)
 
 add_library(SparkleInput
-        src/Sparkle/input_process/GamepadInputProcess.cpp
-        src/Sparkle/input_process/GamepadInputProcess.h
-        src/Sparkle/input_process/InputProcess.h
-        src/Sparkle/input_process/KeyboardInputProcess.cpp
-        src/Sparkle/input_process/KeyboardInputProcess.h
-        src/Sparkle/GamepadController.cpp
-        src/Sparkle/GamepadController.h
-        src/Sparkle/Input.cpp
-        src/Sparkle/Input.h
-        src/Sparkle/InputAction.h
-        src/Sparkle/InputController.cpp
-        src/Sparkle/InputController.h
-        src/Sparkle/InputEvent.h
-        src/Sparkle/InputMap.h
-        src/Sparkle/KeyboardController.cpp
-        src/Sparkle/KeyboardController.h
+        src/Sparkle/Controller/InputProcess/GamepadInputProcess.cpp
+        src/Sparkle/Controller/InputProcess/GamepadInputProcess.h
+        src/Sparkle/Controller/GamepadController.cpp
+        include/Sparkle/Controller/GamepadController.h
+        src/Sparkle/Controller/KeyboardController.cpp
+        include/Sparkle/Controller/KeyboardController.h
+        include/Sparkle/InputController.h
         src/Sparkle/PlayerInputController.cpp
-        src/Sparkle/PlayerInputController.h
+        include/Sparkle/PlayerInputController.h
+        src/Sparkle/Input.cpp
+        include/Sparkle/Input.h
+        include/Sparkle/InputAction.h
+        include/Sparkle/InputEvent.h
+        include/Sparkle/InputMap.h
 )
 add_library(Sparkle::SparkleInput ALIAS SparkleInput)
 
-target_include_directories(SparkleInput PUBLIC
+target_include_directories(SparkleInput PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:src> )
 
+target_include_directories(SparkleInput PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include> )
+
 target_compile_features(SparkleInput PUBLIC cxx_std_17)
 install(TARGETS SparkleInput EXPORT SparkleInputTargets)
-install(DIRECTORY src/ DESTINATION src)
+install(DIRECTORY include/ DESTINATION include)
 install(EXPORT SparkleInputTargets FILE SparkleInputTargets.cmake NAMESPACE Sparkle:: DESTINATION lib/cmake/SparkleInput )
 
 write_basic_package_version_file(
@@ -53,6 +53,7 @@ install(FILES
 
 include(FetchContent)
 # Get SDL2 from find_package (SDL2::SDL2 package installed) or get it from source on github
+message ("Fetching SDL2")
 FetchContent_Declare(
         SDL2_PCK
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -77,9 +78,6 @@ set(SPARKLE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(SPARKLE_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(sparkle-events)
 target_link_libraries(SparkleInput PUBLIC Sparkle::SparkleEvents)
-
-get_target_property(INCLUDES SparkleInput INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "SparkleInput includes: ${INCLUDES}")
 
 if(SPARKLE_INPUT_BUILD_TESTS)
     #enable_testing()

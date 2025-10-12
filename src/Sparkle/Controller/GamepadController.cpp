@@ -2,7 +2,8 @@
 // Created by z3r0_ on 15/01/2024.
 //
 
-#include "GamepadController.h"
+#include "Sparkle/Controller/InputProcess/GamepadInputProcess.h"
+#include "Sparkle/Controller/GamepadController.h"
 #include <SDL.h>
 
 void Sparkle::GamepadController::ClearController()
@@ -36,9 +37,9 @@ void Sparkle::GamepadController::SetController(SDL_GameController *controller, i
 }
 
 void Sparkle::GamepadController::Update() {
-    // TODO: Review dead_zone implementation
-    // apply a dead_zone of 2% movement for now. This should be configurable somehow
-    const float DEAD_ZONE = (float)(SDL_MAX_SINT16 - SDL_MIN_SINT16) * (2.0 / 100.0f) / SDL_MAX_SINT16;
+    // apply a dead_zone of 2% movement for now. This should be configurable in the future
+    const float DEAD_ZONE_PERCENTAGE = 2.0f / 100.0f;
+    const float DEAD_ZONE = (float)(SDL_MAX_SINT16 - SDL_MIN_SINT16) * DEAD_ZONE_PERCENTAGE / SDL_MAX_SINT16;
     
     if (!IsActive())
     {
@@ -62,3 +63,36 @@ void Sparkle::GamepadController::Update() {
         Axis[i] = axis;
     }
 }
+
+Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
+        InputProcess(std::make_unique<GamepadInputProcess>(this)),
+        InternalGameController(controller), Buttons(), LastButtons(),
+        OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
+        OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
+{
+    std::fill(Buttons.begin(), Buttons.end(), false);
+    std::fill(LastButtons.begin(), LastButtons.end(), false);
+
+    std::fill(Axis.begin(), Axis.end(), false);
+    std::fill(LastAxis.begin(), LastAxis.end(), false);
+}
+
+Sparkle::GamepadController::GamepadController():
+        InputProcess(std::make_unique<GamepadInputProcess>(this)),
+        InternalGameController(nullptr), Buttons(), LastButtons(),
+        OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
+        OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
+{
+    std::fill(Buttons.begin(), Buttons.end(), false);
+    std::fill(LastButtons.begin(), LastButtons.end(), false);
+
+    std::fill(Axis.begin(), Axis.end(), false);
+    std::fill(LastAxis.begin(), LastAxis.end(), false);
+}
+
+Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)
+{
+    return InputProcess->ProcessEvent(event);
+}
+
+Sparkle::GamepadController::~GamepadController() = default;

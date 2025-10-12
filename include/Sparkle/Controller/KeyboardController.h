@@ -5,33 +5,38 @@
 #ifndef SPARKLE_SOLUTION_KEYBOARDCONTROLLER_H
 #define SPARKLE_SOLUTION_KEYBOARDCONTROLLER_H
 
-#include <memory>
-#include "InputController.h"
-#include "InputEvent.h"
+#include <cstdint>
 #include <array>
+
+#include "Sparkle/InputController.h"
+#include "Sparkle/InputEvent.h"
 
 namespace Sparkle
 {
     class Input;
-    class KeyboardController : std::enable_shared_from_this<KeyboardController>, public InputController
+
+    // TODO: Type text mode, modifier type, state check (capslock for example)
+    class KeyboardController : public InputController
     {
+        // Input updates the buttons
         friend class Sparkle::Input;
 
     private:
-        //TODO: change int to a smaller type
         std::array<bool, (int)KeyboardButton::Count> Buttons;
         std::array<bool, (int)KeyboardButton::Count> LastButtons;
 
     protected:
         void Update() override;
+        InputResult ProcessButton(const InputKeyboardButtonEvent& event);
+        InputResult ProcessAxis(const InputKeyboardAxisEvent& event);
+        InputResult ProcessStick(const InputKeyboardStickEvent& event);
 
     public:
-        explicit KeyboardController() : Buttons(), LastButtons()
-        {
-            std::fill(LastButtons.begin(), LastButtons.end(), false);
-            std::fill(Buttons.begin(), Buttons.end(), false);
-        }
+        explicit KeyboardController();
+
         inline bool IsActive() override { return true; }
+
+        InputResult ProcessEvent(const Sparkle::InputTrigger &event);
 
         /// Check if Keyboard button is pressed
         /// Keyboard Buttons are updated on Input update
