@@ -440,6 +440,8 @@ E(FULL_NEGATIVE)
     };
 #pragma endregion Struct Event Pair (Trigger/Input)
 
+    /// Possible event types supported
+    /// Current support is Gamepad and Keyboard
     enum class InputEventType
     {
         GamePadButtonEventType,
@@ -448,6 +450,7 @@ E(FULL_NEGATIVE)
         KeyboardButtonEventType
     };
 
+    /// Active Event type used
     union SpecificInputEvent
     {
         InputKeyboardButtonEvent KeyboardButtonEvent;
@@ -456,12 +459,15 @@ E(FULL_NEGATIVE)
         InputGamepadAxisEvent AxisEvent;
     };
 
+    /// 2D Stick value
     struct Stick
     {
         float X;
         float Y;
     };
 
+    /// The input state for the action performed (Button, Stick or Axis)
+    /// This is the result of an EventTrigger process
     union InputState
     {
         bool ButtonPressed;
@@ -469,19 +475,21 @@ E(FULL_NEGATIVE)
         float Axis;
     };
 
-    struct InputEventResult
+    /// The result of an Event Trigger processed
+    struct InputResult
     {
         bool IsActive;
         InputState InputState;
     };
 
-    //TODO: Rename the class. InputEvent name is not good. It sounds like the event is happening when this is actually a class describing an event waiting to happen
-    struct InputEvent
+    /// The Input Trigger description
+    /// This is used to map what the Input Event should look like to trigger a specific action
+    struct InputTrigger
     {
         SpecificInputEvent Event{};
         InputEventType EventType{};
 
-        bool operator <(const InputEvent& rhs) const
+        bool operator <(const InputTrigger& rhs) const
         {
             switch (EventType) {
                 case InputEventType::GamePadButtonEventType:
@@ -515,7 +523,7 @@ E(FULL_NEGATIVE)
             }
             assert(false && "No input event type verified");
         }
-        bool operator ==(const InputEvent& rhs) const
+        bool operator ==(const InputTrigger& rhs) const
         {
             switch (EventType) {
                 case InputEventType::GamePadButtonEventType:
@@ -550,6 +558,57 @@ E(FULL_NEGATIVE)
         }
     };
 }
+
+// To compute HASH for InputTrigger, so it can be used in unordered_map (if needed)
+// use the Action name as HASH
+template <>
+struct std::hash<Sparkle::InputTrigger>
+{
+    template <typename T, typename... Rest>
+    inline void HashCombine(std::size_t &seed, T const &v, Rest &&... rest) const
+    {
+        std::hash<T> hasher;
+        seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        // trick to emulate a fold expression (available in C++17) in C++11
+        // answer on https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x by Henri Menke
+        int i[] = {0, (HashCombine(seed, std::forward<Rest>(rest)), 0)...};
+        (void)(i);
+    }
+
+    std::size_t operator()(const Sparkle::InputTrigger& k) const
+    {
+        using std::size_t;
+        using std::hash;
+        using std::string;
+        std::size_t h = 0;
+        switch (k.EventType) {
+            case Sparkle::InputEventType::GamePadButtonEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.ButtonEvent.Button,
+                            (int)k.Event.ButtonEvent.ButtonTrigger);
+                return h;
+            case Sparkle::InputEventType::GamePadAxisEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.AxisEvent.Axis,
+                            (int)k.Event.AxisEvent.AxisTrigger);
+                return h;
+            case Sparkle::InputEventType::GamePadStickEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.StickEvent.Stick,
+                            (int)k.Event.StickEvent.StickTrigger);
+                return h;
+            case Sparkle::InputEventType::KeyboardButtonEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.KeyboardButtonEvent.Button,
+                            (int)k.Event.KeyboardButtonEvent.ButtonTrigger);
+                return h;
+        }
+    }
+};
 
 #endif //SPARKLE_SOLUTION_INPUT_EVENT_H
 

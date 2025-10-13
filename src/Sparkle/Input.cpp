@@ -3,7 +3,6 @@
 //
 
 #include "Sparkle/Input.h"
-#include "SDL.h"
 
 namespace Sparkle
 {
@@ -22,7 +21,6 @@ namespace Sparkle
             {
                 auto gamepad = std::make_shared<GamepadController>();
                 gamepad->GamepadIndex = i;
-                gamepad->Initialize();
                 GamepadControllers[i] = gamepad;
                 return gamepad;
             }
@@ -81,7 +79,7 @@ namespace Sparkle
         return 0;
     }
 
-    void Input::GamepadControllerDisconnected(const SDL_ControllerDeviceEvent &event)
+    void Input::GamepadControllerDisconnected(const ControllerDeviceEvent &event)
     {
         auto device = event.which;
         for (auto & GamepadController : GamepadControllers)
@@ -96,7 +94,7 @@ namespace Sparkle
         }
     }
 
-    void Input::GamepadControllerConnected(const SDL_ControllerDeviceEvent &event)
+    void Input::GamepadControllerConnected(const ControllerDeviceEvent &event)
     {
         auto device = event.which;
         if (!SDL_IsGameController(device))
@@ -215,8 +213,17 @@ namespace Sparkle
         }
     }
 
-    void Input::UpdateEvent(SDL_Event& event)
+    void Input::UpdateEvent(InputEvent& event)
     {
+        //TODO: answer only to specific events, avoid unnecessary update
+        if (event.type == SDL_CONTROLLERDEVICEADDED)
+        {
+            GamepadControllerConnected(event.cdevice);
+        }
+        if (event.type == SDL_CONTROLLERDEVICEREMOVED)
+        {
+            GamepadControllerDisconnected(event.cdevice);
+        }
         Update();
     }
 

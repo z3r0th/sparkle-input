@@ -23,9 +23,9 @@ Sparkle::KeyboardController::KeyboardController() : Buttons(), LastButtons()
     std::fill(Buttons.begin(), Buttons.end(), false);
 }
 
-Sparkle::InputEventResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputEvent &event)
+Sparkle::InputResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputTrigger &event)
 {
-    if (event.EventType != InputEventType::KeyboardButtonEventType) return Sparkle::InputEventResult{false};
+    if (event.EventType != InputEventType::KeyboardButtonEventType) return Sparkle::InputResult{false};
     const InputKeyboardButtonEvent& keyboardEvent = event.Event.KeyboardButtonEvent;
     bool isButtonJustPressed = IsButtonJustPressed(keyboardEvent.Button);
     bool isButtonJustReleased = IsButtonJustReleased(keyboardEvent.Button);
@@ -34,7 +34,7 @@ Sparkle::InputEventResult Sparkle::KeyboardController::ProcessEvent(const Sparkl
             || IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
             || !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::UP)
     {
-        return Sparkle::InputEventResult{true, {.ButtonPressed = IsButtonPressed(keyboardEvent.Button)}};
+        return Sparkle::InputResult{true, {.ButtonPressed = IsButtonPressed(keyboardEvent.Button)}};
     }
-    return Sparkle::InputEventResult{false};
+    return Sparkle::InputResult{false};
 }

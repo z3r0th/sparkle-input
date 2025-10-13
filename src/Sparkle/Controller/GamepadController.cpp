@@ -65,7 +65,7 @@ void Sparkle::GamepadController::Update() {
 }
 
 Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
-        InputProcess(std::make_unique<GamepadInputProcess>()),
+        InputProcess(std::make_unique<GamepadInputProcess>(this)),
         InternalGameController(controller), Buttons(), LastButtons(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
@@ -78,7 +78,7 @@ Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
 }
 
 Sparkle::GamepadController::GamepadController():
-        InputProcess(std::make_unique<GamepadInputProcess>()),
+        InputProcess(std::make_unique<GamepadInputProcess>(this)),
         InternalGameController(nullptr), Buttons(), LastButtons(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
@@ -90,44 +90,9 @@ Sparkle::GamepadController::GamepadController():
     std::fill(LastAxis.begin(), LastAxis.end(), false);
 }
 
-bool Sparkle::GamepadController::ProcessInput(const Sparkle::InputEvent &event,
-                                              const Sparkle::InputAction &action)
+Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)
 {
-    return InputProcess->UpdateInput(event, action);
-}
-
-Sparkle::EventBinder<const unsigned int &, const Sparkle::InputAction &, const Sparkle::InputGamepadButtonEvent &> &
-Sparkle::GamepadController::BinderForButton(const Sparkle::InputAction &action)
-{
-    return InputProcess->BinderForButton(action);
-}
-
-Sparkle::EventBinder<const unsigned int &, const float &, const Sparkle::InputAction &, const Sparkle::InputGamepadAxisEvent &> &
-Sparkle::GamepadController::BinderForAxis(const Sparkle::InputAction &action)
-{
-    return InputProcess->BinderForAxis(action);
-}
-
-Sparkle::EventBinder<const unsigned int &, const Sparkle::Vector2 &, const Sparkle::InputAction &, const Sparkle::InputGamepadStickEvent &> &
-Sparkle::GamepadController::BinderForStick(const Sparkle::InputAction &action)
-{
-    return InputProcess->BinderForStick(action);
-}
-
-void Sparkle::GamepadController::Clear()
-{
-    InputProcess->Clear();
-}
-
-void Sparkle::GamepadController::Initialize()
-{
-    InputProcess->SetGamepadController(weak_from_this());
+    return InputProcess->ProcessEvent(event);
 }
 
 Sparkle::GamepadController::~GamepadController() = default;
-
-template<typename T>
-void Sparkle::GamepadController::RemoveBind(T *t)
-{
-    return InputProcess->RemoveBind(t);
-}

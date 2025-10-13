@@ -10,7 +10,6 @@ option(SPARKLE_INPUT_BUILD_EXAMPLES "Build SparkleInputs examples" ON)
 add_library(SparkleInput
         src/Sparkle/Controller/InputProcess/GamepadInputProcess.cpp
         src/Sparkle/Controller/InputProcess/GamepadInputProcess.h
-        src/Sparkle/Controller/InputProcess/InputProcess.h
         src/Sparkle/Controller/GamepadController.cpp
         include/Sparkle/Controller/GamepadController.h
         src/Sparkle/Controller/KeyboardController.cpp

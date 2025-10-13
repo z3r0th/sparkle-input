@@ -2,98 +2,71 @@
 // Created by z3r0_ on 08/09/2025.
 //
 
-#include "Sparkle/PlayerInputController.h"
 #include "GamepadInputProcess.h"
+
 #include "Sparkle/Controller/GamepadController.h"
-#include "Sparkle/Input.h"
 
-namespace Sparkle {
-    unsigned int Sparkle::GamepadInputProcessHandler::GetPlayerInputIndex()
+namespace Sparkle
+{
+    InputResult GamepadStickInputProcess::ProcessEvent(const InputGamepadStickEvent &event)
     {
-        // TODO: Fix this issue
-        return -1;
-    }
-
-    bool GamepadStickInputProcess::UpdateInput(const InputGamepadStickEvent &event, const InputAction &action)
-    {
-        if (std::shared_ptr<Sparkle::GamepadController> gamepadController = GamepadController.lock())
+        assert(GamepadController && "GamepadController should never be NULL");
+        static const std::map<GamepadStick, const std::vector<GamepadAxis>> stickAxis =
         {
-            std::map<GamepadStick, std::vector<GamepadAxis>> stickAxis =
-                    {
-                            {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
-                            {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
-                    };
-            Vector2 axisValue = { 0, 0 };
-            const std::vector<GamepadAxis>& axisAnalyses = stickAxis[event.Stick];
-            int i = 0;
-            bool triggerCallback = false;
-            for (auto& axisEnum : axisAnalyses)
-            {
-                bool hasAxisMoved = gamepadController->HasAxisMoved(axisEnum);
-                float axis = gamepadController->GetAxis(axisEnum);
-                axisValue[i++] = axis;
-                if (i > 2) throw std::runtime_error("We don't support stick with more than 2 axis");
-                if (hasAxisMoved && event.StickTrigger == InputStickEventTrigger::MOVEMENT
-                    || axis >= 0.95 && event.StickTrigger == InputStickEventTrigger::FULL_POSITIVE
-                    || axis <= -0.95 && event.StickTrigger == InputStickEventTrigger::FULL_NEGATIVE)
-
-                {
-                    triggerCallback = true;
-                }
-            }
-            if (triggerCallback)
-            {
-                auto it = InputMapCallback.find(action);
-                if (it != InputMapCallback.end())
-                {
-                    it->second.Raise(GetPlayerInputIndex(), axisValue, action, event);
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool GamepadButtonInputProcess::UpdateInput(const InputGamepadButtonEvent &event, const InputAction &action)
-    {
-        if (std::shared_ptr<Sparkle::GamepadController> gamepadController = GamepadController.lock())
+            {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
+            {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
+        };
+        Stick axisValue = { 0, 0 };
+        const std::vector<GamepadAxis>& axisAnalyses = stickAxis.at(event.Stick);
+        bool triggerCallback = false;
+        int i = 0;
+        for (auto& axisEnum : axisAnalyses)
         {
-            bool isButtonJustPressed = gamepadController->IsButtonJustPressed(event.Button);
-            bool isButtonJustReleased = gamepadController->IsButtonJustReleased(event.Button);
-            if (isButtonJustPressed && event.ButtonTrigger == InputButtonEventTrigger::JUST_PRESSED
-                || isButtonJustReleased && event.ButtonTrigger == InputButtonEventTrigger::JUST_RELEASED
-                || gamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
-                || !gamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::UP)
+            bool hasAxisMoved = GamepadController->HasAxisMoved(axisEnum);
+            float axis = GamepadController->GetAxis(axisEnum);
+            assert (i <= 1 && "Support only two axis");
+            i++ == 0 ? axisValue.X = axis : axisValue.Y = axis;
+            if (hasAxisMoved && event.StickTrigger == InputStickEventTrigger::MOVEMENT
+                || axis >= 0.95 && event.StickTrigger == InputStickEventTrigger::FULL_POSITIVE
+                || axis <= -0.95 && event.StickTrigger == InputStickEventTrigger::FULL_NEGATIVE)
+
             {
-                auto it = InputMapCallback.find(action);
-                if (it != InputMapCallback.end())
-                {
-                    it->second.Raise(GetPlayerInputIndex(), action, event);
-                }
-                return true;
+                triggerCallback = true;
             }
         }
-        return false;
+        if (triggerCallback)
+        {
+            return InputResult{true, InputState{.Stick = axisValue}};
+        }
+        return InputResult{false};
     }
 
-    bool GamepadAxisInputProcess::UpdateInput(const InputGamepadAxisEvent &event, const InputAction &action)
+    InputResult GamepadButtonInputProcess::ProcessEvent(const InputGamepadButtonEvent &event)
     {
-        if (std::shared_ptr<Sparkle::GamepadController> gamepadController = GamepadController.lock())
+        assert(GamepadController && "GamepadController should never be NULL");
+        bool isButtonJustPressed = GamepadController->IsButtonJustPressed(event.Button);
+        bool isButtonJustReleased = GamepadController->IsButtonJustReleased(event.Button);
+        if (isButtonJustPressed && event.ButtonTrigger == InputButtonEventTrigger::JUST_PRESSED
+            || isButtonJustReleased && event.ButtonTrigger == InputButtonEventTrigger::JUST_RELEASED
+            || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
+            || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::UP)
         {
-            bool hasAxisMoved = gamepadController->HasAxisMoved(event.Axis);
-            float axis = gamepadController->GetAxis(event.Axis);
-            if (hasAxisMoved && event.AxisTrigger == InputAxisEventTrigger::MOVEMENT
-                || axis >= 0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_POSITIVE
-                || axis <= -0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_NEGATIVE)
-            {
-                auto it = InputMapCallback.find(action);
-                if (it != InputMapCallback.end())
-                {
-                    it->second.Raise(GetPlayerInputIndex(), axis, action, event);
-                }
-                return true;
-            }
+            return InputResult{true, InputState{.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}};
         }
-        return false;
+        return InputResult{false};
+    }
+
+    Sparkle::InputResult GamepadAxisInputProcess::ProcessEvent(const InputGamepadAxisEvent &event)
+    {
+        assert(GamepadController && "GamepadController should never be NULL");
+        bool hasAxisMoved = GamepadController->HasAxisMoved(event.Axis);
+        float axis = GamepadController->GetAxis(event.Axis);
+        if (hasAxisMoved && event.AxisTrigger == InputAxisEventTrigger::MOVEMENT
+            || axis >= 0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_POSITIVE
+            || axis <= -0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_NEGATIVE)
+        {
+            return InputResult{true, InputState{.Axis = axis}};
+        }
+        return InputResult{false};
     }
 }

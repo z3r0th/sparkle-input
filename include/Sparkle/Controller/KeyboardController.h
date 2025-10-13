@@ -34,7 +34,7 @@ namespace Sparkle
 
         inline bool IsActive() override { return true; }
 
-        InputEventResult ProcessEvent(const Sparkle::InputEvent &event);
+        InputResult ProcessEvent(const Sparkle::InputTrigger &event);
 
         /// Check if Keyboard button is pressed
         /// Keyboard Buttons are updated on Input update

@@ -7,7 +7,7 @@
 
 namespace Sparkle
 {
-    class InputEvent;
+    class InputTrigger;
     class InputAction;
 
     class InputController

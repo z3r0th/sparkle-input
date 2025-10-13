@@ -5,27 +5,26 @@
 #ifndef SPARKLE_SOLUTION_GAMEPAD_CONTROLLER_H
 #define SPARKLE_SOLUTION_GAMEPAD_CONTROLLER_H
 
-#include "SDL2/SDL_gamecontroller.h"
 #include <cassert>
-#include <array>
-#include <limits>
 #include <memory>
+#include <limits>
+#include <array>
+#include <SDL.h>
 
 #include "Sparkle/InputController.h"
 #include "Sparkle/InputEvent.h"
 #include "Sparkle/Event.h"
 
-#define RawGameController SDL_GameController
-
 #define ON_DISCONNECTED_EVENT_NAME "OnDisconnected"
 #define ON_CONNECTED_EVENT_NAME "OnConnected"
+
+using RawGameController = SDL_GameController;
 
 namespace Sparkle
 {
     class GamepadInputProcess;
+    class InputTrigger;
     class InputAction;
-    class InputEvent;
-    class Vector2;
     class Input;
 
     struct InputGamepadButtonEvent;
@@ -34,7 +33,7 @@ namespace Sparkle
 
     /// GamepadController to represent a Gamepad device
     /// This connects to an actual Gamepad and expose an interface to check the Gamepad status (buttons, axis, etc)
-    class GamepadController : std::enable_shared_from_this<GamepadController>, public InputController
+    class GamepadController : public std::enable_shared_from_this<GamepadController>, public InputController
     {
         friend class Sparkle::Input;
 
@@ -67,15 +66,13 @@ namespace Sparkle
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         void Update() override;
-        bool ProcessInput(const InputEvent &event, const InputAction &action);
 
     public:
         explicit GamepadController(RawGameController *controller);
-
         explicit GamepadController();
         virtual ~GamepadController();
 
-        void Initialize();
+        InputResult ProcessEvent(const InputTrigger &event);
 
         Sparkle::Event<std::weak_ptr<GamepadController>>& OnDisconnected() { return OnDisconnectedEvent; }
         Sparkle::Event<std::weak_ptr<GamepadController>>& OnConnected() { return OnConnectedEvent; }
@@ -143,13 +140,6 @@ namespace Sparkle
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
         }
-
-        EventBinder<const unsigned int&, const InputAction&, const InputGamepadButtonEvent&>& BinderForButton(const InputAction& action);
-        EventBinder<const unsigned int&, const float&, const InputAction&, const InputGamepadAxisEvent&>& BinderForAxis(const InputAction& action);
-        EventBinder<const unsigned int&, const Vector2&, const InputAction&, const InputGamepadStickEvent&>& BinderForStick(const InputAction& action);
-        void Clear();
-        template<typename T>
-        void RemoveBind(T* t);
     };
 }
 

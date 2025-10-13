@@ -155,49 +155,11 @@ namespace Sparkle
         /// \return EventBinder for OnGamepadConnected
         EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
 
-        /// Binding to Gamepad Button event for the specific InputAction
-        /// The Event will be raised depending on how the button/action were map on \class InputMap
-        /// \example OnGamepadButton().Bind(&Class::Method, &object)
-        /// \example OnGamepadButton().Bind([](const unsigned int&, const Sparkle::InputAction&, const Sparkle::InputGamepadButtonEvent&){...})
-        /// \param action that the button event will respond to
-        /// \return EventBinder for OnGamepadButton
-        EventBinder<const unsigned int&, const Sparkle::InputAction&, const Sparkle::InputGamepadButtonEvent&>& OnGamepadButton(const InputAction& action)
-        {
-            return GamepadController->BinderForButton(action);
-        }
-
-        /// Binding to Gamepad Axis event for the specific InputAction
-        /// The Event will be raised depending on how the axis/action were map on \class InputMap
-        /// Axis are a float (that can be from -1 to 1 or 0 to 1 depending if they represent a full range movement or a trigger (gamepad trigger))
-        /// Axis represent a movement range (LEFT STICK HORIZONTAL or LEFT TRIGGER for example)
-        /// \example OnGamepadAxis().Bind(&Class::Method, &object)
-        /// \example OnGamepadAxis().Bind([](const unsigned int&, const float&, const Sparkle::InputAction&, const Sparkle::InputGamepadAxisEvent&){...})
-        /// \param action that the axis event will respond to
-        /// \return EventBinder for OnGamepadAxis
-        EventBinder<const unsigned int&, const float&, const Sparkle::InputAction&, const Sparkle::InputGamepadAxisEvent&>& OnGamepadAxis(const InputAction& action)
-        {
-            return GamepadController->BinderForAxis(action);
-        }
-
-        /// Binding to Gamepad Stick event for the specific InputAction
-        /// The Event will be raised depending on how the stick/action were map on \class InputMap
-        /// Stick are a Vector2 (pair of float (x,y) ranging from -1 to 1).
-        /// Stick represent a full movement in two direction - Typically known as left or right stick on a gamepad
-        /// \example OnGamepadAxis().Bind(&Class::Method, &object)
-        /// \example OnGamepadAxis().Bind([](const unsigned int&, const Vector2&, const Sparkle::InputAction&, const Sparkle::InputGamepadStickEvent&){...})
-        /// \param action that the stick event will respond to
-        /// \return EventBinder for OnGamepadStick
-        EventBinder<const unsigned int&, const Vector2&, const InputAction&, const Sparkle::InputGamepadStickEvent&>& OnGamepadStick(const InputAction& action)
-        {
-            return GamepadController->BinderForStick(action);
-        }
-
 #pragma endregion Gamepad Methods
 
         /// Clears all callbacks including input connection, input map update and gamepad/kbm input
         void Clear()
         {
-            if (GamepadController) GamepadController->Clear();
             ActionEventMap.clear();
             OnGamepadDisconnectedEvent.RemoveAll();
             OnGamepadConnectedEvent.RemoveAll();

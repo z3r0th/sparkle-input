@@ -29,6 +29,11 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
             SDL_WINDOW_SHOWN // Flag to make the window visible
     );
 
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << '\n';
+        return 1;
+    }
+
     if (!window) {
         std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -53,11 +58,13 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
     // Game loop
     while (!quit) {
         // Handle events on queue
-        while (SDL_PollEvent(&e) != 0) {
+        while (SDL_PollEvent(&e))
+        {
             // User requests quit
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
+            Input.UpdateEvent(e);
         }
 
         // Set draw color to blue
@@ -69,7 +76,6 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
         // Update the screen
         SDL_RenderPresent(renderer);
 
-        Input.UpdateEvent(e);
         if (func) func(Input);
     }
 

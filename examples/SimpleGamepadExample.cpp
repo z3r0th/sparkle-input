@@ -10,9 +10,10 @@ int main(int argc, char* argv[])
     Sparkle::InputMap map;
     Sparkle::InputAction pressedButtonA("PressedButtonA");
 
-    map.Bind(Sparkle::KeyboardButton::KEY_A, Sparkle::InputButtonEventTrigger::JUST_PRESSED, pressedButtonA);
-    map.Bind(Sparkle::KeyboardButton::KEY_A, Sparkle::InputButtonEventTrigger::JUST_RELEASED, pressedButtonA);
+    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_PRESSED, pressedButtonA);
+    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_RELEASED, pressedButtonA);
     playerInputController->SetInputMap(map);
+    playerInputController->AssignGamepad();
 
     playerInputController->OnAction(pressedButtonA).Bind([](const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
     {

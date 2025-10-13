@@ -6,23 +6,22 @@
 #define SPARKLE_SOLUTION_INPUT_H
 
 #include "PlayerInputController.h"
+#include "InputAction.h"
+#include "InputEvent.h"
+#include "InputMap.h"
+
 #include <SDL.h>
 
 #define MAX_LOCAL_PLAYER_CONTROLLERS 100
 
-// TODO: Separate header files from implementation
-// TODO: Fix the Vector2 issue
-// TODO: Reorganize files
-// TODO: Make gamepad example
-// TODO: Make keyboard example
 // TODO: Make mouse example
 // TODO: Make at least one complete example
 
+using ControllerDeviceEvent = SDL_ControllerDeviceEvent;
+using InputEvent = SDL_Event;
+
 namespace Sparkle
 {
-    // TODO: Fix this
-    struct Vector2 {float x; float y;
-        float& operator[](int index){return x;}};
     /// Input Manager
     /// Central point to inspect Input Related actions
     /// Get the Player Controllers, Gamepad or Mouse and keyboard to inspect the state or Bind event actions
@@ -40,8 +39,8 @@ namespace Sparkle
 
         void HandlePlayerInputControllerRequest(std::weak_ptr<PlayerInputController>);
 
-        void GamepadControllerDisconnected(const SDL_ControllerDeviceEvent& event);
-        void GamepadControllerConnected(const SDL_ControllerDeviceEvent& event);
+        void GamepadControllerDisconnected(const ControllerDeviceEvent& event);
+        void GamepadControllerConnected(const ControllerDeviceEvent& event);
 
         void Update();
 
@@ -49,7 +48,7 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        void UpdateEvent(SDL_Event& event);
+        void UpdateEvent(InputEvent& event);
 
         std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
 

@@ -8,18 +8,23 @@ namespace Sparkle
 {
     void PlayerInputController::Update()
     {
-        for (auto & ButtonAction : InputMap.ButtonActions)
+        if (GamepadController != nullptr && GamepadController->IsActive())
         {
-            auto event = ButtonAction.first;
-            if (GamepadController != nullptr && GamepadController->IsActive())
+            for (auto &ButtonAction: InputMap.ActionTrigger)
             {
-                //static_cast<InputController*>(GamepadController.get())->ProcessInput(event, ButtonAction.second);
+                auto event = ButtonAction.first;
+                if (const auto Result = GamepadController->ProcessEvent(event); Result.IsActive)
+                {
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                }
             }
         }
 
         if (KeyboardController != nullptr && KeyboardController->IsActive())
         {
-            for (auto &ButtonAction: InputMap.ButtonActions)
+            for (auto &ButtonAction: InputMap.ActionTrigger)
             {
                 auto event = ButtonAction.first;
                 if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
