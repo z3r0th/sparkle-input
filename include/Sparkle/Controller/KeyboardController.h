@@ -5,40 +5,36 @@
 #ifndef SPARKLE_SOLUTION_KEYBOARDCONTROLLER_H
 #define SPARKLE_SOLUTION_KEYBOARDCONTROLLER_H
 
-#include <memory>
+#include <cstdint>
 #include <array>
 
-#include "Sparkle/Event.h"
-#include "InputController.h"
-#include "InputEvent.h"
+#include "Sparkle/InputController.h"
+#include "Sparkle/InputEvent.h"
 
 namespace Sparkle
 {
     class Input;
-    class KeyboardInputProcess;
-    class InputKeyboardButtonEvent;
-    class KeyboardController : public std::enable_shared_from_this<KeyboardController>, public InputController
+
+    // TODO: Type text mode, modifier type, state check (capslock for example)
+    class KeyboardController : public InputController
     {
+        // Input updates the buttons
         friend class Sparkle::Input;
 
     private:
-        //TODO: change int to a smaller type
-        std::array<bool, (int)KeyboardButton::Count> Buttons;
-        std::array<bool, (int)KeyboardButton::Count> LastButtons;
-
-        std::unique_ptr<KeyboardInputProcess> InputProcess;
+        typedef uint8_t UInt8;
+        std::array<bool, (UInt8)KeyboardButton::Count> Buttons;
+        std::array<bool, (UInt8)KeyboardButton::Count> LastButtons;
 
     protected:
-        bool ProcessInput(const InputEvent &event, const InputAction &action) override;
         void Update() override;
 
     public:
         explicit KeyboardController();
-        virtual ~KeyboardController();
-
-        void Initialize();
 
         inline bool IsActive() override { return true; }
+
+        InputEventResult ProcessEvent(const Sparkle::InputEvent &event);
 
         /// Check if Keyboard button is pressed
         /// Keyboard Buttons are updated on Input update
@@ -68,13 +64,6 @@ namespace Sparkle
             auto index = static_cast<unsigned int>(key);
             return !Buttons[index] && LastButtons[index];
         }
-
-        EventBinder<const unsigned int&, const InputAction&, const InputKeyboardButtonEvent&>& BinderForButton(const InputAction& action);
-
-        template<typename T>
-        void RemoveBind(T *t);
-
-        void Clear();
     };
 }
 

@@ -4,7 +4,7 @@
 
 #include "Sparkle/PlayerInputController.h"
 #include "GamepadInputProcess.h"
-#include "Sparkle/GamepadController.h"
+#include "Sparkle/Controller/GamepadController.h"
 #include "Sparkle/Input.h"
 
 namespace Sparkle {

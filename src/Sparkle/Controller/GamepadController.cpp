@@ -3,7 +3,7 @@
 //
 
 #include "Sparkle/Controller/InputProcess/GamepadInputProcess.h"
-#include "Sparkle/GamepadController.h"
+#include "Sparkle/Controller/GamepadController.h"
 #include <SDL.h>
 
 void Sparkle::GamepadController::ClearController()

@@ -8,15 +8,19 @@
 #define SPARKLE_SOLUTION_INPUT_EVENT_H
 
 #include <string>
+#include <cassert>
 
 namespace Sparkle
 {
     // Input related ENUMS transformed into CLASSES for convenient methods like c_str() and implicit string conversion
     // They should be used (and enforced to be used) as ENUMS
 
+#pragma region Enum Input Types
+
     /// KeyboardButton
     class KeyboardButton
     {
+//TODO: Add more keyboard button
 #define KEYBOARD_BUTTON_LIST(E) \
 E(UNKNOWN)                      \
 E(KEY_RESERVED_1)               \
@@ -243,6 +247,10 @@ E(Count)
 #undef GAMEPAD_AXIS_LIST
     };
 
+#pragma endregion Enum Input Types
+
+#pragma region Enum Event Trigger Types
+
     /// InputStickEventTrigger
     class InputStickEventTrigger
     {
@@ -402,6 +410,144 @@ E(FULL_NEGATIVE)
         InputAxisEventTriggerEnum value;
 
 #undef INPUT_AXIS_EVENT_TRIGGER_LIST
+    };
+
+#pragma endregion Enum Event Trigger Types
+
+#pragma region Struct Event Pair (Trigger/Input)
+    struct InputKeyboardButtonEvent
+    {
+        InputButtonEventTrigger ButtonTrigger{};
+        KeyboardButton Button{};
+    };
+
+    struct InputGamepadButtonEvent
+    {
+        InputButtonEventTrigger ButtonTrigger{};
+        GamepadButton Button{};
+    };
+
+    struct InputGamepadAxisEvent
+    {
+        InputAxisEventTrigger AxisTrigger{};
+        GamepadAxis Axis{};
+    };
+
+    struct InputGamepadStickEvent
+    {
+        InputStickEventTrigger StickTrigger{};
+        GamepadStick Stick{};
+    };
+#pragma endregion Struct Event Pair (Trigger/Input)
+
+    enum class InputEventType
+    {
+        GamePadButtonEventType,
+        GamePadAxisEventType,
+        GamePadStickEventType,
+        KeyboardButtonEventType
+    };
+
+    union SpecificInputEvent
+    {
+        InputKeyboardButtonEvent KeyboardButtonEvent;
+        InputGamepadButtonEvent ButtonEvent;
+        InputGamepadStickEvent StickEvent;
+        InputGamepadAxisEvent AxisEvent;
+    };
+
+    struct Stick
+    {
+        float X;
+        float Y;
+    };
+
+    union InputState
+    {
+        bool ButtonPressed;
+        Stick Stick;
+        float Axis;
+    };
+
+    struct InputEventResult
+    {
+        bool IsActive;
+        InputState InputState;
+    };
+
+    //TODO: Rename the class. InputEvent name is not good. It sounds like the event is happening when this is actually a class describing an event waiting to happen
+    struct InputEvent
+    {
+        SpecificInputEvent Event{};
+        InputEventType EventType{};
+
+        bool operator <(const InputEvent& rhs) const
+        {
+            switch (EventType) {
+                case InputEventType::GamePadButtonEventType:
+                    return std::tie(EventType,
+                             Event.ButtonEvent.Button,
+                             Event.ButtonEvent.ButtonTrigger) <
+                           std::tie(rhs.EventType,
+                             rhs.Event.ButtonEvent.Button,
+                             rhs.Event.ButtonEvent.ButtonTrigger);
+                case InputEventType::GamePadAxisEventType:
+                    return std::tie(EventType,
+                                    Event.AxisEvent.AxisTrigger,
+                                    Event.AxisEvent.Axis) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.AxisEvent.AxisTrigger,
+                                    rhs.Event.AxisEvent.Axis);
+                case InputEventType::GamePadStickEventType:
+                    return std::tie(EventType,
+                                    Event.StickEvent.StickTrigger,
+                                    Event.StickEvent.Stick) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.StickEvent.StickTrigger,
+                                    rhs.Event.StickEvent.Stick);
+                case InputEventType::KeyboardButtonEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardButtonEvent.ButtonTrigger,
+                                    Event.KeyboardButtonEvent.Button) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardButtonEvent.ButtonTrigger,
+                                    rhs.Event.KeyboardButtonEvent.Button);
+            }
+            assert(false && "No input event type verified");
+        }
+        bool operator ==(const InputEvent& rhs) const
+        {
+            switch (EventType) {
+                case InputEventType::GamePadButtonEventType:
+                    return std::tie(EventType,
+                                    Event.ButtonEvent.Button,
+                                    Event.ButtonEvent.ButtonTrigger) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.ButtonEvent.Button,
+                                    rhs.Event.ButtonEvent.ButtonTrigger);
+                case InputEventType::GamePadAxisEventType:
+                    return std::tie(EventType,
+                                    Event.AxisEvent.AxisTrigger,
+                                    Event.AxisEvent.Axis) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.AxisEvent.AxisTrigger,
+                                    rhs.Event.AxisEvent.Axis);
+                case InputEventType::GamePadStickEventType:
+                    return std::tie(EventType,
+                                    Event.StickEvent.StickTrigger,
+                                    Event.StickEvent.Stick) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.StickEvent.StickTrigger,
+                                    rhs.Event.StickEvent.Stick);
+                case InputEventType::KeyboardButtonEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardButtonEvent.ButtonTrigger,
+                                    Event.KeyboardButtonEvent.Button) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardButtonEvent.ButtonTrigger,
+                                    rhs.Event.KeyboardButtonEvent.Button);
+            }
+        }
     };
 }
 

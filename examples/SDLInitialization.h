@@ -10,7 +10,7 @@
 
 #include "Sparkle/Input.h"
 
-int InitializeSDLAndRunInput(Sparkle::Input& input)
+int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::Input&)> func = nullptr)
 {
     Sparkle::Input Input = std::move(input);
     // Initialize SDL
@@ -70,6 +70,7 @@ int InitializeSDLAndRunInput(Sparkle::Input& input)
         SDL_RenderPresent(renderer);
 
         Input.UpdateEvent(e);
+        if (func) func(Input);
     }
 
     // Clean up

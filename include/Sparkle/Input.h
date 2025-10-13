@@ -51,6 +51,8 @@ namespace Sparkle
 
         void UpdateEvent(SDL_Event& event);
 
+        std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
+
         // Gamepad access functions
         // These are Proxy to access gamepad controller functions
 

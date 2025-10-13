@@ -2,9 +2,9 @@
 // Created by z3r0_ on 10/10/2025.
 //
 
-#include "Sparkle/Controller/InputProcess/KeyboardInputProcess.h"
-#include "Sparkle/KeyboardController.h"
+#include "Sparkle/Controller/KeyboardController.h"
 #include "Sparkle/InputEvent.h"
+#include "Sparkle/InputMap.h"
 #include <SDL.h>
 
 void Sparkle::KeyboardController::Update()
@@ -17,37 +17,24 @@ void Sparkle::KeyboardController::Update()
     }
 }
 
-Sparkle::KeyboardController::KeyboardController() : Buttons(), LastButtons(), InputProcess(std::make_unique<KeyboardInputProcess>())
+Sparkle::KeyboardController::KeyboardController() : Buttons(), LastButtons()
 {
     std::fill(LastButtons.begin(), LastButtons.end(), false);
     std::fill(Buttons.begin(), Buttons.end(), false);
 }
 
-bool Sparkle::KeyboardController::ProcessInput(const Sparkle::InputEvent &event, const Sparkle::InputAction &action)
+Sparkle::InputEventResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputEvent &event)
 {
-    return InputProcess->UpdateInput(event, action);
+    if (event.EventType != InputEventType::KeyboardButtonEventType) return Sparkle::InputEventResult{false};
+    const InputKeyboardButtonEvent& keyboardEvent = event.Event.KeyboardButtonEvent;
+    bool isButtonJustPressed = IsButtonJustPressed(keyboardEvent.Button);
+    bool isButtonJustReleased = IsButtonJustReleased(keyboardEvent.Button);
+    if (isButtonJustPressed && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::JUST_PRESSED
+            || isButtonJustReleased && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::JUST_RELEASED
+            || IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
+            || !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputButtonEventTrigger::UP)
+    {
+        return Sparkle::InputEventResult{true, {.ButtonPressed = IsButtonPressed(keyboardEvent.Button)}};
+    }
+    return Sparkle::InputEventResult{false};
 }
-
-Sparkle::EventBinder<const unsigned int &, const Sparkle::InputAction &, const Sparkle::InputKeyboardButtonEvent &> &
-Sparkle::KeyboardController::BinderForButton(const Sparkle::InputAction &action) {
-    return InputProcess->BinderForButton(action);
-}
-
-void Sparkle::KeyboardController::Clear()
-{
-    InputProcess->Clear();
-}
-
-void Sparkle::KeyboardController::Initialize()
-{
-    auto weak = weak_from_this();
-    InputProcess->SetKeyboardController(weak);
-}
-
-template<typename T>
-void Sparkle::KeyboardController::RemoveBind(T *t)
-{
-    InputProcess->RemoveBind(t);
-}
-
-Sparkle::KeyboardController::~KeyboardController() = default;

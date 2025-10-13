@@ -17,61 +17,6 @@
 
 namespace Sparkle
 {
-    struct InputKeyboardButtonEvent
-    {
-        InputButtonEventTrigger ButtonTrigger{};
-        KeyboardButton Button{};
-    };
-
-    struct InputGamepadButtonEvent
-    {
-        InputButtonEventTrigger ButtonTrigger{};
-        GamepadButton Button{};
-    };
-
-    struct InputGamepadAxisEvent
-    {
-        InputAxisEventTrigger AxisTrigger{};
-        GamepadAxis Axis{};
-    };
-
-    struct InputGamepadStickEvent
-    {
-        InputStickEventTrigger StickTrigger{};
-        GamepadStick Stick{};
-    };
-
-    enum class InputEventType
-    {
-        GamePadButtonEventType,
-        GamePadAxisEventType,
-        GamePadStickEventType,
-        KeyboardButtonEventType
-    };
-
-    struct InputEvent
-    {
-        InputGamepadButtonEvent ButtonEvent{};
-        InputGamepadStickEvent StickEvent{};
-        InputGamepadAxisEvent AxisEvent{};
-
-        InputKeyboardButtonEvent KeyboardButtonEvent;
-
-        InputEventType EventType{};
-
-        bool operator <(const InputEvent& rhs) const
-        {
-            return std::tie(EventType, KeyboardButtonEvent.Button, KeyboardButtonEvent.ButtonTrigger, StickEvent.Stick, StickEvent.StickTrigger, ButtonEvent.ButtonTrigger, ButtonEvent.Button, AxisEvent.Axis, AxisEvent.AxisTrigger) <
-                   std::tie(rhs.EventType, rhs.KeyboardButtonEvent.Button, rhs.KeyboardButtonEvent.ButtonTrigger, rhs.StickEvent.Stick, rhs.StickEvent.StickTrigger, rhs.ButtonEvent.ButtonTrigger, rhs.ButtonEvent.Button, rhs.AxisEvent.Axis, rhs.AxisEvent.AxisTrigger);
-        }
-
-        bool operator ==(const InputEvent& rhs) const
-        {
-            return std::tie(EventType, KeyboardButtonEvent.Button, KeyboardButtonEvent.ButtonTrigger, StickEvent.Stick, StickEvent.StickTrigger, ButtonEvent.ButtonTrigger, ButtonEvent.Button, AxisEvent.Axis, AxisEvent.AxisTrigger) ==
-                   std::tie(rhs.EventType, rhs.KeyboardButtonEvent.Button, rhs.KeyboardButtonEvent.ButtonTrigger, rhs.StickEvent.Stick, rhs.StickEvent.StickTrigger, rhs.ButtonEvent.ButtonTrigger, rhs.ButtonEvent.Button, rhs.AxisEvent.Axis, rhs.AxisEvent.AxisTrigger);
-        }
-    };
-
     /// Map a physical InputType (Button, Key, Mouse, Axis) to specific InputAction
     class InputMap
     {
@@ -109,8 +54,8 @@ namespace Sparkle
         {
             InputEvent event = InputEvent();
             event.EventType = InputEventType::KeyboardButtonEventType;
-            event.KeyboardButtonEvent.Button = button;
-            event.KeyboardButtonEvent.ButtonTrigger = trigger;
+            event.Event.KeyboardButtonEvent.Button = button;
+            event.Event.KeyboardButtonEvent.ButtonTrigger = trigger;
             ButtonActions[event] = action;
         }
         /// Binds a specific GamepadButton to a specific Action through a specific Trigger
@@ -126,8 +71,8 @@ namespace Sparkle
         {
             InputEvent event = InputEvent();
             event.EventType = InputEventType::GamePadButtonEventType;
-            event.ButtonEvent.Button = button;
-            event.ButtonEvent.ButtonTrigger = trigger;
+            event.Event.ButtonEvent.Button = button;
+            event.Event.ButtonEvent.ButtonTrigger = trigger;
             ButtonActions[event] = action;
         }
 
@@ -143,8 +88,8 @@ namespace Sparkle
         {
             InputEvent event = InputEvent();
             event.EventType = InputEventType::GamePadStickEventType;
-            event.StickEvent.Stick = stick;
-            event.StickEvent.StickTrigger = trigger;
+            event.Event.StickEvent.Stick = stick;
+            event.Event.StickEvent.StickTrigger = trigger;
             ButtonActions[event] = action;
         }
 
@@ -160,8 +105,8 @@ namespace Sparkle
         {
             InputEvent event = InputEvent();
             event.EventType = InputEventType::GamePadAxisEventType;
-            event.AxisEvent.Axis = axis;
-            event.AxisEvent.AxisTrigger = trigger;
+            event.Event.AxisEvent.Axis = axis;
+            event.Event.AxisEvent.AxisTrigger = trigger;
             ButtonActions[event] = action;
         }
 
@@ -217,20 +162,21 @@ struct std::hash<Sparkle::InputEvent>
 
     std::size_t operator()(const Sparkle::InputEvent& k) const
     {
+        // TODO: Since we are using Union this can be simplified
         using std::size_t;
         using std::hash;
         using std::string;
         std::size_t h = 0;
         HashCombine(h,
                      (int)k.EventType,
-                     (int)k.KeyboardButtonEvent.Button,
-                     (int)k.KeyboardButtonEvent.ButtonTrigger,
-                     (int)k.ButtonEvent.Button,
-                     (int)k.ButtonEvent.ButtonTrigger,
-                     (int)k.StickEvent.Stick,
-                     (int)k.StickEvent.StickTrigger,
-                     (int)k.AxisEvent.Axis,
-                     (int)k.AxisEvent.AxisTrigger);
+                     (int)k.Event.KeyboardButtonEvent.Button,
+                     (int)k.Event.KeyboardButtonEvent.ButtonTrigger,
+                     (int)k.Event.ButtonEvent.Button,
+                     (int)k.Event.ButtonEvent.ButtonTrigger,
+                     (int)k.Event.StickEvent.Stick,
+                     (int)k.Event.StickEvent.StickTrigger,
+                     (int)k.Event.AxisEvent.Axis,
+                     (int)k.Event.AxisEvent.AxisTrigger);
         return h;
     }
 };

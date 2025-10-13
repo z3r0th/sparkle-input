@@ -13,16 +13,21 @@ namespace Sparkle
             auto event = ButtonAction.first;
             if (GamepadController != nullptr && GamepadController->IsActive())
             {
-                static_cast<InputController*>(GamepadController.get())->ProcessInput(event, ButtonAction.second);
+                //static_cast<InputController*>(GamepadController.get())->ProcessInput(event, ButtonAction.second);
             }
         }
 
-        for (auto & ButtonAction : InputMap.ButtonActions)
+        if (KeyboardController != nullptr && KeyboardController->IsActive())
         {
-            auto event = ButtonAction.first;
-            if (KeyboardController != nullptr && KeyboardController->IsActive())
+            for (auto &ButtonAction: InputMap.ButtonActions)
             {
-                static_cast<InputController*>(KeyboardController.get())->ProcessInput(event, ButtonAction.second);
+                auto event = ButtonAction.first;
+                if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
+                {
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                }
             }
         }
     }
@@ -48,5 +53,17 @@ namespace Sparkle
         GamepadController->OnConnected().Remove(this);
         GamepadController->OnDisconnected().Remove(this);
         GamepadController.reset();
+    }
+
+    EventBinder<const std::weak_ptr<PlayerInputController>, InputAction, InputState>&
+    PlayerInputController::OnAction(const InputAction & action)
+    {
+        auto it = ActionEventMap.find(action);
+        if (it != ActionEventMap.end())
+        {
+            return it->second.GetBinder();
+        }
+        ActionEventMap.emplace(action, Event<const std::weak_ptr<PlayerInputController>, InputAction, InputState>());
+        return ActionEventMap[action].GetBinder();
     }
 } // Sparkle

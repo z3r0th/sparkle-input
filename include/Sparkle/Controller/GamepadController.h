@@ -11,7 +11,7 @@
 #include <limits>
 #include <memory>
 
-#include "InputController.h"
+#include "Sparkle/InputController.h"
 #include "Sparkle/InputEvent.h"
 #include "Sparkle/Event.h"
 
@@ -67,7 +67,7 @@ namespace Sparkle
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         void Update() override;
-        bool ProcessInput(const InputEvent &event, const InputAction &action) override;
+        bool ProcessInput(const InputEvent &event, const InputAction &action);
 
     public:
         explicit GamepadController(RawGameController *controller);

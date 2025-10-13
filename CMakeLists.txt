@@ -11,12 +11,10 @@ add_library(SparkleInput
         src/Sparkle/Controller/InputProcess/GamepadInputProcess.cpp
         src/Sparkle/Controller/InputProcess/GamepadInputProcess.h
         src/Sparkle/Controller/InputProcess/InputProcess.h
-        src/Sparkle/Controller/InputProcess/KeyboardInputProcess.cpp
-        src/Sparkle/Controller/InputProcess/KeyboardInputProcess.h
         src/Sparkle/Controller/GamepadController.cpp
-        include/Sparkle/GamepadController.h
+        include/Sparkle/Controller/GamepadController.h
         src/Sparkle/Controller/KeyboardController.cpp
-        include/Sparkle/KeyboardController.h
+        include/Sparkle/Controller/KeyboardController.h
         include/Sparkle/InputController.h
         src/Sparkle/PlayerInputController.cpp
         include/Sparkle/PlayerInputController.h

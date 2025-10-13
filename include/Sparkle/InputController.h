@@ -12,18 +12,14 @@ namespace Sparkle
 
     class InputController
     {
-        friend class PlayerInputController;
-
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
         virtual void Update() = 0;
-        virtual bool ProcessInput(const InputEvent &event, const InputAction &action) = 0;
 
     public:
         /// Is this controller active to the player?
         /// \return true if active
         [[nodiscard]] virtual inline bool IsActive() = 0;
-
     };
 
 } // Sparkle

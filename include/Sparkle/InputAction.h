@@ -61,6 +61,8 @@ namespace Sparkle
         {
             return ActionName == rhs.ActionName;
         }
+
+        operator std::string() const { return GetName(); }
     };
 }
 

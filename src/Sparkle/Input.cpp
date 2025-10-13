@@ -10,7 +10,6 @@ namespace Sparkle
     Input::Input()
     {
         KeyboardController = std::make_shared<class KeyboardController>();
-        KeyboardController->Initialize();
     }
 
     std::shared_ptr<GamepadController> Input::GetInactiveOrNewGamepadController(int device)
