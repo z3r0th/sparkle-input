@@ -468,6 +468,7 @@ E(FULL_NEGATIVE)
 
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
+    // TODO: Input State must have another property to select the correct property
     union InputState
     {
         bool ButtonPressed;
