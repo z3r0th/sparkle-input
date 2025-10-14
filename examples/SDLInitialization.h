@@ -66,6 +66,7 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
             }
             Input.UpdateEvent(e);
         }
+        Input.Update();
 
         // Set draw color to blue
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);

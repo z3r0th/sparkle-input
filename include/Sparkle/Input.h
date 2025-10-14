@@ -42,9 +42,11 @@ namespace Sparkle
         void GamepadControllerDisconnected(const ControllerDeviceEvent& event);
         void GamepadControllerConnected(const ControllerDeviceEvent& event);
 
-        void Update();
+
 
     public:
+        //TODO: Move to protected and call from event?
+        void Update();
         explicit Input();
         ~Input();
 

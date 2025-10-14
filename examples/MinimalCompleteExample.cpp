@@ -29,9 +29,8 @@ int main(int argc, char* argv[])
     // START => Pause
     map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
     map.Bind(Sparkle::GamepadButton::BUTTON_START, Sparkle::InputButtonEventTrigger::JUST_RELEASED, PauseAction);
-    // TODO: This is being triggered twice
     map.Bind(Sparkle::GamepadButton::BUTTON_RIGHT_SHOULDER, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
-    //map.Bind(Sparkle::GamepadAxis::TRIGGER_RIGHT, Sparkle::InputAxisEventTrigger::FULL_POSITIVE, FireAction);
+    map.Bind(Sparkle::GamepadAxis::TRIGGER_RIGHT, Sparkle::InputAxisEventTrigger::FULL_POSITIVE, FireAction);
     map.Bind(Sparkle::GamepadStick::STICK_LEFT, Sparkle::InputStickEventTrigger::MOVEMENT, MoveAction);
     map.Bind(Sparkle::GamepadStick::STICK_RIGHT, Sparkle::InputStickEventTrigger::MOVEMENT, AimAction);
 

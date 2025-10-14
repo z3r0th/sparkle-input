@@ -224,7 +224,7 @@ namespace Sparkle
         {
             GamepadControllerDisconnected(event.cdevice);
         }
-        Update();
+        //Update();
     }
 
     Input::~Input()
