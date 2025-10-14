@@ -40,10 +40,10 @@ int main(int argc, char* argv[])
     // Z => Fire
     // A/D => Horizontal Axis
     // W/S => Vertical Axis
-    // map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
-    // map.Bind(Sparkle::KeyboardButton::KEY_ESCAPE, Sparkle::InputButtonEventTrigger::JUST_PRESSED, PauseAction);
-    // map.Bind(Sparkle::KeyboardButton::KEY_CTRL, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
-    // map.Bind(Sparkle::GamepadAxis::KEY_Z, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_ESCAPE, Sparkle::InputButtonEventTrigger::JUST_RELEASED, PauseAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_LCTRL, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_Z, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
     // TODO: How to make AWSD to respond as a Stick or Axis so we can respond to it as a movement?
     //map.Bind(Sparkle::GamepadStick::STICK_LEFT, Sparkle::InputStickEventTrigger::MOVEMENT, MoveAction);
     //map.Bind(Sparkle::GamepadStick::STICK_RIGHT, Sparkle::InputStickEventTrigger::MOVEMENT, AimAction);

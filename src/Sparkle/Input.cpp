@@ -117,10 +117,9 @@ namespace Sparkle
     {
         auto index = GetNextPlayerIndex();
         assert(PlayerInputControllers.find(index) == PlayerInputControllers.end());
-        std::shared_ptr<PlayerInputController> input = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
-        PlayerInputControllers[index] = input;
-        input->KeyboardController = KeyboardController;
-        return input;
+        PlayerInputControllers[index] = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
+        PlayerInputControllers[index]->KeyboardController = KeyboardController;
+        return std::weak_ptr<PlayerInputController>(PlayerInputControllers[index]);
     }
 
     bool Input::RemovePlayerInputController(std::weak_ptr<PlayerInputController> inputControllerPtr)
@@ -191,7 +190,7 @@ namespace Sparkle
         for (auto & playerInputControllersPair : PlayerInputControllers)
         {
             std::shared_ptr<PlayerInputController> playerInputController = playerInputControllersPair.second;
-            HandlePlayerInputControllerRequest(playerInputController);
+            HandlePlayerInputControllerRequest(playerInputController->weak_from_this());
 
             playerInputController->Update();
         }

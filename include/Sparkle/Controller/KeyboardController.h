@@ -22,9 +22,8 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        typedef uint8_t UInt8;
-        std::array<bool, (UInt8)KeyboardButton::Count> Buttons;
-        std::array<bool, (UInt8)KeyboardButton::Count> LastButtons;
+        std::array<bool, (int)KeyboardButton::Count> Buttons;
+        std::array<bool, (int)KeyboardButton::Count> LastButtons;
 
     protected:
         void Update() override;
