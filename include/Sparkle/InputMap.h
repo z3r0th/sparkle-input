@@ -58,6 +58,25 @@ namespace Sparkle
             event.Event.KeyboardButtonEvent.ButtonTrigger = trigger;
             ActionTrigger[event] = action;
         }
+
+        void Bind(const KeyboardAxis& axis, const InputAxisEventTrigger& trigger, const InputAction& action)
+        {
+            InputTrigger event = InputTrigger();
+            event.EventType = InputEventType::KeyboardAxisEventType;
+            event.Event.KeyboardAxisEvent.AxisTrigger = trigger;
+            event.Event.KeyboardAxisEvent.Axis = axis;
+            ActionTrigger[event] = action;
+        }
+
+        void Bind(const KeyboardStick& stick, const InputStickEventTrigger& trigger, const InputAction& action)
+        {
+            InputTrigger event = InputTrigger();
+            event.EventType = InputEventType::KeyboardStickEventType;
+            event.Event.KeyboardStickEvent.StickTrigger = trigger;
+            event.Event.KeyboardStickEvent.Stick = stick;
+            ActionTrigger[event] = action;
+        }
+
         /// Binds a specific GamepadButton to a specific Action through a specific Trigger
         /// You should be able to bind something like:
         ///  - When Button_A is pressed, triggers Action

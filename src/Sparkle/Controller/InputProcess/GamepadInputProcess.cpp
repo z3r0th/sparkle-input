@@ -16,7 +16,7 @@ namespace Sparkle
             {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
             {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
         };
-        Stick axisValue = { 0, 0 };
+        Stick stickValue = {0, 0 };
         const std::vector<GamepadAxis>& axisAnalyses = stickAxis.at(event.Stick);
         bool triggerCallback = false;
         int i = 0;
@@ -25,7 +25,7 @@ namespace Sparkle
             bool hasAxisMoved = GamepadController->HasAxisMoved(axisEnum);
             float axis = GamepadController->GetAxis(axisEnum);
             assert (i <= 1 && "Support only two axis");
-            i++ == 0 ? axisValue.X = axis : axisValue.Y = axis;
+            i++ == 0 ? stickValue.X = axis : stickValue.Y = axis;
             if (hasAxisMoved && event.StickTrigger == InputStickEventTrigger::MOVEMENT
                 || axis >= 0.95 && event.StickTrigger == InputStickEventTrigger::FULL_POSITIVE
                 || axis <= -0.95 && event.StickTrigger == InputStickEventTrigger::FULL_NEGATIVE)
@@ -36,7 +36,7 @@ namespace Sparkle
         }
         if (triggerCallback)
         {
-            return InputResult{true, InputState{.Stick = axisValue}};
+            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stickValue}}};
         }
         return InputResult{false};
     }
@@ -51,7 +51,7 @@ namespace Sparkle
             || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
             || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::UP)
         {
-            return InputResult{true, InputState{.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}};
+            return InputResult{true, InputState{.Type=InputType::Button, .Value={.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}}};
         }
         return InputResult{false};
     }
@@ -65,7 +65,7 @@ namespace Sparkle
             || axis >= 0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_POSITIVE
             || axis <= -0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_NEGATIVE)
         {
-            return InputResult{true, InputState{.Axis = axis}};
+            return InputResult{true, InputState{.Type=InputType::Axis, .Value={.Axis = axis}}};
         }
         return InputResult{false};
     }

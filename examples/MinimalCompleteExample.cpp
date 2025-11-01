@@ -3,7 +3,18 @@
 
 void ButtonPressed(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
-    SDL_Log(">> Action[%s] KEY PRESSED %s", action.GetName().c_str(), buttonState.ButtonPressed ? "PRESSED" : "RELEASED");
+    switch (buttonState.Type)
+    {
+        case Sparkle::InputType::Button:
+            SDL_Log(">> Action[%s] BUTTON PRESSED %s", action.GetName().c_str(), buttonState.Value.ButtonPressed ? "PRESSED" : "RELEASED");
+            break;
+        case Sparkle::InputType::Axis:
+            SDL_Log(">> Action[%s] AXIS ACTIVE %f", action.GetName().c_str(), buttonState.Value.Axis);
+            break;
+        case Sparkle::InputType::Stick:
+            SDL_Log(">> Action[%s] STICK ACTIVE [%f,%f]", action.GetName().c_str(), buttonState.Value.Stick.X, buttonState.Value.Stick.Y);
+            break;
+    }
 }
 
 int main(int argc, char* argv[])
@@ -42,11 +53,24 @@ int main(int argc, char* argv[])
     // W/S => Vertical Axis
     map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
     map.Bind(Sparkle::KeyboardButton::KEY_ESCAPE, Sparkle::InputButtonEventTrigger::JUST_RELEASED, PauseAction);
-    map.Bind(Sparkle::KeyboardButton::KEY_LCTRL, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
+    map.Bind(Sparkle::KeyboardAxis
+            { Sparkle::KeyboardButton::KEY_LCTRL, Sparkle::KeyboardAxis::POSITIVE },
+             Sparkle::InputAxisEventTrigger::FULL_POSITIVE, FireAction);
     map.Bind(Sparkle::KeyboardButton::KEY_Z, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
-    // TODO: How to make AWSD to respond as a Stick or Axis so we can respond to it as a movement?
-    //map.Bind(Sparkle::GamepadStick::STICK_LEFT, Sparkle::InputStickEventTrigger::MOVEMENT, MoveAction);
-    //map.Bind(Sparkle::GamepadStick::STICK_RIGHT, Sparkle::InputStickEventTrigger::MOVEMENT, AimAction);
+    map.Bind(Sparkle::KeyboardStick
+            {
+                Sparkle::KeyboardAxis {
+                        {Sparkle::KeyboardButton::KEY_A, Sparkle::KeyboardAxis::NEGATIVE},
+                        {Sparkle::KeyboardButton::KEY_D, Sparkle::KeyboardAxis::POSITIVE}
+                },
+                Sparkle::KeyboardAxis {
+                        {Sparkle::KeyboardButton::KEY_W, Sparkle::KeyboardAxis::POSITIVE},
+                        {Sparkle::KeyboardButton::KEY_S, Sparkle::KeyboardAxis::NEGATIVE}
+                }
+            },
+            Sparkle::InputStickEventTrigger::MOVEMENT,
+            MoveAction
+    );
 
     playerInputController->SetInputMap(map);
 

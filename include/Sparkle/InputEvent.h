@@ -361,6 +361,55 @@ E(Count)
 #undef KEYBOARD_BUTTON_LIST
     };
 
+    /// KeyboardAxis
+    class KeyboardAxis
+    {
+    public:
+        bool operator <(const KeyboardAxis& rhs) const
+        {
+            return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
+        }
+        bool operator ==(const KeyboardAxis& rhs) const
+        {
+            return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
+        }
+        enum KeyboardAxisRange {
+            NONE,
+            POSITIVE,
+            NEGATIVE,
+            FULL
+        };
+        struct KeyboardPartAxis
+        {
+            bool operator <(const KeyboardPartAxis& rhs) const
+            {
+                return std::tie(Button, Range) < std::tie(rhs.Button, rhs.Range);
+            }
+            bool operator ==(const KeyboardPartAxis& rhs) const
+            {
+                return Button == rhs.Button && Range == rhs.Range;
+            }
+            KeyboardButton Button;
+            KeyboardAxisRange Range;
+        }Motion1, Motion2{};
+    };
+
+    /// KeyboardStick
+    class KeyboardStick
+    {
+    public:
+        bool operator <(const KeyboardStick& rhs) const
+        {
+            return std::tie(Horizontal, Vertical) < std::tie(rhs.Horizontal, rhs.Vertical);
+        }
+        bool operator ==(const KeyboardStick& rhs) const
+        {
+            return Horizontal == rhs.Horizontal && Vertical == rhs.Vertical;
+        }
+        KeyboardAxis Horizontal;
+        KeyboardAxis Vertical;
+    };
+
     /// GamepadStick
     class GamepadStick
     {
@@ -538,6 +587,7 @@ E(Count)
 
 #pragma region Enum Event Trigger Types
 
+    // TODO: Replace Stick and Axis with AnalogTrigger
     /// InputStickEventTrigger
     class InputStickEventTrigger
     {
@@ -708,6 +758,18 @@ E(FULL_NEGATIVE)
         KeyboardButton Button{};
     };
 
+    struct InputKeyboardAxisEvent
+    {
+        InputAxisEventTrigger AxisTrigger{};
+        KeyboardAxis Axis{};
+    };
+
+    struct InputKeyboardStickEvent
+    {
+        InputStickEventTrigger StickTrigger{};
+        KeyboardStick Stick{};
+    };
+
     struct InputGamepadButtonEvent
     {
         InputButtonEventTrigger ButtonTrigger{};
@@ -734,13 +796,17 @@ E(FULL_NEGATIVE)
         GamePadButtonEventType,
         GamePadAxisEventType,
         GamePadStickEventType,
-        KeyboardButtonEventType
+        KeyboardButtonEventType,
+        KeyboardAxisEventType,
+        KeyboardStickEventType,
     };
 
     /// Active Event type used
     union SpecificInputEvent
     {
         InputKeyboardButtonEvent KeyboardButtonEvent;
+        InputKeyboardStickEvent KeyboardStickEvent;
+        InputKeyboardAxisEvent KeyboardAxisEvent;
         InputGamepadButtonEvent ButtonEvent;
         InputGamepadStickEvent StickEvent;
         InputGamepadAxisEvent AxisEvent;
@@ -753,14 +819,27 @@ E(FULL_NEGATIVE)
         float Y;
     };
 
-    /// The input state for the action performed (Button, Stick or Axis)
-    /// This is the result of an EventTrigger process
-    // TODO: Input State must have another property to select the correct property
-    union InputState
+    enum struct InputType
+    {
+        Button,
+        Axis,
+        Stick
+    };
+
+    union InputStateValue
     {
         bool ButtonPressed;
         Stick Stick;
         float Axis;
+    };
+
+    /// The input state for the action performed (Button, Stick or Axis)
+    /// This is the result of an EventTrigger process
+    // TODO: Input State must have another property to select the correct property
+    struct InputState
+    {
+        InputType Type;
+        InputStateValue Value;
     };
 
     /// The result of an Event Trigger processed
@@ -808,6 +887,20 @@ E(FULL_NEGATIVE)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardButtonEvent.ButtonTrigger,
                                     rhs.Event.KeyboardButtonEvent.Button);
+                case InputEventType::KeyboardAxisEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardAxisEvent.AxisTrigger,
+                                    Event.KeyboardAxisEvent.Axis) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardAxisEvent.AxisTrigger,
+                                    rhs.Event.KeyboardAxisEvent.Axis);
+                case InputEventType::KeyboardStickEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardStickEvent.StickTrigger,
+                                    Event.KeyboardStickEvent.Stick) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardStickEvent.StickTrigger,
+                                    rhs.Event.KeyboardStickEvent.Stick);
             }
             assert(false && "No input event type verified");
         }
@@ -842,7 +935,22 @@ E(FULL_NEGATIVE)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardButtonEvent.ButtonTrigger,
                                     rhs.Event.KeyboardButtonEvent.Button);
+                case InputEventType::KeyboardAxisEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardAxisEvent.AxisTrigger,
+                                    Event.KeyboardAxisEvent.Axis) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardAxisEvent.AxisTrigger,
+                                    rhs.Event.KeyboardAxisEvent.Axis);
+                case InputEventType::KeyboardStickEventType:
+                    return std::tie(EventType,
+                                    Event.KeyboardStickEvent.StickTrigger,
+                                    Event.KeyboardStickEvent.Stick) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.KeyboardStickEvent.StickTrigger,
+                                    rhs.Event.KeyboardStickEvent.Stick);
             }
+            assert(false && "No input event type verified");
         }
     };
 }
@@ -893,6 +1001,28 @@ struct std::hash<Sparkle::InputTrigger>
                             (int)k.EventType,
                             (int)k.Event.KeyboardButtonEvent.Button,
                             (int)k.Event.KeyboardButtonEvent.ButtonTrigger);
+                return h;
+            case Sparkle::InputEventType::KeyboardAxisEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.KeyboardAxisEvent.AxisTrigger,
+                            (int)k.Event.KeyboardAxisEvent.Axis.Motion1.Range,
+                            (int)k.Event.KeyboardAxisEvent.Axis.Motion1.Button,
+                            (int)k.Event.KeyboardAxisEvent.Axis.Motion2.Range,
+                            (int)k.Event.KeyboardAxisEvent.Axis.Motion2.Button);
+                return h;
+            case Sparkle::InputEventType::KeyboardStickEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.KeyboardStickEvent.StickTrigger,
+                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion1.Range,
+                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion1.Button,
+                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion2.Range,
+                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion2.Button,
+                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Range,
+                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Button,
+                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Range,
+                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Button);
                 return h;
         }
     }
