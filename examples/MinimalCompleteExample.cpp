@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
     auto playerInputController = input.GetNewPlayerInputController().lock();
     assert(playerInputController && "A player should be created");
     playerInputController->AssignGamepad();
+    playerInputController->AssignKeyboard();
 
     Sparkle::InputMap map;
     Sparkle::InputAction PauseAction("Pause");

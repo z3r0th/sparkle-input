@@ -116,7 +116,6 @@ namespace Sparkle
         auto index = GetNextPlayerIndex();
         assert(PlayerInputControllers.find(index) == PlayerInputControllers.end());
         PlayerInputControllers[index] = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
-        PlayerInputControllers[index]->KeyboardController = KeyboardController;
         return { PlayerInputControllers[index] };
     }
 
@@ -206,6 +205,11 @@ namespace Sparkle
                     playerInputController->RequestGamepad = false;
                     playerInputController->SetGamepadController(gamepadController);
                 }
+            }
+            if (playerInputController->RequestKeyboard && playerInputController->KeyboardController == nullptr)
+            {
+                playerInputController->RequestKeyboard = false;
+                playerInputController->KeyboardController = KeyboardController;
             }
         }
     }

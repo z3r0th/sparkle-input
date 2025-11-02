@@ -73,4 +73,15 @@ namespace Sparkle
         ActionEventMap.emplace(action, Event<const std::weak_ptr<PlayerInputController>, InputAction, InputState>());
         return ActionEventMap[action].GetBinder();
     }
+
+    void PlayerInputController::SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController> &keyboardController)
+    {
+        assert(KeyboardController == nullptr);
+        KeyboardController = keyboardController.lock();
+    }
+
+    void PlayerInputController::RemoveKeyboardController()
+    {
+        KeyboardController.reset();
+    }
 } // Sparkle

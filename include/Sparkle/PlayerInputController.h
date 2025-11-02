@@ -80,6 +80,10 @@ namespace Sparkle
         /// Raises `OnGamepadDisconnectedEvent`
         void RemoveGamepadController();
 
+        void SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController>& keyboardController);
+
+        void RemoveKeyboardController();
+
     public:
         /// Bind to the action
         EventBinder<const std::weak_ptr<PlayerInputController>, InputAction, InputState>& OnAction(const InputAction&);
@@ -131,6 +135,13 @@ namespace Sparkle
         inline void AssignGamepad()
         {
             RequestGamepad = true;
+        }
+
+        /// Requests a keyboard to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController and the OnGamepadConnected callback will be called
+        inline void AssignKeyboard()
+        {
+            RequestKeyboard = true;
         }
 
         /// Is this PlayerInputController's Gamepad assigned active and connected
