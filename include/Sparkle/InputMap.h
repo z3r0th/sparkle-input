@@ -32,20 +32,20 @@ namespace Sparkle
         InputMap() : InputMapDescription(), ActionTrigger{}, InputMapName(EMPTY_INPUT_MAP_NAME)
         { }
 
-        explicit InputMap(std::string  mapName, std::string  mapDescription = "")
+        [[maybe_unused]] explicit InputMap(std::string  mapName, std::string  mapDescription = "")
                 : InputMapName(std::move(mapName)), InputMapDescription(std::move(mapDescription))
         { }
 
         /// Get InputMap name
         /// \return name
-        [[nodiscard]] const std::string& GetInputMapName() const
+        [[maybe_unused]] [[nodiscard]] const std::string& GetInputMapName() const
         {
             return InputMapName;
         }
 
         /// Get InputMap description
         /// \return description
-        [[maybe_unused]][[nodiscard]] const std::string& GetInputMapDescription() const
+        [[maybe_unused]] [[nodiscard]] const std::string& GetInputMapDescription() const
         {
             return InputMapDescription;
         }
@@ -132,7 +132,7 @@ namespace Sparkle
         /// Get all bind actions
         /// O(n) to get the actions
         /// \return actions
-        std::vector<InputAction> GetActions()
+        [[maybe_unused]] [[nodiscard]] std::vector<InputAction> GetActions()
         {
             std::vector<InputAction> actions;
             actions.reserve(ActionTrigger.size());
@@ -147,7 +147,7 @@ namespace Sparkle
         /// Get all input events
         /// O(n) to get the events
         /// \return input events
-        std::vector<InputTrigger> GetEventsForAction(const InputAction& inputAction)
+        [[maybe_unused]] [[nodiscard]] std::vector<InputTrigger> GetEventsForAction(const InputAction& inputAction)
         {
             std::vector<InputTrigger> events;
             for (auto & ButtonAction : ActionTrigger)

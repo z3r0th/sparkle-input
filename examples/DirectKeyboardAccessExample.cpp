@@ -2,6 +2,9 @@
 #include "SDLInitialization.h"
 #include "Sparkle/Input.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedParameter"
+
 int main(int argc, char* argv[])
 {
     Sparkle::Input input;
@@ -15,3 +18,4 @@ int main(int argc, char* argv[])
         }
     });
 }
+#pragma clang diagnostic pop

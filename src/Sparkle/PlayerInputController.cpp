@@ -39,14 +39,14 @@ namespace Sparkle
         }
     }
 
-    void PlayerInputController::SetGamepadController(std::weak_ptr<Sparkle::GamepadController> gamepadController)
+    void PlayerInputController::SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController)
     {
         assert(GamepadController == nullptr);
         GamepadController = gamepadController.lock();
         GamepadController->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
         GamepadController->OnDisconnected().Bind(&PlayerInputController::OnGamepadDisconnected, this);
 
-        // if gamepad is active, it is already connected. Call the event as we are just subscribing to an already connected controller
+        // if the gamepad is active, it is already connected. Call the event as we are just subscribing to an already connected controller
         if (GamepadController->IsActive())
         {
             OnGamepadConnected(gamepadController);

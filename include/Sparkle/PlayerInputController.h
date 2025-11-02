@@ -74,7 +74,7 @@ namespace Sparkle
         /// Assigns the gamepadController and connects to the events.
         /// If the GamepadController is active, raises the `OnGamepadConnectedEvent`
         /// \param gamepadController to assign
-        void SetGamepadController(std::weak_ptr<Sparkle::GamepadController> gamepadController);
+        void SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController);
 
         /// Disconnects from events and sets the GamepadController to null (reset)
         /// Raises `OnGamepadDisconnectedEvent`
@@ -98,7 +98,7 @@ namespace Sparkle
     public:
         /// Gets the current input map
         /// \return InputMap const reference
-        [[nodiscard]] const Sparkle::InputMap& GetInputMap() const { return InputMap; }
+        [[maybe_unused]] [[nodiscard]] const Sparkle::InputMap& GetInputMap() const { return InputMap; }
 
         /// Set a new input map.
         /// \related Raise the Event OnInputMapUpdated
@@ -113,7 +113,7 @@ namespace Sparkle
         /// \example OnInputMapUpdated().Bind(&Class::Method, &object);
         /// \example OnInputMapUpdated().Bind([](const std::weak_ptr<PlayerInputController>){...})
         /// \return EventBinder for OnInputMapUpdated
-        EventBinder<const std::weak_ptr<PlayerInputController>>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
 
 #pragma endregion InputMap
 
@@ -124,7 +124,7 @@ namespace Sparkle
         /// GetGamepadController
         /// The gamepad might not exist (nullptr) and/or might not be connected or valid
         /// \return weak ptr to GamepadController
-        [[nodiscard]] std::weak_ptr<Sparkle::GamepadController> GetGamepadController() const { return GamepadController; }
+        [[maybe_unused]] [[nodiscard]] std::weak_ptr<Sparkle::GamepadController> GetGamepadController() const { return GamepadController; }
 
         /// Requests a controller to the Input.
         /// When a controller is available it will be assign to this PlayerInputController and the OnGamepadConnected callback will be called
@@ -145,7 +145,7 @@ namespace Sparkle
         /// \example OnGamepadDisconnected().Bind(&Class::Method, &object);
         /// \example OnGamepadDisconnected().Bind([](const std::weak_ptr<PlayerInputController>){...})
         /// \return EventBinder for OnGamepadDisconnected
-        EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadDisconnected() { return OnGamepadDisconnectedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadDisconnected() { return OnGamepadDisconnectedEvent.GetBinder(); }
 
         /// Binding to Gamepad Connected event
         /// The controller might already be connected before you binding to it (and this event won't be triggered again - unless disconnected and connected again)
@@ -153,12 +153,12 @@ namespace Sparkle
         /// \example OnGamepadConnected().Bind(&Class::Method, &object)
         /// \example OnGamepadConnected().Bind([](const std::weak_ptr<PlayerInputController>){...})
         /// \return EventBinder for OnGamepadConnected
-        EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
 
 #pragma endregion Gamepad Methods
 
         /// Clears all callbacks including input connection, input map update and gamepad/kbm input
-        void Clear()
+        [[maybe_unused]] void Clear()
         {
             ActionEventMap.clear();
             OnGamepadDisconnectedEvent.RemoveAll();

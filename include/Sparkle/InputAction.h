@@ -50,7 +50,7 @@ namespace Sparkle
             return ActionDescription;
         }
 
-        // comparison operators used on map
+        // comparison operators used on a map
         bool operator <(const InputAction& rhs) const
         {
             return ActionName < rhs.ActionName;
@@ -66,7 +66,7 @@ namespace Sparkle
     };
 }
 
-// To compute HASH for InputAction, so it can be used in unordered_map (if needed)
+// To compute HASH for InputAction, so it can be used in unordered_map (if needed).
 // use the Action name as HASH
 template <>
 struct std::hash<Sparkle::InputAction>

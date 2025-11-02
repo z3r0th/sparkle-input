@@ -46,8 +46,8 @@ namespace Sparkle
         std::array<bool, (int)GamepadButton::Count> Buttons;
         std::array<bool, (int)GamepadButton::Count> LastButtons;
 
-        std::array<float, (int)GamepadAxis::Count> Axis;
-        std::array<float, (int)GamepadAxis::Count> LastAxis;
+        std::array<float, (int)GamepadAxis::Count> Axis{};
+        std::array<float, (int)GamepadAxis::Count> LastAxis{};
 
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;

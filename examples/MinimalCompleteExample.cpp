@@ -1,6 +1,9 @@
 #include "SDLInitialization.h"
 #include "Sparkle/Input.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedParameter"
+
 void ButtonPressed(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
     switch (buttonState.Type)
@@ -37,7 +40,7 @@ int main(int argc, char* argv[])
     // RB or RT => Fire
     // Left Stick => Move
     // Right Stick => Aim
-    // START => Pause
+    // START => Pauses
     map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, JumpAction);
     map.Bind(Sparkle::GamepadButton::BUTTON_START, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, PauseAction);
     map.Bind(Sparkle::GamepadButton::BUTTON_RIGHT_SHOULDER, Sparkle::InputDigitalEventTrigger::HOLDING_DOWN, FireAction);
@@ -82,3 +85,5 @@ int main(int argc, char* argv[])
 
     return InitializeSDLAndRunInput(input);
 }
+
+#pragma clang diagnostic pop
