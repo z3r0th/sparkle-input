@@ -10,8 +10,8 @@ int main(int argc, char* argv[])
     Sparkle::InputMap map;
     Sparkle::InputAction pressedButtonA("PressedButtonA");
 
-    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_PRESSED, pressedButtonA);
-    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_RELEASED, pressedButtonA);
+    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, pressedButtonA);
+    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, pressedButtonA);
     playerInputController->SetInputMap(map);
     playerInputController->AssignGamepad();
 

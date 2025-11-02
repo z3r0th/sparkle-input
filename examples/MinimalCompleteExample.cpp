@@ -12,7 +12,7 @@ void ButtonPressed(const std::weak_ptr<Sparkle::PlayerInputController>&, const S
             SDL_Log(">> Action[%s] AXIS ACTIVE %f", action.GetName().c_str(), buttonState.Value.Axis);
             break;
         case Sparkle::InputType::Stick:
-            SDL_Log(">> Action[%s] STICK ACTIVE [%f,%f]", action.GetName().c_str(), buttonState.Value.Stick.X, buttonState.Value.Stick.Y);
+            SDL_Log(">> Action[%s] STICK ACTIVE [%f,%f]", action.GetName().c_str(), buttonState.Value.Stick.Horizontal, buttonState.Value.Stick.Vertical);
             break;
     }
 }
@@ -38,12 +38,12 @@ int main(int argc, char* argv[])
     // Left Stick => Move
     // Right Stick => Aim
     // START => Pause
-    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
-    map.Bind(Sparkle::GamepadButton::BUTTON_START, Sparkle::InputButtonEventTrigger::JUST_RELEASED, PauseAction);
-    map.Bind(Sparkle::GamepadButton::BUTTON_RIGHT_SHOULDER, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
-    map.Bind(Sparkle::GamepadAxis::TRIGGER_RIGHT, Sparkle::InputAxisEventTrigger::FULL_POSITIVE, FireAction);
-    map.Bind(Sparkle::GamepadStick::STICK_LEFT, Sparkle::InputStickEventTrigger::MOVEMENT, MoveAction);
-    map.Bind(Sparkle::GamepadStick::STICK_RIGHT, Sparkle::InputStickEventTrigger::MOVEMENT, AimAction);
+    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, JumpAction);
+    map.Bind(Sparkle::GamepadButton::BUTTON_START, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, PauseAction);
+    map.Bind(Sparkle::GamepadButton::BUTTON_RIGHT_SHOULDER, Sparkle::InputDigitalEventTrigger::HOLDING_DOWN, FireAction);
+    map.Bind(Sparkle::GamepadAxis::TRIGGER_RIGHT, Sparkle::InputAnalogEventTrigger::FULL_POSITIVE, FireAction);
+    map.Bind(Sparkle::GamepadStick::STICK_LEFT, Sparkle::InputAnalogEventTrigger::MOVEMENT, MoveAction);
+    map.Bind(Sparkle::GamepadStick::STICK_RIGHT, Sparkle::InputAnalogEventTrigger::MOVEMENT, AimAction);
 
     // Keyboard mapping actions
     // Space => Jump
@@ -51,12 +51,12 @@ int main(int argc, char* argv[])
     // Z => Fire
     // A/D => Horizontal Axis
     // W/S => Vertical Axis
-    map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputButtonEventTrigger::JUST_PRESSED, JumpAction);
-    map.Bind(Sparkle::KeyboardButton::KEY_ESCAPE, Sparkle::InputButtonEventTrigger::JUST_RELEASED, PauseAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, JumpAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_ESCAPE, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, PauseAction);
     map.Bind(Sparkle::KeyboardAxis
             { Sparkle::KeyboardButton::KEY_LCTRL, Sparkle::KeyboardAxis::POSITIVE },
-             Sparkle::InputAxisEventTrigger::FULL_POSITIVE, FireAction);
-    map.Bind(Sparkle::KeyboardButton::KEY_Z, Sparkle::InputButtonEventTrigger::HOLDING_DOWN, FireAction);
+             Sparkle::InputAnalogEventTrigger::FULL_POSITIVE, FireAction);
+    map.Bind(Sparkle::KeyboardButton::KEY_Z, Sparkle::InputDigitalEventTrigger::HOLDING_DOWN, FireAction);
     map.Bind(Sparkle::KeyboardStick
             {
                 Sparkle::KeyboardAxis {
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
                         {Sparkle::KeyboardButton::KEY_S, Sparkle::KeyboardAxis::NEGATIVE}
                 }
             },
-            Sparkle::InputStickEventTrigger::MOVEMENT,
+            Sparkle::InputAnalogEventTrigger::MOVEMENT,
             MoveAction
     );
 

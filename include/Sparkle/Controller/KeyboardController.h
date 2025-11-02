@@ -27,6 +27,9 @@ namespace Sparkle
 
     protected:
         void Update() override;
+        InputResult ProcessButton(const InputKeyboardButtonEvent& event);
+        InputResult ProcessAxis(const InputKeyboardAxisEvent& event);
+        InputResult ProcessStick(const InputKeyboardStickEvent& event);
 
     public:
         explicit KeyboardController();

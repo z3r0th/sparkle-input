@@ -338,7 +338,7 @@ E(Count)
 #define KEYBOARD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 KEYBOARD_BUTTON_LIST(KEYBOARD_STRING_DEF)
@@ -369,16 +369,19 @@ E(Count)
         {
             return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
         }
+
         bool operator ==(const KeyboardAxis& rhs) const
         {
             return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
         }
-        enum KeyboardAxisRange {
-            NONE,
+
+        enum KeyboardAxisRange
+        {
             POSITIVE,
             NEGATIVE,
             FULL
         };
+
         struct KeyboardPartAxis
         {
             bool operator <(const KeyboardPartAxis& rhs) const
@@ -391,7 +394,7 @@ E(Count)
             }
             KeyboardButton Button;
             KeyboardAxisRange Range;
-        }Motion1, Motion2{};
+        } Motion1{}, Motion2{};
     };
 
     /// KeyboardStick
@@ -439,7 +442,7 @@ E(COUNT)
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 GAMEPAD_STICK_LIST(GAMEPAD_STRING_DEF)
@@ -504,7 +507,7 @@ E(Count)
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 GAMEPAD_BUTTON_LIST(GAMEPAD_STRING_DEF)
@@ -560,7 +563,7 @@ E(Count)
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 GAMEPAD_AXIS_LIST(GAMEPAD_STRING_DEF)
@@ -587,24 +590,23 @@ E(Count)
 
 #pragma region Enum Event Trigger Types
 
-    // TODO: Replace Stick and Axis with AnalogTrigger
-    /// InputStickEventTrigger
-    class InputStickEventTrigger
+    /// InputAnalogEventTrigger. Used for triggers on analog range value [-1, 1]
+    class InputAnalogEventTrigger
     {
 #define INPUT_STICK_EVENT_TRIGGER_LIST(E) \
 E(MOVEMENT) \
 E(FULL_POSITIVE) \
 E(FULL_NEGATIVE)
     public:
-        enum InputStickEventTriggerEnum
+        enum InputAnalogEventTriggerEnum
         {
             #define INPUT_STICK_EVENT_TRIGGER_DEF(name) name,
             INPUT_STICK_EVENT_TRIGGER_LIST(INPUT_STICK_EVENT_TRIGGER_DEF)
             #undef INPUT_STICK_EVENT_TRIGGER_DEF
         };
 
-        InputStickEventTrigger() = default;
-        [[maybe_unused]] constexpr InputStickEventTrigger(InputStickEventTriggerEnum enumValue) : value(enumValue) { }
+        InputAnalogEventTrigger() = default;
+        [[maybe_unused]] constexpr InputAnalogEventTrigger(InputAnalogEventTriggerEnum enumValue) : value(enumValue) { }
         // prevent using as a pointer or boolean operator
         void * operator new (std::size_t) = delete;
         void * operator new[] (std::size_t) = delete;
@@ -612,12 +614,12 @@ E(FULL_NEGATIVE)
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator InputStickEventTriggerEnum() const { return value; }
+        constexpr operator InputAnalogEventTriggerEnum() const { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 INPUT_STICK_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
@@ -636,20 +638,20 @@ E(FULL_NEGATIVE)
 #undef GAMEPAD_STRING_DEF
 
     private:
-        InputStickEventTriggerEnum value;
+        InputAnalogEventTriggerEnum value;
 
 #undef INPUT_STICK_EVENT_TRIGGER_LIST
     };
 
-    /// InputButtonEventTrigger
-    class InputButtonEventTrigger
+    /// InputButtonEventTrigger. Used for triggers on digital value (true, false)
+    class InputDigitalEventTrigger
     {
 #define INPUT_BUTTON_EVENT_TRIGGER_LIST(E) \
 E(JUST_PRESSED) \
 E(JUST_RELEASED) \
 E(HOLDING_DOWN) \
 E(UP)
-// HOLD, LONG_PRESS, etc
+// HOLD, LONG_PRESS, etc.
 
     public:
         enum InputButtonEventTriggerEnum
@@ -658,8 +660,8 @@ E(UP)
             INPUT_BUTTON_EVENT_TRIGGER_LIST(INPUT_BUTTON_EVENT_TRIGGER_DEF)
             #undef INPUT_BUTTON_EVENT_TRIGGER_DEF
         };
-        InputButtonEventTrigger() = default;
-        [[maybe_unused]] constexpr InputButtonEventTrigger(InputButtonEventTriggerEnum enumValue) : value(enumValue) { }
+        InputDigitalEventTrigger() = default;
+        [[maybe_unused]] constexpr InputDigitalEventTrigger(InputButtonEventTriggerEnum enumValue) : value(enumValue) { }
         // prevent using as a pointer or boolean operator
         void * operator new (std::size_t) = delete;
         void * operator new[] (std::size_t) = delete;
@@ -672,7 +674,7 @@ E(UP)
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        const char* c_str() {
+        [[maybe_unused]] const char* c_str() {
             switch (value)
             {
                 INPUT_BUTTON_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
@@ -696,97 +698,46 @@ E(UP)
 #undef INPUT_BUTTON_EVENT_TRIGGER_LIST
     };
 
-    /// InputAxisEventTrigger
-    class InputAxisEventTrigger
-    {
-#define INPUT_AXIS_EVENT_TRIGGER_LIST(E) \
-E(MOVEMENT) \
-E(FULL_POSITIVE) \
-E(FULL_NEGATIVE)
-    public:
-        enum InputAxisEventTriggerEnum
-        {
-            #define INPUT_AXIS_EVENT_TRIGGER_DEF(name) name,
-            INPUT_AXIS_EVENT_TRIGGER_LIST(INPUT_AXIS_EVENT_TRIGGER_DEF)
-            #undef INPUT_AXIS_EVENT_TRIGGER_DEF
-        };
-
-        InputAxisEventTrigger() = default;
-        [[maybe_unused]] constexpr InputAxisEventTrigger(InputAxisEventTriggerEnum enumValue) : value(enumValue) { }
-        // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator InputAxisEventTriggerEnum() const { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        const char* c_str() {
-            switch (value)
-            {
-                INPUT_AXIS_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputAxisEventTrigger Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                INPUT_AXIS_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputAxisEventTrigger Unknown";
-            }
-        }
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        InputAxisEventTriggerEnum value;
-
-#undef INPUT_AXIS_EVENT_TRIGGER_LIST
-    };
-
 #pragma endregion Enum Event Trigger Types
 
 #pragma region Struct Event Pair (Trigger/Input)
+
     struct InputKeyboardButtonEvent
     {
-        InputButtonEventTrigger ButtonTrigger{};
+        InputDigitalEventTrigger ButtonTrigger{};
         KeyboardButton Button{};
     };
 
     struct InputKeyboardAxisEvent
     {
-        InputAxisEventTrigger AxisTrigger{};
+        InputAnalogEventTrigger AxisTrigger{};
         KeyboardAxis Axis{};
     };
 
     struct InputKeyboardStickEvent
     {
-        InputStickEventTrigger StickTrigger{};
+        InputAnalogEventTrigger StickTrigger{};
         KeyboardStick Stick{};
     };
 
     struct InputGamepadButtonEvent
     {
-        InputButtonEventTrigger ButtonTrigger{};
+        InputDigitalEventTrigger ButtonTrigger{};
         GamepadButton Button{};
     };
 
     struct InputGamepadAxisEvent
     {
-        InputAxisEventTrigger AxisTrigger{};
+        InputAnalogEventTrigger AxisTrigger{};
         GamepadAxis Axis{};
     };
 
     struct InputGamepadStickEvent
     {
-        InputStickEventTrigger StickTrigger{};
+        InputAnalogEventTrigger StickTrigger{};
         GamepadStick Stick{};
     };
+
 #pragma endregion Struct Event Pair (Trigger/Input)
 
     /// Possible event types supported
@@ -815,8 +766,8 @@ E(FULL_NEGATIVE)
     /// 2D Stick value
     struct Stick
     {
-        float X;
-        float Y;
+        float Horizontal;
+        float Vertical;
     };
 
     enum struct InputType
@@ -835,7 +786,6 @@ E(FULL_NEGATIVE)
 
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
-    // TODO: Input State must have another property to select the correct property
     struct InputState
     {
         InputType Type;
@@ -955,7 +905,7 @@ E(FULL_NEGATIVE)
     };
 }
 
-// To compute HASH for InputTrigger, so it can be used in unordered_map (if needed)
+// To compute HASH for InputTrigger, so it can be used in unordered_map (if needed).
 // use the Action name as HASH
 template <>
 struct std::hash<Sparkle::InputTrigger>
@@ -966,7 +916,7 @@ struct std::hash<Sparkle::InputTrigger>
         std::hash<T> hasher;
         seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         // trick to emulate a fold expression (available in C++17) in C++11
-        // answer on https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x by Henri Menke
+        // answer on https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x by Henri Mencke
         int i[] = {0, (HashCombine(seed, std::forward<Rest>(rest)), 0)...};
         (void)(i);
     }

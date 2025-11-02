@@ -25,10 +25,10 @@ namespace Sparkle
             bool hasAxisMoved = GamepadController->HasAxisMoved(axisEnum);
             float axis = GamepadController->GetAxis(axisEnum);
             assert (i <= 1 && "Support only two axis");
-            i++ == 0 ? stickValue.X = axis : stickValue.Y = axis;
-            if (hasAxisMoved && event.StickTrigger == InputStickEventTrigger::MOVEMENT
-                || axis >= 0.95 && event.StickTrigger == InputStickEventTrigger::FULL_POSITIVE
-                || axis <= -0.95 && event.StickTrigger == InputStickEventTrigger::FULL_NEGATIVE)
+            i++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
+            if (hasAxisMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
+                || axis >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE
+                || axis <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
 
             {
                 triggerCallback = true;
@@ -46,10 +46,10 @@ namespace Sparkle
         assert(GamepadController && "GamepadController should never be NULL");
         bool isButtonJustPressed = GamepadController->IsButtonJustPressed(event.Button);
         bool isButtonJustReleased = GamepadController->IsButtonJustReleased(event.Button);
-        if (isButtonJustPressed && event.ButtonTrigger == InputButtonEventTrigger::JUST_PRESSED
-            || isButtonJustReleased && event.ButtonTrigger == InputButtonEventTrigger::JUST_RELEASED
-            || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::HOLDING_DOWN
-            || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputButtonEventTrigger::UP)
+        if (isButtonJustPressed && event.ButtonTrigger == InputDigitalEventTrigger::JUST_PRESSED
+            || isButtonJustReleased && event.ButtonTrigger == InputDigitalEventTrigger::JUST_RELEASED
+            || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
+            || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::UP)
         {
             return InputResult{true, InputState{.Type=InputType::Button, .Value={.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}}};
         }
@@ -61,9 +61,9 @@ namespace Sparkle
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasAxisMoved = GamepadController->HasAxisMoved(event.Axis);
         float axis = GamepadController->GetAxis(event.Axis);
-        if (hasAxisMoved && event.AxisTrigger == InputAxisEventTrigger::MOVEMENT
-            || axis >= 0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_POSITIVE
-            || axis <= -0.95 && event.AxisTrigger == InputAxisEventTrigger::FULL_NEGATIVE)
+        if (hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
+            || axis >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
+            || axis <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {
             return InputResult{true, InputState{.Type=InputType::Axis, .Value={.Axis = axis}}};
         }
