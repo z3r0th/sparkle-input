@@ -43,8 +43,7 @@ namespace Sparkle
         std::shared_ptr<GamepadController> GamepadController = nullptr;
 
         std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>, InputAction, InputState>> ActionEventMap;
-
-        // TODO: Implement Keyboard assignment
+        
         bool RequestKeyboard = false;
         bool RequestGamepad = false;
 
