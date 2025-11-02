@@ -37,9 +37,9 @@ void Sparkle::GamepadController::SetController(SDL_GameController *controller, i
 }
 
 void Sparkle::GamepadController::Update() {
-    // TODO: Review dead_zone implementation
-    // apply a dead_zone of 2% movement for now. This should be configurable somehow
-    const float DEAD_ZONE = (float)(SDL_MAX_SINT16 - SDL_MIN_SINT16) * (2.0 / 100.0f) / SDL_MAX_SINT16;
+    // apply a dead_zone of 2% movement for now. This should be configurable in the future
+    const float DEAD_ZONE_PERCENTAGE = 2.0f;
+    const float DEAD_ZONE = (float)(SDL_MAX_SINT16 - SDL_MIN_SINT16) * (DEAD_ZONE_PERCENTAGE / 100.0f) / SDL_MAX_SINT16;
     
     if (!IsActive())
     {

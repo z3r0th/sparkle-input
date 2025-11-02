@@ -186,3 +186,7 @@ Additional Sections
 
     - Headers not found:
         - If using find_package, ensure CMAKE_PREFIX_PATH or default install locations include SparkleInput’s install prefix.
+
+
+TODO:
+- Configure Gamepad dead zone value (GamepadController::Update)
