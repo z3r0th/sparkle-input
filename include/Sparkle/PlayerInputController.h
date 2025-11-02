@@ -63,10 +63,10 @@ namespace Sparkle
         { }
 
         /// Called from Input when a gamepad is connected (or assigning an active GamepadController)
-        void OnGamepadConnected(std::weak_ptr<Sparkle::GamepadController>) { OnGamepadConnectedEvent.Raise(weak_from_this()); }
+        void OnGamepadConnected(const std::weak_ptr<Sparkle::GamepadController>&) { OnGamepadConnectedEvent.Raise(weak_from_this()); }
 
         /// Called from Input when a gamepad is disconnected (or removing the GamepadController)
-        void OnGamepadDisconnected(std::weak_ptr<Sparkle::GamepadController>) { OnGamepadDisconnectedEvent.Raise(weak_from_this()); }
+        void OnGamepadDisconnected(const std::weak_ptr<Sparkle::GamepadController>&) { OnGamepadDisconnectedEvent.Raise(weak_from_this()); }
 
         /// Process events from input map checking assigned devices status and raising bind callbacks
         void Update();

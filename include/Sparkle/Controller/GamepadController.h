@@ -40,8 +40,8 @@ namespace Sparkle
     private:
         RawGameController *InternalGameController;
 
-        Sparkle::Event<std::weak_ptr<GamepadController>> OnDisconnectedEvent;
-        Sparkle::Event<std::weak_ptr<GamepadController>> OnConnectedEvent;
+        Sparkle::Event<const std::weak_ptr<GamepadController>&> OnDisconnectedEvent;
+        Sparkle::Event<const std::weak_ptr<GamepadController>&> OnConnectedEvent;
 
         std::array<bool, (int)GamepadButton::Count> Buttons;
         std::array<bool, (int)GamepadButton::Count> LastButtons;
@@ -74,8 +74,8 @@ namespace Sparkle
 
         InputResult ProcessEvent(const InputTrigger &event);
 
-        Sparkle::Event<std::weak_ptr<GamepadController>>& OnDisconnected() { return OnDisconnectedEvent; }
-        Sparkle::Event<std::weak_ptr<GamepadController>>& OnConnected() { return OnConnectedEvent; }
+        Sparkle::EventBinder<const std::weak_ptr<GamepadController>&>& OnDisconnected() { return OnDisconnectedEvent.GetBinder(); }
+        Sparkle::EventBinder<const std::weak_ptr<GamepadController>&>& OnConnected() { return OnConnectedEvent.GetBinder(); }
 
         /// This Gamepad Controller is active if a Gamepad device is connected and assigned to it
         /// The controller is assigned by the Input

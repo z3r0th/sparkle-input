@@ -229,11 +229,11 @@ namespace Sparkle
         if (!PlayerInputControllers.empty())
         {
             std::vector<std::shared_ptr<PlayerInputController>> inputControllers;
-            for (auto it: PlayerInputControllers)
+            for (const auto& it: PlayerInputControllers)
             {
                 inputControllers.push_back(it.second);
             }
-            for (auto& controller : inputControllers)
+            for (const auto& controller : inputControllers)
             {
                 RemovePlayerInputController(controller);
             }
@@ -292,7 +292,7 @@ namespace Sparkle
     {
         if (auto gamepadController = gamepad.lock())
         {
-            for (auto it: PlayerInputControllers)
+            for (const auto& it: PlayerInputControllers)
             {
                 if (it.second->GamepadController == gamepadController) return it.second;
             }
@@ -304,12 +304,8 @@ namespace Sparkle
     bool Input::IsGamepadAssigned(const std::weak_ptr<GamepadController>& gamepad)
     {
         if (gamepad.expired()) return false;
-        for (auto pair: PlayerInputControllers)
-        {
-            if (IsGamepadAssigned(gamepad, pair.second)) return true;
-        }
-
-        return false;
+        return std::any_of(PlayerInputControllers.begin(), PlayerInputControllers.end(),
+                           [&](const auto& it) { return IsGamepadAssigned(gamepad, it.second); });
     }
 
     bool Input::IsGamepadAssigned(const std::weak_ptr<GamepadController>& gamepad, const std::weak_ptr<PlayerInputController>& player)
@@ -318,7 +314,7 @@ namespace Sparkle
         {
             auto gamepadAssignedIt = PlayerInputControllers.find(playerInputController->GetPlayerInputIndex());
             if (gamepadAssignedIt == PlayerInputControllers.end()) return false;
-            auto gamepadAssigned = *gamepadAssignedIt;
+            const auto& gamepadAssigned = *gamepadAssignedIt;
             return gamepadAssigned.second->GamepadController == gamepad.lock();
         }
 
