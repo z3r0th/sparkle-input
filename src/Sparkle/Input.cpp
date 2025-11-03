@@ -177,13 +177,6 @@ namespace Sparkle
 
     void Input::Update()
     {
-        for (auto & gamepadController : GamepadControllers)
-        {
-            gamepadController.second->Update();
-        }
-
-        KeyboardController->Update();
-
         for (auto & playerInputControllersPair : PlayerInputControllers)
         {
             std::shared_ptr<PlayerInputController> playerInputController = playerInputControllersPair.second;
@@ -191,6 +184,9 @@ namespace Sparkle
 
             playerInputController->Update();
         }
+
+        UpdateGamepad();
+        UpdateKeyboard();
     }
 
     void Input::HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>& playerInputControllerPtr)
@@ -216,16 +212,15 @@ namespace Sparkle
 
     void Input::UpdateEvent(InputEvent& event)
     {
-        //TODO: answer only to specific events, avoid unnecessary update
+        // Update Gamepad Events
         if (event.type == SDL_CONTROLLERDEVICEADDED)
         {
             GamepadControllerConnected(event.cdevice);
         }
-        if (event.type == SDL_CONTROLLERDEVICEREMOVED)
+        else if (event.type == SDL_CONTROLLERDEVICEREMOVED)
         {
             GamepadControllerDisconnected(event.cdevice);
         }
-        //Update();
     }
 
     Input::~Input()
@@ -323,5 +318,18 @@ namespace Sparkle
         }
 
         return false;
+    }
+
+    void Input::UpdateGamepad()
+    {
+        for (auto & gamepadController : GamepadControllers)
+        {
+            gamepadController.second->Update();
+        }
+    }
+
+    void Input::UpdateKeyboard()
+    {
+        KeyboardController->Update();
     }
 } // Sparkle

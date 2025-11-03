@@ -6,8 +6,6 @@
 
 namespace Sparkle
 {
-    // TODO: Axis and Stick should be called at least once when extended (moved, positive, negative) and when released (0).
-    // This is because Axis are a range -1 to 1 or 0 to 1 or -1 to 0. So it should reflect the range change
     void PlayerInputController::Update()
     {
         if (GamepadController != nullptr && GamepadController->IsActive())

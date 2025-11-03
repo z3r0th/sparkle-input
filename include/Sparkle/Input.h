@@ -41,14 +41,16 @@ namespace Sparkle
 
         void GamepadControllerDisconnected(const ControllerDeviceEvent& event);
         void GamepadControllerConnected(const ControllerDeviceEvent& event);
-        
+
+        void UpdateGamepad();
+        void UpdateKeyboard();
+
     public:
-        //TODO: Move to protected and call from event?
+        void UpdateEvent(InputEvent& event);
         void Update();
+
         explicit Input();
         ~Input();
-
-        void UpdateEvent(InputEvent& event);
 
         std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
 
