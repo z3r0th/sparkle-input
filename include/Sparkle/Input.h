@@ -78,15 +78,13 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        // TODO: Double check we are passing weak pointer as const references
         // TODO: Add Mouse Input and example
-        // TODO: Default Map for newly created PlayerInputController? maybe not
         // TODO: Make at least one complete example
 
         EventBinder<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); };
+        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); };
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
 
 #pragma region Gamepad Proxy
         // Gamepad access functions

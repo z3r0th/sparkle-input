@@ -42,7 +42,7 @@ namespace Sparkle
         std::shared_ptr<KeyboardController> KeyboardController = nullptr;
         std::shared_ptr<GamepadController> GamepadController = nullptr;
 
-        std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>, InputAction, InputState>> ActionEventMap;
+        std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>> ActionEventMap;
 
         bool RequestKeyboard = false;
         bool RequestGamepad = false;
@@ -50,9 +50,9 @@ namespace Sparkle
         Sparkle::InputMap InputMap;
 
         Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
-        Event<const std::weak_ptr<PlayerInputController>> OnGamepadDisconnectedEvent;
-        Event<const std::weak_ptr<PlayerInputController>> OnGamepadConnectedEvent;
-        Event<const std::weak_ptr<PlayerInputController>> OnInputMapUpdatedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&> OnGamepadDisconnectedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&> OnGamepadConnectedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&> OnInputMapUpdatedEvent;
 
         /// Private constructor that Input (friend class) can access
         explicit PlayerInputController(unsigned int index) :
@@ -86,7 +86,7 @@ namespace Sparkle
 
     public:
         /// Bind to the action
-        EventBinder<const std::weak_ptr<PlayerInputController>, InputAction, InputState>& OnAction(const InputAction&);
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAction(const InputAction&);
 
         /// PlayerInputController cannot be directly created, get it from Input
         PlayerInputController() = delete;
@@ -115,13 +115,13 @@ namespace Sparkle
 
         /// Binding OnInputMapUpdated event
         /// \example OnInputMapUpdated().Bind(&Class::Method, &object);
-        /// \example OnInputMapUpdated().Bind([](const std::weak_ptr<PlayerInputController>){...})
+        /// \example OnInputMapUpdated().Bind([](const std::weak_ptr<PlayerInputController>&){...})
         /// \return EventBinder for OnInputMapUpdated
-        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
 
         /// Binding OnAnyAction event
         /// \example OnAnyAction().Bind(&Class::Method, &object);
-        /// \example OnAnyAction().Bind([](const std::weak_ptr<PlayerInputController>, const InputAction&, const InputState&){...})
+        /// \example OnAnyAction().Bind([](const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&){...})
         /// \return EventBinder for OnAnyAction
         [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyAction() { return OnAnyActionEvent.GetBinder(); };
 
@@ -160,17 +160,17 @@ namespace Sparkle
 
         /// Binding to Gamepad Disconnected event
         /// \example OnGamepadDisconnected().Bind(&Class::Method, &object);
-        /// \example OnGamepadDisconnected().Bind([](const std::weak_ptr<PlayerInputController>){...})
+        /// \example OnGamepadDisconnected().Bind([](const std::weak_ptr<PlayerInputController>&){...})
         /// \return EventBinder for OnGamepadDisconnected
-        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadDisconnected() { return OnGamepadDisconnectedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&>& OnGamepadDisconnected() { return OnGamepadDisconnectedEvent.GetBinder(); }
 
         /// Binding to Gamepad Connected event
         /// The controller might already be connected before you binding to it (and this event won't be triggered again - unless disconnected and connected again)
         /// use IsGamepadConnected to check if needed
         /// \example OnGamepadConnected().Bind(&Class::Method, &object)
-        /// \example OnGamepadConnected().Bind([](const std::weak_ptr<PlayerInputController>){...})
+        /// \example OnGamepadConnected().Bind([](const std::weak_ptr<PlayerInputController>&){...})
         /// \return EventBinder for OnGamepadConnected
-        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
 
 #pragma endregion Gamepad Methods
 

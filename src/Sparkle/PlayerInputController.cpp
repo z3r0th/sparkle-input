@@ -62,7 +62,7 @@ namespace Sparkle
         GamepadController.reset();
     }
 
-    EventBinder<const std::weak_ptr<PlayerInputController>, InputAction, InputState>&
+    EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>&
     PlayerInputController::OnAction(const InputAction & action)
     {
         auto it = ActionEventMap.find(action);
@@ -70,7 +70,7 @@ namespace Sparkle
         {
             return it->second.GetBinder();
         }
-        ActionEventMap.emplace(action, Event<const std::weak_ptr<PlayerInputController>, InputAction, InputState>());
+        ActionEventMap.emplace(action, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>());
         return ActionEventMap[action].GetBinder();
     }
 
