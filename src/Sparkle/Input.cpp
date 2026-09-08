@@ -115,7 +115,7 @@ namespace Sparkle
     {
         auto index = GetNextPlayerIndex();
         assert(PlayerInputControllers.find(index) == PlayerInputControllers.end());
-        PlayerInputControllers[index] = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
+        PlayerInputControllers[index] = CreateInputController(index);
         return { PlayerInputControllers[index] };
     }
 
@@ -162,17 +162,6 @@ namespace Sparkle
     void Input::RemoveGamepadControllerFrom(PlayerInputController *playerInputController)
     {
         RemoveGamepadFromPlayer(playerInputController->GamepadController);
-    }
-
-    std::weak_ptr<PlayerInputController> Input::GetPlayerInputController(unsigned int index) const
-    {
-        auto it = PlayerInputControllers.find(index);
-        if (it != PlayerInputControllers.end())
-        {
-            return it->second;
-        }
-
-        return std::weak_ptr<PlayerInputController>();
     }
 
     void Input::Update()
@@ -324,12 +313,71 @@ namespace Sparkle
     {
         for (auto & gamepadController : GamepadControllers)
         {
-            gamepadController.second->Update();
+            std::shared_ptr<GamepadController> gamepad = gamepadController.second;
+            gamepad->Update();
+            auto pressedButton = gamepad->AnyJustPressedButton();
+            if (pressedButton != GamepadButton::BUTTON_NONE)
+            {
+                InputControllerReference reference { .Gamepad = std::weak_ptr<GamepadController>(gamepad) };
+                InputEventType eventType = InputEventType::GamePadButtonEventType;
+                InputState inputState = InputState {
+                    .Type = InputType::Button,
+                    .Value = {.ButtonPressed = gamepad->IsButtonPressed(pressedButton)}
+                };
+                InputButton button = InputButton { .GamepadButton = pressedButton };
+                OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);
+                OnGamepadJustPressedEvent(gamepad, inputState, button);
+            }
+            if (gamepad->AnyAxisMoved() != GamepadAxis::AXIS_NONE)
+            {}
         }
     }
 
     void Input::UpdateKeyboard()
     {
         KeyboardController->Update();
+        auto pressedButton = KeyboardController->AnyJustPressedButton();
+        if (pressedButton != KeyboardButton::KEY_NONE)
+        {
+            InputControllerReference reference { .Keyboard = std::weak_ptr<class KeyboardController>(KeyboardController) };
+            InputEventType eventType = InputEventType::KeyboardButtonEventType;
+            InputState inputState = InputState {
+                    .Type = InputType::Button,
+                    .Value = { .ButtonPressed = true }
+            };
+            InputButton button = InputButton { .KeyboardButton = pressedButton };
+            OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);
+            OnKeyboardJustPressedEvent(KeyboardController, inputState, button);
+        }
+    }
+
+    std::weak_ptr<PlayerInputController> Input::GetPlayerInputController(unsigned int index)
+    {
+        if (index >= MAX_LOCAL_PLAYER_CONTROLLERS)
+        {
+            SDL_Log("Invalid Player Input Controller Index {%u}", index);
+            assert(false);
+        }
+        auto controller = PlayerInputControllers.find(index);
+        if (controller != PlayerInputControllers.end())
+        {
+            return controller->second;
+        }
+        auto playerInputController = CreateInputController(index);
+        PlayerInputControllers[index] = playerInputController;
+        return { PlayerInputControllers[index] };
+    }
+
+    std::shared_ptr<PlayerInputController> Input::CreateInputController(unsigned int index)
+    {
+        auto playerInputController = std::shared_ptr<PlayerInputController>(new PlayerInputController(index));
+        playerInputController->OnAnyAction()
+            .Bind([this](const std::weak_ptr<PlayerInputController>& player, const InputAction& action, const InputState& state)
+            {
+                OnAnyActionEvent(player, action, state);
+            });
+        if (index == FirstPlayerIndex) playerInputController->AssignKeyboard();
+        playerInputController->AssignGamepad();
+        return playerInputController;
     }
 } // Sparkle

@@ -14,9 +14,6 @@
 
 #define MAX_LOCAL_PLAYER_CONTROLLERS 100
 
-// TODO: Make mouse example
-// TODO: Make at least one complete example
-
 using ControllerDeviceEvent = SDL_ControllerDeviceEvent;
 using InputEvent = SDL_Event;
 
@@ -27,7 +24,21 @@ namespace Sparkle
     /// Get the Player Controllers, Gamepad or Mouse and keyboard to inspect the state or Bind event actions
     class Input
     {
+    public:
+        struct InputControllerReference
+        {
+            const std::weak_ptr<GamepadController> Gamepad;
+            const std::weak_ptr<KeyboardController> Keyboard;
+        };
+
+        union InputButton
+        {
+            class GamepadButton GamepadButton;
+            class KeyboardButton KeyboardButton;
+        };
+
     private:
+        std::shared_ptr<PlayerInputController> CreateInputController(unsigned int index);
         std::map<unsigned int, std::shared_ptr<PlayerInputController>> PlayerInputControllers;
         std::map<unsigned int, std::shared_ptr<GamepadController>> GamepadControllers;
         std::shared_ptr<KeyboardController> KeyboardController;
@@ -45,15 +56,40 @@ namespace Sparkle
         void UpdateGamepad();
         void UpdateKeyboard();
 
+        Event<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&> OnAnyKeyJustPressedEvent;
+        Event<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&> OnKeyboardJustPressedEvent;
+        Event<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&> OnGamepadJustPressedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
+
     public:
+
+#pragma region Player Index
+        static constexpr unsigned int FirstPlayerIndex = 0;
+        static constexpr unsigned int SecondPlayerIndex = 1;
+        static constexpr unsigned int ThirdPlayerIndex = 2;
+        static constexpr unsigned int FourthPlayerIndex = 3;
+        static constexpr unsigned int FifthPlayerIndex = 4;
+        static constexpr unsigned int SixthPlayerIndex = 5;
+#pragma endregion
+
         void UpdateEvent(InputEvent& event);
         void Update();
 
         explicit Input();
         ~Input();
 
-        std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
+        // TODO: ******* Add Horizontal/Vertical axis information
+        // TODO: Add Mouse Input and example
+        // TODO: Default Map for newly created PlayerInputController? maybe not
+        // TODO: Make at least one complete example
+        // TODO: double check we are passing weak pointer as const references
 
+        EventBinder<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); };
+        EventBinder<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); };
+
+#pragma region Gamepad Proxy
         // Gamepad access functions
         // These are Proxy to access gamepad controller functions
 
@@ -85,6 +121,13 @@ namespace Sparkle
         [[maybe_unused]][[nodiscard]] float GetGamepadAxis(GamepadAxis axis, int controllerIndex = 0) const;
 
         // end Gamepad
+#pragma endregion
+
+#pragma region Gamepad/Keyboard/Mouse Management
+
+        /// Get the Keyboard Controller
+        /// \return the Keyboard Controller
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
 
         /// Get an existing GamepadController at index. It might return nullptr if no Gamepad/Joystick were connected yet
         /// It might be already assigned to a player
@@ -109,25 +152,49 @@ namespace Sparkle
         /// \return true if able to destroy, false otherwise
         [[maybe_unused]][[nodiscard]] bool RemovePlayerInputController(unsigned int index);
 
+        /// Check if a gamepad is assigned to any player
+        /// \param gamepad the gamepad to check
+        /// \return true if assigned, false otherwise
         [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(const std::weak_ptr<GamepadController>&);
 
+        /// Check if a gamepad is assigned to a specific player
+        /// \param gamepad the gamepad to check
+        /// \param player the player to check
+        /// \return true if assigned, false otherwise
         [[maybe_unused]][[nodiscard]] bool IsGamepadAssigned(const std::weak_ptr<GamepadController>&, const std::weak_ptr<PlayerInputController>&);
+
+#pragma endregion
+
+#pragma region PlayerInputController Management
 
         /// Get a new PlayerInputController. This Input Manager is responsible to manage, destroy and remove it.
         /// When deleting it, call `RemovePlayerInputController`
         /// \return the new PlayerInputController instance
         [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetNewPlayerInputController();
 
-        /// Get an already created PlayerInputController by its assigned index
-        /// \param index The PlayerInputController index
-        /// \return the Existing PlayerInputController or nullptr if it does not exist
-        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetPlayerInputController(unsigned int index) const;
-
         /// How many PlayerInputControllers we have active.
         /// \return the amount of PlayerInputControllers
         [[maybe_unused]][[nodiscard]] inline unsigned int PlayerInputControllerCount() const { return PlayerInputControllers.size(); }
 
+        /// Get the PlayerInputController assigned to a specific gamepad
+        /// \param gamepad the gamepad to check
+        /// \return the PlayerInputController or nullptr if it does not exist
         [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad);
+
+        /// Get or create new PlayerInputController. This Input Manager is responsible to manage, destroy and remove it.
+        /// When deleting it, call `RemovePlayerInputController`
+        /// \param index The PlayerInputController index. If it already exists, it will be returned. If not, a new one will be created.
+        /// \return the new PlayerInputController instance
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetPlayerInputController(unsigned int index);
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetFirstPlayer() { return GetPlayerInputController(FirstPlayerIndex); }
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetSecondPlayer() { return GetPlayerInputController(SecondPlayerIndex); }
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetThirdPlayer() { return GetPlayerInputController(ThirdPlayerIndex); }
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetFourthPlayer() { return GetPlayerInputController(FourthPlayerIndex); }
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetFifthPlayer() { return GetPlayerInputController(FifthPlayerIndex); }
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetSixthPlayer() { return GetPlayerInputController(SixthPlayerIndex); }
+
+#pragma endregion
+
     };
 
 } // Sparkle

@@ -49,6 +49,7 @@ namespace Sparkle
 
         Sparkle::InputMap InputMap;
 
+        Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
         Event<const std::weak_ptr<PlayerInputController>> OnGamepadDisconnectedEvent;
         Event<const std::weak_ptr<PlayerInputController>> OnGamepadConnectedEvent;
         Event<const std::weak_ptr<PlayerInputController>> OnInputMapUpdatedEvent;
@@ -118,6 +119,8 @@ namespace Sparkle
         /// \return EventBinder for OnInputMapUpdated
         [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
 
+        [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyAction() { return OnAnyActionEvent.GetBinder(); };
+
 #pragma endregion InputMap
 
 #pragma region Gamepad Methods
@@ -174,6 +177,7 @@ namespace Sparkle
             OnGamepadDisconnectedEvent.RemoveAll();
             OnGamepadConnectedEvent.RemoveAll();
             OnInputMapUpdatedEvent.RemoveAll();
+            OnAnyActionEvent.RemoveAll();
         }
     };
 

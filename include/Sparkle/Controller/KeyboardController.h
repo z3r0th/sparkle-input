@@ -66,6 +66,18 @@ namespace Sparkle
             auto index = static_cast<unsigned int>(key);
             return !Buttons[index] && LastButtons[index];
         }
+
+        /// Get the first/any pressed button we can find
+        /// \return the first pressed button or BUTTON_NONE if none is pressed
+        inline KeyboardButton AnyJustPressedButton()
+        {
+            for(int i = 0 ; i < Buttons.size() ; ++i)
+            {
+                if (Buttons[i] && !LastButtons[i]) return KeyboardButton(KeyboardButton::KeyboardButtonEnum(i));
+            }
+
+            return KeyboardButton(KeyboardButton::KeyboardButtonEnum::KEY_NONE);
+        }
     };
 }
 

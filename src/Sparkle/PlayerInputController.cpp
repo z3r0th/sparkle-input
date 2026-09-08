@@ -15,6 +15,7 @@ namespace Sparkle
                 auto event = ButtonAction.first;
                 if (const auto Result = GamepadController->ProcessEvent(event); Result.IsActive)
                 {
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
                     auto it = ActionEventMap.find(ButtonAction.second);
                     if (it == ActionEventMap.end()) continue;
                     it->second(weak_from_this(), ButtonAction.second, Result.InputState);
@@ -29,6 +30,7 @@ namespace Sparkle
                 auto event = ButtonAction.first;
                 if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
                 {
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
                     auto it = ActionEventMap.find(ButtonAction.second);
                     if (it == ActionEventMap.end()) continue;
                     it->second(weak_from_this(), ButtonAction.second, Result.InputState);
