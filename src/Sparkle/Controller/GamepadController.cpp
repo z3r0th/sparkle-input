@@ -18,6 +18,10 @@ void Sparkle::GamepadController::ClearController()
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct InputVector emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 void Sparkle::GamepadController::SetController(SDL_GameController *controller, int deviceIndex)
@@ -46,13 +50,13 @@ void Sparkle::GamepadController::Update() {
         return;
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadButton::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadButtonType::Count) ; ++i)
     {
         LastButtons[i] = Buttons[i];
         Buttons[i] = SDL_GameControllerGetButton(InternalGameController, static_cast<SDL_GameControllerButton>(i));
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxis::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxisType::Count) ; ++i)
     {
         LastAxis[i] = Axis[i];
         float axis = (float)(SDL_GameControllerGetAxis(InternalGameController, static_cast<SDL_GameControllerAxis>(i))) / (float)(SDL_MAX_SINT16);
@@ -61,6 +65,27 @@ void Sparkle::GamepadController::Update() {
             axis = 0.0;
         }
         Axis[i] = axis;
+    }
+
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadStickType::Count) ; ++i)
+    {
+        static const std::map<GamepadStickType, const std::vector<GamepadAxisType>> StickAxis =
+        {
+            {GamepadStickType::STICK_LEFT,  {GamepadAxisType::AXIS_LEFT_X,  GamepadAxisType::AXIS_LEFT_Y}},
+            {GamepadStickType::STICK_RIGHT, {GamepadAxisType::AXIS_RIGHT_X, GamepadAxisType::AXIS_RIGHT_Y}}
+        };
+        LastStick[i] = Stick[i];
+        GamepadStickType UpdateStick = static_cast<GamepadStickType::GamepadStickEnum>(i);
+        struct InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
+        const std::vector<GamepadAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
+        int axisIndex = 0;
+        for (auto& axisEnum : axisAnalyses)
+        {
+            float axis = GetAxis(axisEnum);
+            assert (axisIndex <= 1 && "Support only two axis");
+            axisIndex++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
+        }
+        Stick[i] = stickValue;
     }
 }
 
@@ -75,6 +100,10 @@ Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct InputVector emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 Sparkle::GamepadController::GamepadController():
@@ -88,6 +117,10 @@ Sparkle::GamepadController::GamepadController():
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct InputVector emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)

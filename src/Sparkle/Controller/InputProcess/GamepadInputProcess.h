@@ -65,12 +65,12 @@ namespace Sparkle
         {
             switch (inputEvent.EventType)
             {
-                case InputEventType::GamePadButtonEventType:
-                    return ButtonInputProcess.ProcessEvent(inputEvent.Event.ButtonEvent);
-                case InputEventType::GamePadAxisEventType:
-                    return AxisInputProcess.ProcessEvent(inputEvent.Event.AxisEvent);
-                case InputEventType::GamePadStickEventType:
-                    return StickInputProcess.ProcessEvent(inputEvent.Event.StickEvent);
+                case InputEventType::GamepadButtonEventType:
+                    return ButtonInputProcess.ProcessEvent(inputEvent.Event.GamepadButtonEvent);
+                case InputEventType::GamepadAxisEventType:
+                    return AxisInputProcess.ProcessEvent(inputEvent.Event.GamepadAxisEvent);
+                case InputEventType::GamepadStickEventType:
+                    return StickInputProcess.ProcessEvent(inputEvent.Event.GamepadStickEvent);
                 default:
                     return Sparkle::InputResult{false};
             }

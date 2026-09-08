@@ -17,8 +17,203 @@ namespace Sparkle
 
 #pragma region Enum Input Types
 
+    /// MouseButton
+    class MouseButtonType
+    {
+#define MOUSE_BUTTON_LIST(E) \
+E(BUTTON_NONE) \
+E(BUTTON_LEFT) \
+E(BUTTON_MIDDLE) \
+E(BUTTON_RIGHT) \
+E(BUTTON_X1) \
+E(BUTTON_X2) \
+E(Count)
+    public:
+        enum MouseButtonEnum
+        {
+#define MOUSE_BUTTON_DEF(name) name,
+            MOUSE_BUTTON_LIST(MOUSE_BUTTON_DEF)
+#undef MOUSE_BUTTON_DEF
+        };
+
+        MouseButtonType() = default;
+
+        constexpr MouseButtonType(MouseButtonEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseButtonEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseButton Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseButton Unknown";
+            }
+        }
+
+#undef GAMEPAD_STRING_DEF
+
+    private:
+        MouseButtonEnum value;
+#undef GAMEPAD_BUTTON_LIST
+    };
+
+    /// MouseAxis
+    class MouseAxisType
+    {
+#define MOUSE_AXIS_LIST(E) \
+E(AXIS_X) \
+E(AXIS_Y) \
+E(SCROLL_WHEEL_Y) \
+E(SCROLL_WHEEL_X) \
+E(Count) \
+E(AXIS_NONE)
+    public:
+        enum MouseAxisEnum
+        {
+#define MOUSE_AXIS_DEF(name) name,
+            MOUSE_AXIS_LIST(MOUSE_AXIS_DEF)
+#undef MOUSE_AXIS_DEF
+        };
+
+        MouseAxisType() = default;
+
+        constexpr MouseAxisType(MouseAxisEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseAxisEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseAxis Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "GamepadAxis Unknown";
+            }
+        }
+
+#undef MOUSE_STRING_DEF
+
+    private:
+        MouseAxisEnum value;
+#undef MOUSE_AXIS_LIST
+    };
+
+    /// MouseStick
+    class MouseStickType
+    {
+#define MOUSE_STICK_LIST(E) \
+E(MOUSE_MOVEMENT) \
+E(Count)
+    public:
+        enum MouseStickEnum
+        {
+#define MOUSE_STICK_DEF(name) name,
+            MOUSE_STICK_LIST(MOUSE_STICK_DEF)
+#undef MOUSE_STICK_DEF
+        };
+
+        MouseStickType() = default;
+
+        constexpr MouseStickType(MouseStickEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseStickEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseStick Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseStick Unknown";
+            }
+        }
+
+#undef MOUSE_STRING_DEF
+
+    private:
+        MouseStickEnum value;
+#undef GAMEPAD_STICK_LIST
+    };
+
     /// KeyboardButton
-    class KeyboardButton
+    class KeyboardButtonType
     {
 #pragma region Key List
 /// This key enum is based on SDL_SCANCODE
@@ -314,8 +509,8 @@ E(KEY_SOFTLEFT)                 \
 E(KEY_SOFTRIGHT)                \
 E(KEY_CALL)                     \
 E(KEY_ENDCALL)                  \
-E(KEY_NONE)                     \
-E(Count)
+E(Count)                        \
+E(KEY_NONE)
 #pragma endregion Key List
     public:
         enum KeyboardButtonEnum
@@ -325,25 +520,34 @@ E(Count)
 #undef KEYBOARD_BUTTON_DEF
         };
 
-        KeyboardButton() = default;
-        constexpr KeyboardButton(KeyboardButtonEnum enumValue) : value(enumValue) { }
+        KeyboardButtonType() = default;
+
+        constexpr KeyboardButtonType(KeyboardButtonEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator KeyboardButtonEnum() const { return value; }
+        constexpr operator KeyboardButtonEnum() const
+        { return value; }
 
 #define KEYBOARD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 KEYBOARD_BUTTON_LIST(KEYBOARD_STRING_DEF)
-                default: return "KeyboardButton Unknown";
+                default:
+                    return "KeyboardButton Unknown";
             }
         }
 
@@ -352,9 +556,11 @@ E(Count)
             switch (value)
             {
                 KEYBOARD_BUTTON_LIST(KEYBOARD_STRING_DEF)
-                default: return "KeyboardButton Unknown";
+                default:
+                    return "KeyboardButton Unknown";
             }
         }
+
 #undef KEYBOARD_STRING_DEF
 
     private:
@@ -363,15 +569,15 @@ E(Count)
     };
 
     /// KeyboardAxis
-    class KeyboardAxis
+    class KeyboardAxisType
     {
     public:
-        bool operator <(const KeyboardAxis& rhs) const
+        bool operator<(const KeyboardAxisType &rhs) const
         {
             return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
         }
 
-        bool operator ==(const KeyboardAxis& rhs) const
+        bool operator==(const KeyboardAxisType &rhs) const
         {
             return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
         }
@@ -385,69 +591,84 @@ E(Count)
 
         struct KeyboardPartAxis
         {
-            bool operator <(const KeyboardPartAxis& rhs) const
+            bool operator<(const KeyboardPartAxis &rhs) const
             {
                 return std::tie(Button, Range) < std::tie(rhs.Button, rhs.Range);
             }
-            bool operator ==(const KeyboardPartAxis& rhs) const
+
+            bool operator==(const KeyboardPartAxis &rhs) const
             {
                 return Button == rhs.Button && Range == rhs.Range;
             }
-            KeyboardButton Button;
+
+            KeyboardButtonType Button;
             KeyboardAxisRange Range;
         } Motion1{}, Motion2{};
     };
 
     /// KeyboardStick
-    class KeyboardStick
+    class KeyboardStickType
     {
     public:
-        bool operator <(const KeyboardStick& rhs) const
+        bool operator<(const KeyboardStickType &rhs) const
         {
             return std::tie(Horizontal, Vertical) < std::tie(rhs.Horizontal, rhs.Vertical);
         }
-        bool operator ==(const KeyboardStick& rhs) const
+
+        bool operator==(const KeyboardStickType &rhs) const
         {
             return Horizontal == rhs.Horizontal && Vertical == rhs.Vertical;
         }
-        KeyboardAxis Horizontal;
-        KeyboardAxis Vertical;
+
+        KeyboardAxisType Horizontal;
+        KeyboardAxisType Vertical;
     };
 
     /// GamepadStick
-    class GamepadStick
+    class GamepadStickType
     {
 #define GAMEPAD_STICK_LIST(E) \
 E(STICK_LEFT) \
 E(STICK_RIGHT) \
-E(COUNT)
-    public:
+E(Count) \
+E(STICK_NONE)
+
+public:
         enum GamepadStickEnum
         {
-            #define GAMEPAD_STICK_DEF(name) name,
+#define GAMEPAD_STICK_DEF(name) name,
             GAMEPAD_STICK_LIST(GAMEPAD_STICK_DEF)
-            #undef GAMEPAD_STICK_DEF
+#undef GAMEPAD_STICK_DEF
         };
 
-        GamepadStick() = default;
-        constexpr GamepadStick(GamepadStickEnum enumValue) : value(enumValue) { }
+        GamepadStickType() = default;
+
+        constexpr GamepadStickType(GamepadStickEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator GamepadStickEnum() const { return value; }
+        constexpr operator GamepadStickEnum() const
+        { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 GAMEPAD_STICK_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadStick Unknown";
+                default:
+                    return "GamepadStick Unknown";
             }
         }
 
@@ -456,9 +677,11 @@ E(COUNT)
             switch (value)
             {
                 GAMEPAD_STICK_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadStick Unknown";
+                default:
+                    return "GamepadStick Unknown";
             }
         }
+
 #undef GAMEPAD_STRING_DEF
 
     private:
@@ -467,10 +690,9 @@ E(COUNT)
     };
 
     /// GamepadButton
-    class GamepadButton
+    class GamepadButtonType
     {
 #define GAMEPAD_BUTTON_LIST(E) \
-E(BUTTON_NONE) \
 E(BUTTON_A) \
 E(BUTTON_B) \
 E(BUTTON_X) \
@@ -486,34 +708,44 @@ E(BUTTON_DPAD_UP) \
 E(BUTTON_DPAD_DOWN) \
 E(BUTTON_DPAD_LEFT) \
 E(BUTTON_DPAD_RIGHT) \
-E(Count)
+E(Count) \
+E(BUTTON_NONE)
     public:
         enum GamepadButtonEnum
         {
-            #define GAMEPAD_BUTTON_DEF(name) name,
+#define GAMEPAD_BUTTON_DEF(name) name,
             GAMEPAD_BUTTON_LIST(GAMEPAD_BUTTON_DEF)
-            #undef GAMEPAD_BUTTON_DEF
+#undef GAMEPAD_BUTTON_DEF
         };
 
-        GamepadButton() = default;
-        constexpr GamepadButton(GamepadButtonEnum enumValue) : value(enumValue) { }
+        GamepadButtonType() = default;
+
+        constexpr GamepadButtonType(GamepadButtonEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator GamepadButtonEnum() const { return value; }
+        constexpr operator GamepadButtonEnum() const
+        { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 GAMEPAD_BUTTON_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadButton Unknown";
+                default:
+                    return "GamepadButton Unknown";
             }
         }
 
@@ -522,9 +754,11 @@ E(Count)
             switch (value)
             {
                 GAMEPAD_BUTTON_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadButton Unknown";
+                default:
+                    return "GamepadButton Unknown";
             }
         }
+
 #undef GAMEPAD_STRING_DEF
 
     private:
@@ -533,44 +767,53 @@ E(Count)
     };
 
     /// GamepadAxis
-    class GamepadAxis
+    class GamepadAxisType
     {
 #define GAMEPAD_AXIS_LIST(E) \
-E(AXIS_NONE) \
-E(AXIS_LEFT_X) \
-E(AXIS_LEFT_Y) \
+E(AXIS_LEFT_X)  \
+E(AXIS_LEFT_Y)  \
 E(AXIS_RIGHT_X) \
 E(AXIS_RIGHT_Y) \
 E(TRIGGER_LEFT) \
-E(TRIGGER_RIGHT) \
-E(Count)
+E(TRIGGER_RIGHT)\
+E(Count)        \
+E(AXIS_NONE)
     public:
         enum GamepadAxisEnum
         {
-            #define GAMEPAD_AXIS_DEF(name) name,
+#define GAMEPAD_AXIS_DEF(name) name,
             GAMEPAD_AXIS_LIST(GAMEPAD_AXIS_DEF)
-            #undef GAMEPAD_AXIS_DEF
+#undef GAMEPAD_AXIS_DEF
         };
 
-        GamepadAxis() = default;
-        constexpr GamepadAxis(GamepadAxisEnum enumValue) : value(enumValue) { }
+        GamepadAxisType() = default;
+
+        constexpr GamepadAxisType(GamepadAxisEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator GamepadAxisEnum() const { return value; }
+        constexpr operator GamepadAxisEnum() const
+        { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 GAMEPAD_AXIS_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadAxis Unknown";
+                default:
+                    return "GamepadAxis Unknown";
             }
         }
 
@@ -579,9 +822,11 @@ E(Count)
             switch (value)
             {
                 GAMEPAD_AXIS_LIST(GAMEPAD_STRING_DEF)
-                default: return "GamepadAxis Unknown";
+                default:
+                    return "GamepadAxis Unknown";
             }
         }
+
 #undef GAMEPAD_STRING_DEF
 
     private:
@@ -599,34 +844,45 @@ E(Count)
 #define INPUT_STICK_EVENT_TRIGGER_LIST(E) \
 E(MOVEMENT) \
 E(FULL_POSITIVE) \
-E(FULL_NEGATIVE)
+E(FULL_NEGATIVE) \
+E(CONTINUOUS)
+
     public:
         enum InputAnalogEventTriggerEnum
         {
-            #define INPUT_STICK_EVENT_TRIGGER_DEF(name) name,
+#define INPUT_STICK_EVENT_TRIGGER_DEF(name) name,
             INPUT_STICK_EVENT_TRIGGER_LIST(INPUT_STICK_EVENT_TRIGGER_DEF)
-            #undef INPUT_STICK_EVENT_TRIGGER_DEF
+#undef INPUT_STICK_EVENT_TRIGGER_DEF
         };
 
         InputAnalogEventTrigger() = default;
-        [[maybe_unused]] constexpr InputAnalogEventTrigger(InputAnalogEventTriggerEnum enumValue) : value(enumValue) { }
+
+        [[maybe_unused]] constexpr InputAnalogEventTrigger(InputAnalogEventTriggerEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator InputAnalogEventTriggerEnum() const { return value; }
+        constexpr operator InputAnalogEventTriggerEnum() const
+        { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 INPUT_STICK_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputAxisEventTrigger Unknown";
+                default:
+                    return "InputAxisEventTrigger Unknown";
             }
         }
 
@@ -635,9 +891,11 @@ E(FULL_NEGATIVE)
             switch (value)
             {
                 INPUT_STICK_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputAxisEventTrigger Unknown";
+                default:
+                    return "InputAxisEventTrigger Unknown";
             }
         }
+
 #undef GAMEPAD_STRING_DEF
 
     private:
@@ -659,29 +917,39 @@ E(UP)
     public:
         enum InputButtonEventTriggerEnum
         {
-            #define INPUT_BUTTON_EVENT_TRIGGER_DEF(name) name,
+#define INPUT_BUTTON_EVENT_TRIGGER_DEF(name) name,
             INPUT_BUTTON_EVENT_TRIGGER_LIST(INPUT_BUTTON_EVENT_TRIGGER_DEF)
-            #undef INPUT_BUTTON_EVENT_TRIGGER_DEF
+#undef INPUT_BUTTON_EVENT_TRIGGER_DEF
         };
+
         InputDigitalEventTrigger() = default;
-        [[maybe_unused]] constexpr InputDigitalEventTrigger(InputButtonEventTriggerEnum enumValue) : value(enumValue) { }
+
+        [[maybe_unused]] constexpr InputDigitalEventTrigger(InputButtonEventTriggerEnum enumValue) : value(enumValue)
+        {}
+
         // prevent using as a pointer or boolean operator
-        void * operator new (std::size_t) = delete;
-        void * operator new[] (std::size_t) = delete;
-        void operator delete (void *p) = delete;
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
         explicit operator bool() const = delete;
 
         // Allow switch and comparisons.
-        constexpr operator InputButtonEventTriggerEnum() const { return value; }
+        constexpr operator InputButtonEventTriggerEnum() const
+        { return value; }
 
 #define GAMEPAD_STRING_DEF(name) \
         case name: return #name;
 
-        [[maybe_unused]] const char* c_str() {
+        [[maybe_unused]] const char *c_str()
+        {
             switch (value)
             {
                 INPUT_BUTTON_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputButtonEventTrigger Unknown";
+                default:
+                    return "InputButtonEventTrigger Unknown";
             }
         }
 
@@ -690,9 +958,11 @@ E(UP)
             switch (value)
             {
                 INPUT_BUTTON_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default: return "InputButtonEventTrigger Unknown";
+                default:
+                    return "InputButtonEventTrigger Unknown";
             }
         }
+
 #undef GAMEPAD_STRING_DEF
 
     private:
@@ -705,54 +975,75 @@ E(UP)
 
 #pragma region Struct Event Pair (Trigger/Input)
 
+    struct InputMouseButtonEvent
+    {
+        InputDigitalEventTrigger ButtonTrigger{};
+        MouseButtonType Button{};
+    };
+
+    struct InputMouseAxisEvent
+    {
+        InputAnalogEventTrigger AxisTrigger{};
+        MouseAxisType Axis{};
+    };
+
+    struct InputMouseStickEvent
+    {
+        InputAnalogEventTrigger StickTrigger{};
+        MouseStickType Stick{};
+    };
+
     struct InputKeyboardButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
-        KeyboardButton Button{};
+        KeyboardButtonType Button{};
     };
 
     struct InputKeyboardAxisEvent
     {
         InputAnalogEventTrigger AxisTrigger{};
-        KeyboardAxis Axis{};
+        KeyboardAxisType Axis{};
     };
 
     struct InputKeyboardStickEvent
     {
         InputAnalogEventTrigger StickTrigger{};
-        KeyboardStick Stick{};
+        KeyboardStickType Stick{};
     };
 
     struct InputGamepadButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
-        GamepadButton Button{};
+        GamepadButtonType Button{};
     };
 
     struct InputGamepadAxisEvent
     {
         InputAnalogEventTrigger AxisTrigger{};
-        GamepadAxis Axis{};
+        GamepadAxisType Axis{};
     };
 
     struct InputGamepadStickEvent
     {
         InputAnalogEventTrigger StickTrigger{};
-        GamepadStick Stick{};
+        GamepadStickType Stick{};
     };
 
 #pragma endregion Struct Event Pair (Trigger/Input)
 
     /// Possible event types supported
-    /// Current support is Gamepad and Keyboard
+    /// Current support is Gamepad, Keyboard, and Mouse
     enum class InputEventType
     {
-        GamePadButtonEventType,
-        GamePadAxisEventType,
-        GamePadStickEventType,
+        GamepadButtonEventType,
+        GamepadAxisEventType,
+        GamepadStickEventType,
         KeyboardButtonEventType,
         KeyboardAxisEventType,
         KeyboardStickEventType,
+        MouseButtonEventType,
+        MouseAxisEventType,
+        MouseStickEventType,
     };
 
     /// Active Event type used
@@ -761,45 +1052,149 @@ E(UP)
         InputKeyboardButtonEvent KeyboardButtonEvent;
         InputKeyboardStickEvent KeyboardStickEvent;
         InputKeyboardAxisEvent KeyboardAxisEvent;
-        InputGamepadButtonEvent ButtonEvent;
-        InputGamepadStickEvent StickEvent;
-        InputGamepadAxisEvent AxisEvent;
+        InputGamepadButtonEvent GamepadButtonEvent;
+        InputGamepadStickEvent GamepadStickEvent;
+        InputGamepadAxisEvent GamepadAxisEvent;
+        InputMouseButtonEvent MouseButtonEvent;
+        InputMouseStickEvent MouseStickEvent;
+        InputMouseAxisEvent MouseAxisEvent;
     };
 
-    /// 2D Stick value
-    struct Stick
+    /// Axis Type
+    /// Represents an axis on a controller (Gamepad, Mouse, Keyboard)
+    union AxisType
+    {
+        GamepadAxisType GamepadAxis;
+        KeyboardAxisType KeyboardAxis;
+        MouseAxisType MouseAxis;
+
+        operator GamepadAxisType() const { return GamepadAxis; }
+        operator KeyboardAxisType() const { return KeyboardAxis; }
+        operator MouseAxisType() const { return MouseAxis; }
+    };
+
+    /// Stick Type
+    /// Represents a stick on a controller (Gamepad, Mouse, Keyboard)
+    union StickType
+    {
+        class MouseStickType MouseStick;
+        class KeyboardStickType KeyboardStick;
+        class GamepadStickType GamepadStick;
+
+        operator MouseStickType() const { return MouseStick; }
+        operator KeyboardStickType() const { return KeyboardStick; }
+        operator GamepadStickType() const { return GamepadStick; }
+    };
+
+    /// Button Type
+    /// Represents a button on a controller (Gamepad, Mouse, Keyboard)
+    union ButtonType
+    {
+        class MouseButtonType MouseButton;
+        class GamepadButtonType GamepadButton;
+        class KeyboardButtonType KeyboardButton;
+
+        operator MouseButtonType() const { return MouseButton; }
+        operator GamepadButtonType() const { return GamepadButton; }
+        operator KeyboardButtonType() const { return KeyboardButton; }
+    };
+
+    /// Input Vector
+    /// Represents a pair of Axis.
+    /// It is a pair of floats representing the horizontal and vertical movement.
+    struct InputVector
     {
         float Horizontal;
         float Vertical;
     };
 
-    enum struct InputType
+    /// Input Event
+    /// Describes the Axis with the current state and the Type of the Axis (Gamepad::LEFT_TRIGGER, Mouse::WHEEL, etc)
+    /// You must know the Controller type to consult the AxisType
+    struct Axis
     {
-        Button,
-        Axis,
-        Stick
+        AxisType AxisType;
+        float Value;
+
+        operator float() const
+        { return Value; }
     };
 
+    /// Input Stick
+    /// Describes the Stick with the current state and the Type of the Stick (Gamepad::LEFT_STICK, Mouse::MOVEMENT, etc)
+    /// You must know the Controller type to consult the StickType
+    struct Stick
+    {
+        StickType StickType;
+        InputVector Value;
+
+        operator InputVector() const
+        { return Value; }
+    };
+
+    /// Input Button
+    /// Describes the Button with the current state and the Type of the Button (Gamepad::X, Keyboard::A, Mouse::Left, etc)
+    /// You must know the Controller type to consult the ButtonType
+    struct Button
+    {
+        ButtonType ButtonType;
+        bool Pressed;
+
+        operator bool() const
+        { return Pressed; }
+    };
+
+    /// Input Type
+    /// Input Type can be three:
+    /// 1. Button - This is a digital input, it can be pressed or released.
+    /// 2. Axis - This is an analog input. Represents one axis [-1, 1]. Some axis might have a constraint to [0, 1] - Can be one direction of a gamepad stick, a gamepad trigger, or a mouse wheel, etc.
+    /// 3. Stick - This is an Axis pair. It represents a Stick on a controller. It can be used to represent a mouse cursor movement, or a gamepad stick.
+    enum struct InputType
+    {
+        BUTTON,
+        AXIS,
+        STICK
+    };
+
+    /// Controller Type
+    /// Input controller describes the physical device that is being interacted with.
+    enum struct InputControllerType
+    {
+        KEYBOARD,
+        MOUSE,
+        GAMEPAD
+    };
+
+    /// Input State Value
+    /// This represents the current value for an Input. It can be a Button, Axis or Stick (the three possible supported inputs).
     union InputStateValue
     {
-        bool ButtonPressed;
+        Button Button {};
         Stick Stick;
-        float Axis;
+        Axis Axis;
+
+        operator struct Button() const { return Button; }
+        operator struct Stick() const { return Stick; }
+        operator struct Axis() const { return Axis; }
     };
 
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
+    /// To proper use it, check the InputType and get the appropriate InputStateValue (If Type is Button, read the Input Value for Button, and so on)
     struct InputState
     {
-        InputType Type;
-        InputStateValue Value;
+        InputType Type {};
+        InputStateValue Input {};
+        InputControllerType ControllerType {};
     };
 
     /// The result of an Event Trigger processed
+    /// The Result is only valid if "IsActive" is true. It will be false if the controller is inactive.
+    /// This is the result of an EventTrigger process
     struct InputResult
     {
-        bool IsActive;
-        InputState InputState;
+        bool IsActive {};
+        InputState InputState {};
     };
 
     /// The Input Trigger description
@@ -812,27 +1207,27 @@ E(UP)
         bool operator <(const InputTrigger& rhs) const
         {
             switch (EventType) {
-                case InputEventType::GamePadButtonEventType:
+                case InputEventType::GamepadButtonEventType:
                     return std::tie(EventType,
-                             Event.ButtonEvent.Button,
-                             Event.ButtonEvent.ButtonTrigger) <
+                             Event.GamepadButtonEvent.Button,
+                             Event.GamepadButtonEvent.ButtonTrigger) <
                            std::tie(rhs.EventType,
-                             rhs.Event.ButtonEvent.Button,
-                             rhs.Event.ButtonEvent.ButtonTrigger);
-                case InputEventType::GamePadAxisEventType:
+                             rhs.Event.GamepadButtonEvent.Button,
+                             rhs.Event.GamepadButtonEvent.ButtonTrigger);
+                case InputEventType::GamepadAxisEventType:
                     return std::tie(EventType,
-                                    Event.AxisEvent.AxisTrigger,
-                                    Event.AxisEvent.Axis) <
+                                    Event.GamepadAxisEvent.AxisTrigger,
+                                    Event.GamepadAxisEvent.Axis) <
                            std::tie(rhs.EventType,
-                                    rhs.Event.AxisEvent.AxisTrigger,
-                                    rhs.Event.AxisEvent.Axis);
-                case InputEventType::GamePadStickEventType:
+                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
+                                    rhs.Event.GamepadAxisEvent.Axis);
+                case InputEventType::GamepadStickEventType:
                     return std::tie(EventType,
-                                    Event.StickEvent.StickTrigger,
-                                    Event.StickEvent.Stick) <
+                                    Event.GamepadStickEvent.StickTrigger,
+                                    Event.GamepadStickEvent.Stick) <
                            std::tie(rhs.EventType,
-                                    rhs.Event.StickEvent.StickTrigger,
-                                    rhs.Event.StickEvent.Stick);
+                                    rhs.Event.GamepadStickEvent.StickTrigger,
+                                    rhs.Event.GamepadStickEvent.Stick);
                 case InputEventType::KeyboardButtonEventType:
                     return std::tie(EventType,
                                     Event.KeyboardButtonEvent.ButtonTrigger,
@@ -854,33 +1249,54 @@ E(UP)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardStickEvent.StickTrigger,
                                     rhs.Event.KeyboardStickEvent.Stick);
+                case InputEventType::MouseButtonEventType:
+                    return std::tie(EventType,
+                                    Event.MouseButtonEvent.ButtonTrigger,
+                                    Event.MouseButtonEvent.Button) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
+                                    rhs.Event.MouseButtonEvent.Button);
+                case InputEventType::MouseAxisEventType:
+                    return std::tie(EventType,
+                                    Event.MouseAxisEvent.AxisTrigger,
+                                    Event.MouseAxisEvent.Axis) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseAxisEvent.AxisTrigger,
+                                    rhs.Event.MouseAxisEvent.Axis);
+                case InputEventType::MouseStickEventType:
+                    return std::tie(EventType,
+                                    Event.MouseStickEvent.StickTrigger,
+                                    Event.MouseStickEvent.Stick) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseStickEvent.StickTrigger,
+                                    rhs.Event.MouseStickEvent.Stick);
             }
             assert(false && "No input event type verified");
         }
         bool operator ==(const InputTrigger& rhs) const
         {
             switch (EventType) {
-                case InputEventType::GamePadButtonEventType:
+                case InputEventType::GamepadButtonEventType:
                     return std::tie(EventType,
-                                    Event.ButtonEvent.Button,
-                                    Event.ButtonEvent.ButtonTrigger) ==
+                                    Event.GamepadButtonEvent.Button,
+                                    Event.GamepadButtonEvent.ButtonTrigger) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.ButtonEvent.Button,
-                                    rhs.Event.ButtonEvent.ButtonTrigger);
-                case InputEventType::GamePadAxisEventType:
+                                    rhs.Event.GamepadButtonEvent.Button,
+                                    rhs.Event.GamepadButtonEvent.ButtonTrigger);
+                case InputEventType::GamepadAxisEventType:
                     return std::tie(EventType,
-                                    Event.AxisEvent.AxisTrigger,
-                                    Event.AxisEvent.Axis) ==
+                                    Event.GamepadAxisEvent.AxisTrigger,
+                                    Event.GamepadAxisEvent.Axis) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.AxisEvent.AxisTrigger,
-                                    rhs.Event.AxisEvent.Axis);
-                case InputEventType::GamePadStickEventType:
+                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
+                                    rhs.Event.GamepadAxisEvent.Axis);
+                case InputEventType::GamepadStickEventType:
                     return std::tie(EventType,
-                                    Event.StickEvent.StickTrigger,
-                                    Event.StickEvent.Stick) ==
+                                    Event.GamepadStickEvent.StickTrigger,
+                                    Event.GamepadStickEvent.Stick) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.StickEvent.StickTrigger,
-                                    rhs.Event.StickEvent.Stick);
+                                    rhs.Event.GamepadStickEvent.StickTrigger,
+                                    rhs.Event.GamepadStickEvent.Stick);
                 case InputEventType::KeyboardButtonEventType:
                     return std::tie(EventType,
                                     Event.KeyboardButtonEvent.ButtonTrigger,
@@ -902,6 +1318,27 @@ E(UP)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardStickEvent.StickTrigger,
                                     rhs.Event.KeyboardStickEvent.Stick);
+                case InputEventType::MouseButtonEventType:
+                    return std::tie(EventType,
+                                    Event.MouseButtonEvent.ButtonTrigger,
+                                    Event.MouseButtonEvent.Button) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
+                                    rhs.Event.MouseButtonEvent.Button);
+                case InputEventType::MouseAxisEventType:
+                    return std::tie(EventType,
+                                    Event.MouseAxisEvent.AxisTrigger,
+                                    Event.MouseAxisEvent.Axis) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseAxisEvent.AxisTrigger,
+                                    rhs.Event.MouseAxisEvent.Axis);
+                case InputEventType::MouseStickEventType:
+                    return std::tie(EventType,
+                                    Event.MouseStickEvent.StickTrigger,
+                                    Event.MouseStickEvent.Stick) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseStickEvent.StickTrigger,
+                                    rhs.Event.MouseStickEvent.Stick);
             }
             assert(false && "No input event type verified");
         }
@@ -931,23 +1368,23 @@ struct std::hash<Sparkle::InputTrigger>
         using std::string;
         std::size_t h = 0;
         switch (k.EventType) {
-            case Sparkle::InputEventType::GamePadButtonEventType:
+            case Sparkle::InputEventType::GamepadButtonEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.ButtonEvent.Button,
-                            (int)k.Event.ButtonEvent.ButtonTrigger);
+                            (int)k.Event.GamepadButtonEvent.Button,
+                            (int)k.Event.GamepadButtonEvent.ButtonTrigger);
                 return h;
-            case Sparkle::InputEventType::GamePadAxisEventType:
+            case Sparkle::InputEventType::GamepadAxisEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.AxisEvent.Axis,
-                            (int)k.Event.AxisEvent.AxisTrigger);
+                            (int)k.Event.GamepadAxisEvent.Axis,
+                            (int)k.Event.GamepadAxisEvent.AxisTrigger);
                 return h;
-            case Sparkle::InputEventType::GamePadStickEventType:
+            case Sparkle::InputEventType::GamepadStickEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.StickEvent.Stick,
-                            (int)k.Event.StickEvent.StickTrigger);
+                            (int)k.Event.GamepadStickEvent.Stick,
+                            (int)k.Event.GamepadStickEvent.StickTrigger);
                 return h;
             case Sparkle::InputEventType::KeyboardButtonEventType:
                 HashCombine(h,
@@ -976,6 +1413,24 @@ struct std::hash<Sparkle::InputTrigger>
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Button,
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Range,
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Button);
+                return h;
+            case Sparkle::InputEventType::MouseButtonEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.MouseButtonEvent.Button,
+                            (int)k.Event.MouseButtonEvent.ButtonTrigger);
+                return h;
+            case Sparkle::InputEventType::MouseAxisEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.GamepadAxisEvent.AxisTrigger,
+                            (int)k.Event.GamepadAxisEvent.Axis);
+                return h;
+            case Sparkle::InputEventType::MouseStickEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.GamepadStickEvent.StickTrigger,
+                            (int)k.Event.GamepadStickEvent.Stick);
                 return h;
         }
     }

@@ -16,12 +16,12 @@ The project is currently private.
 
 ### Controller
 Controller is the physical input device used to control the game (gamepad, keyboard, mouse, etc.)
-### Gamepad
-Gamepad is a game input controller (like xbox or playstation controller) 
-### Keyboard
-Keyboard is the computer keyboard
-### Mouse
-Mouse is the computer mouse
+### GAMEPAD
+GAMEPAD is a game input controller (like xbox or playstation controller) 
+### KEYBOARD
+KEYBOARD is the computer keyboard
+### MOUSE
+MOUSE is the computer mouse
 ### Map
 Map is how we bind a *Controller* and *Action* to a *Trigger*
 ### Trigger
@@ -29,14 +29,14 @@ Trigger is how we trigger a physical input. Like a button pressed, released, hol
 ### Action
 Action is the logical action that the game can take (jump, pause, reload, etc.). We bind the action to 
 a physical input through a *Trigger*
-### Axis
-Axis is a one-dimensional floating input. Like Horizontal *Axis* for a Gamepad *Stick* or Gamepad *Trigger*.
-### Stick
-Stick is a two-dimensional floating input. Like Horizontal and Vertical Axis for a Gamepad *Stick*.
+### AXIS
+AXIS is a one-dimensional floating input. Like Horizontal *AXIS* for a GAMEPAD *STICK* or GAMEPAD *Trigger*.
+### STICK
+STICK is a two-dimensional floating input. Like Horizontal and Vertical AXIS for a GAMEPAD *STICK*.
 ### Digital Trigger
-Digital Trigger is a trigger that can be pressed or released. Like a Button.
+Digital Trigger is a trigger that can be pressed or released. Like a BUTTON.
 ### Analog Trigger
-Analog Trigger is a trigger that represents a floating value. Like an Axis.
+Analog Trigger is a trigger that represents a floating value. Like an AXIS.
 
 # Features
 
@@ -185,17 +185,17 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
 
 void PrintAction(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
-    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.Value.ButtonPressed ? "PRESSED" : "RELEASED");
+    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.Input.ButtonPressed ? "PRESSED" : "RELEASED");
 }
 
 int main(int argc, char* argv[])
 {
     Sparkle::InputMap map;
     Sparkle::InputAction Action("GAME ACTION");
-    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, Action);
-    map.Bind(Sparkle::GamepadButton::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, Action);
-    map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, Action);
-    map.Bind(Sparkle::KeyboardButton::KEY_SPACE, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, Action);
+    map.Bind(Sparkle::GamepadButtonType::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, Action);
+    map.Bind(Sparkle::GamepadButtonType::BUTTON_A, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, Action);
+    map.Bind(Sparkle::KeyboardButtonType::KEY_SPACE, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, Action);
+    map.Bind(Sparkle::KeyboardButtonType::KEY_SPACE, Sparkle::InputDigitalEventTrigger::JUST_RELEASED, Action);
 
     Sparkle::Input input;
     auto playerInputController = input.GetNewPlayerInputController().lock();
@@ -210,9 +210,9 @@ int main(int argc, char* argv[])
 
 # Roadmap
 
-- Mouse support
-- Keyboard Text input support
-- Gamepad Text input support
+- MOUSE support
+- KEYBOARD Text input support
+- GAMEPAD Text input support
 - Save/Load key mapping
 - More devices Support (Wheel, VR, Touch, etc.)
 - Device/PlayerInputController Reassignment

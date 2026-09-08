@@ -11,32 +11,15 @@ namespace Sparkle
     InputResult GamepadStickInputProcess::ProcessEvent(const InputGamepadStickEvent &event)
     {
         assert(GamepadController && "GamepadController should never be NULL");
-        static const std::map<GamepadStick, const std::vector<GamepadAxis>> stickAxis =
+        bool hasStickMoved = GamepadController->HasStickMoved(event.Stick);
+        InputVector stickValue = GamepadController->GetStick(event.Stick);
+        if (event.StickTrigger == InputAnalogEventTrigger::CONTINUOUS
+            || hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
+            || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
+            || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
         {
-            {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
-            {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
-        };
-        Stick stickValue = {0, 0 };
-        const std::vector<GamepadAxis>& axisAnalyses = stickAxis.at(event.Stick);
-        bool triggerCallback = false;
-        int i = 0;
-        for (auto& axisEnum : axisAnalyses)
-        {
-            bool hasAxisMoved = GamepadController->HasAxisMoved(axisEnum);
-            float axis = GamepadController->GetAxis(axisEnum);
-            assert (i <= 1 && "Support only two axis");
-            i++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
-            if (hasAxisMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
-                || axis >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE
-                || axis <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
-
-            {
-                triggerCallback = true;
-            }
-        }
-        if (triggerCallback)
-        {
-            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stickValue}}};
+            Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Value = stickValue};
+            return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
         }
         return InputResult{false};
     }
@@ -51,7 +34,8 @@ namespace Sparkle
             || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
             || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::UP)
         {
-            return InputResult{true, InputState{.Type=InputType::Button, .Value={.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}}};
+            Button button = {.ButtonType = {.GamepadButton = event.Button}, .Pressed = GamepadController->IsButtonPressed(event.Button)};
+            return InputResult{true, InputState{.Type=InputType::BUTTON, .Input={.Button = button}}};
         }
         return InputResult{false};
     }
@@ -60,12 +44,14 @@ namespace Sparkle
     {
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasAxisMoved = GamepadController->HasAxisMoved(event.Axis);
-        float axis = GamepadController->GetAxis(event.Axis);
-        if (hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
-            || axis >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
-            || axis <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
+        float axisValue = GamepadController->GetAxis(event.Axis);
+        if (event.AxisTrigger == InputAnalogEventTrigger::CONTINUOUS
+            || hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
+            || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
+            || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {
-            return InputResult{true, InputState{.Type=InputType::Axis, .Value={.Axis = axis}}};
+            Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
+            return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
         }
         return InputResult{false};
     }

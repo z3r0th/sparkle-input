@@ -13,8 +13,8 @@ int main(int argc, char* argv[])
         if (auto Keyboard = Input.GetKeyBoardController().lock())
         {
             if (!Keyboard->IsActive()) { std::cout << "Keyboard is not active" << std::endl; }
-            if (Keyboard->IsButtonJustPressed(Sparkle::KeyboardButton::KEY_A)) { std::cout << "Key \'A\' just pressed" << std::endl; }
-            if (Keyboard->IsButtonJustReleased(Sparkle::KeyboardButton::KEY_A)) { std::cout << "Key \'A\' just released" << std::endl; }
+            if (Keyboard->IsButtonJustPressed(Sparkle::KeyboardButtonType::KEY_A)) { std::cout << "Key \'A\' just pressed" << std::endl; }
+            if (Keyboard->IsButtonJustReleased(Sparkle::KeyboardButtonType::KEY_A)) { std::cout << "Key \'A\' just released" << std::endl; }
         }
     });
 }
