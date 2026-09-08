@@ -78,11 +78,10 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        // TODO: ******* Add Horizontal/Vertical axis information
+        // TODO: Double check we are passing weak pointer as const references
         // TODO: Add Mouse Input and example
         // TODO: Default Map for newly created PlayerInputController? maybe not
         // TODO: Make at least one complete example
-        // TODO: double check we are passing weak pointer as const references
 
         EventBinder<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); };

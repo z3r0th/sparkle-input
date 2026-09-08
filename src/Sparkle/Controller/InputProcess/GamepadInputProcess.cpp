@@ -60,11 +60,12 @@ namespace Sparkle
     {
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasAxisMoved = GamepadController->HasAxisMoved(event.Axis);
-        float axis = GamepadController->GetAxis(event.Axis);
+        float axisValue = GamepadController->GetAxis(event.Axis);
         if (hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
-            || axis >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
-            || axis <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
+            || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
+            || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {
+            Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
             return InputResult{true, InputState{.Type=InputType::Axis, .Value={.Axis = axis}}};
         }
         return InputResult{false};

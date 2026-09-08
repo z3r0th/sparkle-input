@@ -89,11 +89,13 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessAxis(const Sparkle::Inp
     if (motion1Button || motion2Button)
     {
         float axisValue = GetValueFromAxis(this, keyboardEvent.Axis, keyboardEvent.AxisTrigger);
-        return Sparkle::InputResult{true, {.Type = InputType::Axis, .Value = {.Axis = axisValue}}};
+        Axis axis = Axis{.AxisType = {.KeyboardAxis = keyboardEvent.Axis}, .Value = axisValue};
+        return Sparkle::InputResult{true, {.Type = InputType::Axis, .Value = {.Axis = axis}}};
     }
     if (IsButtonJustReleased(keyboardEvent.Axis.Motion1.Button) || IsButtonJustReleased(keyboardEvent.Axis.Motion2.Button))
     {
-        return Sparkle::InputResult{true, {.Type = InputType::Axis, .Value = {.Axis = 0.0f}}};
+        Axis axis = Axis{.AxisType = {.KeyboardAxis = keyboardEvent.Axis}, .Value = 0.0f};
+        return Sparkle::InputResult{true, {.Type = InputType::Axis, .Value = {.Axis = axis}}};
     }
     return Sparkle::InputResult{false};
 }

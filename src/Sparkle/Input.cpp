@@ -322,7 +322,8 @@ namespace Sparkle
                 InputEventType eventType = InputEventType::GamePadButtonEventType;
                 InputState inputState = InputState {
                     .Type = InputType::Button,
-                    .Value = {.ButtonPressed = gamepad->IsButtonPressed(pressedButton)}
+                    .Value = {.ButtonPressed = gamepad->IsButtonPressed(pressedButton)},
+                    .ControllerType = InputControllerType::Gamepad
                 };
                 InputButton button = InputButton { .GamepadButton = pressedButton };
                 OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);
@@ -343,7 +344,8 @@ namespace Sparkle
             InputEventType eventType = InputEventType::KeyboardButtonEventType;
             InputState inputState = InputState {
                     .Type = InputType::Button,
-                    .Value = { .ButtonPressed = true }
+                    .Value = { .ButtonPressed = true },
+                    .ControllerType = InputControllerType::Keyboard
             };
             InputButton button = InputButton { .KeyboardButton = pressedButton };
             OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);

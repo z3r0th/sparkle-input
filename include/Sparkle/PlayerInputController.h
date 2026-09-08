@@ -119,6 +119,10 @@ namespace Sparkle
         /// \return EventBinder for OnInputMapUpdated
         [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>>& OnInputMapUpdated() { return OnInputMapUpdatedEvent.GetBinder(); }
 
+        /// Binding OnAnyAction event
+        /// \example OnAnyAction().Bind(&Class::Method, &object);
+        /// \example OnAnyAction().Bind([](const std::weak_ptr<PlayerInputController>, const InputAction&, const InputState&){...})
+        /// \return EventBinder for OnAnyAction
         [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyAction() { return OnAnyActionEvent.GetBinder(); };
 
 #pragma endregion InputMap
