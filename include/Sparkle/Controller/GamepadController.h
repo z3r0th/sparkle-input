@@ -122,6 +122,56 @@ namespace Sparkle
             return !Buttons[index] && LastButtons[index];
         }
 
+        /// Get the first/any pressed button we can find
+        /// \return the first pressed button or BUTTON_NONE if none is pressed
+        inline GamepadButton AnyPressedButton()
+        {
+            for(int i = 0 ; i < Buttons.size() ; ++i)
+            {
+                if (Buttons[i]) return GamepadButton(GamepadButton::GamepadButtonEnum(i));
+            }
+
+            return GamepadButton(GamepadButton::GamepadButtonEnum::BUTTON_NONE);
+        }
+
+        /// Get the first/any pressed button we can find
+        /// \return the first pressed button or BUTTON_NONE if none is pressed
+        inline GamepadButton AnyJustPressedButton()
+        {
+            for(int i = 0 ; i < Buttons.size() ; ++i)
+            {
+                if (Buttons[i] && !LastButtons[i]) return GamepadButton(GamepadButton::GamepadButtonEnum(i));
+            }
+
+            return GamepadButton(GamepadButton::GamepadButtonEnum::BUTTON_NONE);
+        }
+
+        /// Get all pressed buttons
+        /// \return all pressed buttons
+        inline std::vector<GamepadButton> PressedButtons()
+        {
+            std::vector<GamepadButton> pressedButtons;
+            for(int i = 0 ; i < Buttons.size() ; ++i)
+            {
+                if (Buttons[i]) pressedButtons.push_back(GamepadButton(GamepadButton::GamepadButtonEnum(i)));
+            }
+
+            return pressedButtons;
+        }
+
+        /// Get all pressed buttons
+        /// \return all pressed buttons
+        inline std::vector<GamepadButton> JustPressedButtons()
+        {
+            std::vector<GamepadButton> pressedButtons;
+            for(int i = 0 ; i < Buttons.size() ; ++i)
+            {
+                if (Buttons[i] && !LastButtons[i]) pressedButtons.push_back(GamepadButton(GamepadButton::GamepadButtonEnum(i)));
+            }
+
+            return pressedButtons;
+        }
+
         /// Get the current Gamepad axis value
         /// Currently we apply 2% movement as dead-zone
         /// \param axis which device axis is being checked
@@ -139,6 +189,20 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
+        }
+
+        /// Check if axis had a movement from last frame
+        /// It has moved if an Axis value difference from last frame to this is greater than epsilon
+        /// \param axis which device axis is being checked
+        /// \return true if moved
+        [[nodiscard]] inline GamepadAxis AnyAxisMoved()
+        {
+            for (int i = 0 ; i < (int)GamepadAxis::Count ; ++i)
+            {
+                auto axis = GamepadAxis::GamepadAxisEnum(i);
+                if (HasAxisMoved(axis)) return axis;
+            }
+            return GamepadAxis::GamepadAxisEnum::AXIS_NONE;
         }
     };
 }

@@ -314,6 +314,7 @@ E(KEY_SOFTLEFT)                 \
 E(KEY_SOFTRIGHT)                \
 E(KEY_CALL)                     \
 E(KEY_ENDCALL)                  \
+E(KEY_NONE)                     \
 E(Count)
 #pragma endregion Key List
     public:
@@ -469,6 +470,7 @@ E(COUNT)
     class GamepadButton
     {
 #define GAMEPAD_BUTTON_LIST(E) \
+E(BUTTON_NONE) \
 E(BUTTON_A) \
 E(BUTTON_B) \
 E(BUTTON_X) \
@@ -534,6 +536,7 @@ E(Count)
     class GamepadAxis
     {
 #define GAMEPAD_AXIS_LIST(E) \
+E(AXIS_NONE) \
 E(AXIS_LEFT_X) \
 E(AXIS_LEFT_Y) \
 E(AXIS_RIGHT_X) \
