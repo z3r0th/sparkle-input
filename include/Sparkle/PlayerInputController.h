@@ -3,6 +3,7 @@
 
 #include "Sparkle/Controller/KeyboardController.h"
 #include "Sparkle/Controller/GamepadController.h"
+#include "Sparkle/Controller/MouseController.h"
 #include "Sparkle/Event.h"
 #include "InputMap.h"
 
@@ -41,11 +42,13 @@ namespace Sparkle
 
         std::shared_ptr<KeyboardController> KeyboardController = nullptr;
         std::shared_ptr<GamepadController> GamepadController = nullptr;
+        std::shared_ptr<MouseController> MouseController = nullptr;
 
         std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>> ActionEventMap;
 
         bool RequestKeyboard = false;
         bool RequestGamepad = false;
+        bool RequestMouse = false;
 
         Sparkle::InputMap InputMap;
 
@@ -83,6 +86,10 @@ namespace Sparkle
         void SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController>& keyboardController);
 
         void RemoveKeyboardController();
+
+        void SetMouseController(const std::weak_ptr<Sparkle::MouseController>& mouseController);
+
+        void RemoveMouseController();
 
     public:
         /// Bind to the action
@@ -144,10 +151,17 @@ namespace Sparkle
         }
 
         /// Requests a keyboard to the Input.
-        /// When a controller is available it will be assign to this PlayerInputController and the OnGamepadConnected callback will be called
+        /// When a controller is available it will be assign to this PlayerInputController
         inline void AssignKeyboard()
         {
             RequestKeyboard = true;
+        }
+
+        /// Requests a Mouse to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController
+        inline void AssignMouse()
+        {
+            RequestMouse = true;
         }
 
         /// Is this PlayerInputController's Gamepad assigned active and connected

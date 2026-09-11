@@ -17,6 +17,201 @@ namespace Sparkle
 
 #pragma region Enum Input Types
 
+    /// MouseButton
+    class MouseButton
+    {
+#define MOUSE_BUTTON_LIST(E) \
+E(BUTTON_NONE) \
+E(BUTTON_LEFT) \
+E(BUTTON_MIDDLE) \
+E(BUTTON_RIGHT) \
+E(BUTTON_X1) \
+E(BUTTON_X2) \
+E(Count)
+    public:
+        enum MouseButtonEnum
+        {
+#define MOUSE_BUTTON_DEF(name) name,
+            MOUSE_BUTTON_LIST(MOUSE_BUTTON_DEF)
+#undef MOUSE_BUTTON_DEF
+        };
+
+        MouseButton() = default;
+
+        constexpr MouseButton(MouseButtonEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseButtonEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseButton Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseButton Unknown";
+            }
+        }
+
+#undef GAMEPAD_STRING_DEF
+
+    private:
+        MouseButtonEnum value;
+#undef GAMEPAD_BUTTON_LIST
+    };
+
+    /// MouseAxis
+    class MouseAxis
+    {
+#define MOUSE_AXIS_LIST(E) \
+E(AXIS_X) \
+E(AXIS_Y) \
+E(SCROLL_WHEEL_Y) \
+E(SCROLL_WHEEL_X) \
+E(AXIS_NONE) \
+E(Count)
+    public:
+        enum MouseAxisEnum
+        {
+#define MOUSE_AXIS_DEF(name) name,
+            MOUSE_AXIS_LIST(MOUSE_AXIS_DEF)
+#undef MOUSE_AXIS_DEF
+        };
+
+        MouseAxis() = default;
+
+        constexpr MouseAxis(MouseAxisEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseAxisEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseAxis Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "GamepadAxis Unknown";
+            }
+        }
+
+#undef MOUSE_STRING_DEF
+
+    private:
+        MouseAxisEnum value;
+#undef MOUSE_AXIS_LIST
+    };
+
+    /// MouseStick
+    class MouseStick
+    {
+#define MOUSE_STICK_LIST(E) \
+E(MOUSE_MOVEMENT) \
+E(COUNT)
+    public:
+        enum MouseStickEnum
+        {
+#define MOUSE_STICK_DEF(name) name,
+            MOUSE_STICK_LIST(MOUSE_STICK_DEF)
+#undef MOUSE_STICK_DEF
+        };
+
+        MouseStick() = default;
+
+        constexpr MouseStick(MouseStickEnum enumValue) : value(enumValue)
+        {}
+
+        // prevent using as a pointer or boolean operator
+        void *operator new(std::size_t) = delete;
+
+        void *operator new[](std::size_t) = delete;
+
+        void operator delete(void *p) = delete;
+
+        explicit operator bool() const = delete;
+
+        // Allow switch and comparisons.
+        constexpr operator MouseStickEnum() const
+        { return value; }
+
+#define MOUSE_STRING_DEF(name) \
+        case name: return #name;
+
+        [[maybe_unused]] const char *c_str()
+        {
+            switch (value)
+            {
+                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseStick Unknown";
+            }
+        }
+
+        operator std::string()
+        {
+            switch (value)
+            {
+                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
+                default:
+                    return "MouseStick Unknown";
+            }
+        }
+
+#undef MOUSE_STRING_DEF
+
+    private:
+        MouseStickEnum value;
+#undef GAMEPAD_STICK_LIST
+    };
+
     /// KeyboardButton
     class KeyboardButton
     {
@@ -776,6 +971,24 @@ E(UP)
 
 #pragma region Struct Event Pair (Trigger/Input)
 
+    struct InputMouseButtonEvent
+    {
+        InputDigitalEventTrigger ButtonTrigger{};
+        MouseButton Button{};
+    };
+
+    struct InputMouseAxisEvent
+    {
+        InputAnalogEventTrigger AxisTrigger{};
+        MouseAxis Axis{};
+    };
+
+    struct InputMouseStickEvent
+    {
+        InputAnalogEventTrigger StickTrigger{};
+        MouseStick Stick{};
+    };
+
     struct InputKeyboardButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
@@ -824,6 +1037,9 @@ E(UP)
         KeyboardButtonEventType,
         KeyboardAxisEventType,
         KeyboardStickEventType,
+        MouseButtonEventType,
+        MouseAxisEventType,
+        MouseStickEventType,
     };
 
     /// Active Event type used
@@ -835,6 +1051,9 @@ E(UP)
         InputGamepadButtonEvent ButtonEvent;
         InputGamepadStickEvent StickEvent;
         InputGamepadAxisEvent AxisEvent;
+        InputMouseButtonEvent MouseButtonEvent;
+        InputMouseStickEvent MouseStickEvent;
+        InputMouseAxisEvent MouseAxisEvent;
     };
 
     /// 2D Stick value
@@ -848,6 +1067,7 @@ E(UP)
     {
         GamepadAxis GamepadAxis;
         KeyboardAxis KeyboardAxis;
+        MouseAxis MouseAxis;
     };
 
     struct Axis
@@ -948,6 +1168,27 @@ E(UP)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardStickEvent.StickTrigger,
                                     rhs.Event.KeyboardStickEvent.Stick);
+                case InputEventType::MouseButtonEventType:
+                    return std::tie(EventType,
+                                    Event.MouseButtonEvent.ButtonTrigger,
+                                    Event.MouseButtonEvent.Button) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
+                                    rhs.Event.MouseButtonEvent.Button);
+                case InputEventType::MouseAxisEventType:
+                    return std::tie(EventType,
+                                    Event.MouseAxisEvent.AxisTrigger,
+                                    Event.MouseAxisEvent.Axis) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseAxisEvent.AxisTrigger,
+                                    rhs.Event.MouseAxisEvent.Axis);
+                case InputEventType::MouseStickEventType:
+                    return std::tie(EventType,
+                                    Event.MouseStickEvent.StickTrigger,
+                                    Event.MouseStickEvent.Stick) <
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseStickEvent.StickTrigger,
+                                    rhs.Event.MouseStickEvent.Stick);
             }
             assert(false && "No input event type verified");
         }
@@ -996,6 +1237,27 @@ E(UP)
                            std::tie(rhs.EventType,
                                     rhs.Event.KeyboardStickEvent.StickTrigger,
                                     rhs.Event.KeyboardStickEvent.Stick);
+                case InputEventType::MouseButtonEventType:
+                    return std::tie(EventType,
+                                    Event.MouseButtonEvent.ButtonTrigger,
+                                    Event.MouseButtonEvent.Button) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
+                                    rhs.Event.MouseButtonEvent.Button);
+                case InputEventType::MouseAxisEventType:
+                    return std::tie(EventType,
+                                    Event.MouseAxisEvent.AxisTrigger,
+                                    Event.MouseAxisEvent.Axis) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseAxisEvent.AxisTrigger,
+                                    rhs.Event.MouseAxisEvent.Axis);
+                case InputEventType::MouseStickEventType:
+                    return std::tie(EventType,
+                                    Event.MouseStickEvent.StickTrigger,
+                                    Event.MouseStickEvent.Stick) ==
+                           std::tie(rhs.EventType,
+                                    rhs.Event.MouseStickEvent.StickTrigger,
+                                    rhs.Event.MouseStickEvent.Stick);
             }
             assert(false && "No input event type verified");
         }
@@ -1070,6 +1332,24 @@ struct std::hash<Sparkle::InputTrigger>
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Button,
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Range,
                             (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Button);
+                return h;
+            case Sparkle::InputEventType::MouseButtonEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.MouseButtonEvent.Button,
+                            (int)k.Event.MouseButtonEvent.ButtonTrigger);
+                return h;
+            case Sparkle::InputEventType::MouseAxisEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.AxisEvent.AxisTrigger,
+                            (int)k.Event.AxisEvent.Axis);
+                return h;
+            case Sparkle::InputEventType::MouseStickEventType:
+                HashCombine(h,
+                            (int)k.EventType,
+                            (int)k.Event.StickEvent.StickTrigger,
+                            (int)k.Event.StickEvent.Stick);
                 return h;
         }
     }

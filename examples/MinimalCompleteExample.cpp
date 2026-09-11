@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
     Sparkle::InputAction FireAction("Fire");
     Sparkle::InputAction MoveAction("Move");
     Sparkle::InputAction AimAction("Aim");
+    Sparkle::InputAction ScrollAction("Scroll");
 
     // Gamepad mapping actions
     // With XBox Layout
@@ -76,6 +77,11 @@ int main(int argc, char* argv[])
             MoveAction
     );
 
+    map.Bind(Sparkle::MouseButton::BUTTON_RIGHT, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, JumpAction);
+    map.Bind(Sparkle::MouseButton::BUTTON_LEFT, Sparkle::InputDigitalEventTrigger::JUST_PRESSED, FireAction);
+    map.Bind(Sparkle::MouseAxis::SCROLL_WHEEL_Y, Sparkle::InputAnalogEventTrigger::MOVEMENT, ScrollAction);
+    map.Bind(Sparkle::MouseStick::MOUSE_MOVEMENT, Sparkle::InputAnalogEventTrigger::MOVEMENT, MoveAction);
+
     playerInputController->SetInputMap(map);
 
     playerInputController->OnAction(PauseAction).Bind(&ButtonPressed);
@@ -83,6 +89,7 @@ int main(int argc, char* argv[])
     playerInputController->OnAction(FireAction).Bind(&ButtonPressed);
     playerInputController->OnAction(MoveAction).Bind(&ButtonPressed);
     playerInputController->OnAction(AimAction).Bind(&ButtonPressed);
+    playerInputController->OnAction(ScrollAction).Bind(&ButtonPressed);
 
     return InitializeSDLAndRunInput(input);
 }

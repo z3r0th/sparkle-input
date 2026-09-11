@@ -8,32 +8,43 @@ namespace Sparkle
 {
     void PlayerInputController::Update()
     {
-        if (GamepadController != nullptr && GamepadController->IsActive())
+        for (auto &ButtonAction: InputMap.ActionTrigger)
         {
-            for (auto &ButtonAction: InputMap.ActionTrigger)
+            const auto event = ButtonAction.first;
+
+            if (GamepadController != nullptr && GamepadController->IsActive())
             {
-                auto event = ButtonAction.first;
                 if (const auto Result = GamepadController->ProcessEvent(event); Result.IsActive)
                 {
                     OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
                     auto it = ActionEventMap.find(ButtonAction.second);
                     if (it == ActionEventMap.end()) continue;
                     it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
                 }
             }
-        }
 
-        if (KeyboardController != nullptr && KeyboardController->IsActive())
-        {
-            for (auto &ButtonAction: InputMap.ActionTrigger)
+            if (KeyboardController != nullptr && KeyboardController->IsActive())
             {
-                auto event = ButtonAction.first;
                 if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
                 {
                     OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
                     auto it = ActionEventMap.find(ButtonAction.second);
                     if (it == ActionEventMap.end()) continue;
                     it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
+                }
+            }
+
+            if (MouseController != nullptr && MouseController->IsActive())
+            {
+                if (const auto Result = MouseController->ProcessEvent(event); Result.IsActive)
+                {
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
                 }
             }
         }

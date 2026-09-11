@@ -15,7 +15,6 @@ namespace Sparkle
 {
     class Input;
 
-    // TODO: Type text mode, modifier type, state check (capslock for example)
     class KeyboardController : public InputController
     {
         // Input updates the buttons

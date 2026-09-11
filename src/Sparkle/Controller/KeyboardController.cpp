@@ -71,13 +71,9 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessButton(const Sparkle::I
     bool isButtonJustReleased = IsButtonJustReleased(keyboardEvent.Button);
     if (isButtonJustPressed && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_PRESSED
         || isButtonJustReleased && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_RELEASED
-        || IsButtonPressed(keyboardEvent.Button) &&
-           keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
-        ||
-        !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::UP) {
-        return Sparkle::InputResult{true,
-                                    {.Type = InputType::Button, .Value = {.ButtonPressed = IsButtonPressed(
-                                            keyboardEvent.Button)}}};
+        || IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
+        || !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::UP) {
+        return Sparkle::InputResult{true, {.Type = InputType::Button, .Value = {.ButtonPressed = IsButtonPressed(keyboardEvent.Button)}}};
     }
     return Sparkle::InputResult{false};
 }

@@ -50,6 +50,33 @@ namespace Sparkle
             return InputMapDescription;
         }
 
+        void Bind(const MouseButton& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
+        {
+            InputTrigger event = InputTrigger();
+            event.EventType = InputEventType::MouseButtonEventType;
+            event.Event.MouseButtonEvent.Button = button;
+            event.Event.MouseButtonEvent.ButtonTrigger = trigger;
+            ActionTrigger[event] = action;
+        }
+
+        void Bind(const MouseAxis& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
+        {
+            InputTrigger event = InputTrigger();
+            event.EventType = InputEventType::MouseAxisEventType;
+            event.Event.MouseAxisEvent.AxisTrigger = trigger;
+            event.Event.MouseAxisEvent.Axis = axis;
+            ActionTrigger[event] = action;
+        }
+
+        void Bind(const MouseStick& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
+        {
+            InputTrigger event = InputTrigger();
+            event.EventType = InputEventType::MouseStickEventType;
+            event.Event.MouseStickEvent.StickTrigger = trigger;
+            event.Event.MouseStickEvent.Stick = stick;
+            ActionTrigger[event] = action;
+        }
+
         void Bind(const KeyboardButton& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
