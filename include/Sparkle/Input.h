@@ -82,9 +82,9 @@ namespace Sparkle
 
         explicit Input();
         ~Input();
-
-        // TODO: *Consult Key, Axis and Stick for gamepad, keyboard and mouse (just like buttons)
+        
         // TODO: Add Mouse/Gamepad AnyMove (for mouse movement)
+        // TODO: Maybe we should have a Continuos Movement at InputAnalogEventTrigger
         // TODO: Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
         // TODO: OnAnyKeyJustPressedEvent should get the player reference and not a InputControllerReference
         // TODO: Should we add a Button/Axis/Stick specific type to the Action callback?
@@ -94,6 +94,7 @@ namespace Sparkle
         // TODO: Make at least one complete example
         // TODO: Refactor and Documentation
         // TODO: A way to check for Specific Controller Type/Layout (playstation, xbox, etc)
+        // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
         // TODO: Add Specific input support: DoubleClick, Drag, HoldingFor, maybe specific combination sequence (down, forward, X = Haduken)
         // TODO: Add Modifier keys (SHIFT, ALT, CTRL, LeftTrigger, etc), so when we are pressing a combination (CTRL + A) we can check trigger a different action
         // TODO: Add Keyboard text function - capture text/character instead of action trigger
@@ -106,8 +107,6 @@ namespace Sparkle
         EventBinder<const std::weak_ptr<class MouseController>&, const InputState&, const InputButton&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
 
-        [[maybe_unused]][[nodiscard]] bool IsMouseButtonPressed(MouseButton button) const;
-        [[maybe_unused]][[nodiscard]] float GetMouseAxis(MouseAxis axis) const;
 #pragma region Gamepad Proxy
         // Gamepad access functions
         // These are Proxy to access gamepad controller functions
@@ -139,7 +138,93 @@ namespace Sparkle
         /// \return the Axis value
         [[maybe_unused]][[nodiscard]] float GetGamepadAxis(GamepadAxis axis, int controllerIndex = 0) const;
 
+        /// Get current Stick value
+        /// Value returned will be Stick (Vertical/Horizontal pair)
+        /// between -1(left and bottom) and 1(right and up)
+        /// \param stick Specific Stick to query
+        /// \param controllerIndex the controller index. Default is 0
+        /// \return the Stick value
+        [[maybe_unused]][[nodiscard]] Stick GetGamepadStick(GamepadStick stick, int controllerIndex = 0) const;
+
         // end Gamepad
+#pragma endregion
+
+#pragma region Keyboard Proxy
+
+        // Keyboard access functions
+        // These are Proxy to access keyboard controller functions
+
+        /// Get Keyboard button state
+        /// \param button Specific button to query
+        /// \return true if button is pressed. Return false if button is not pressed
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonPressed(KeyboardButton button) const;
+
+        /// Check if Keyboard button was just pressed
+        /// Just pressed means that in the last frame the button was "released" and in this frame it is "pressed"
+        /// \param button Specific button to query
+        /// \return true if button was just pressed. Return false if button was not just pressed
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustPressed(KeyboardButton button) const;
+
+        /// Check if Keyboard button was just released
+        /// Just released means that in the last frame the button was "pressed" and in this frame it is "released"
+        /// \param button Specific button to query
+        /// \return true if button was just released. Return false if button was not just released
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustReleased(KeyboardButton button) const;
+
+        /// Get current axis value
+        /// Value returned will be between -1(left and bottom) and 1(right and up)
+        /// \param axis Specific Axis to query
+        /// \return the Axis value
+        [[maybe_unused]][[nodiscard]] float GetKeyboardAxis(KeyboardAxis axis) const;
+
+        /// Get current Stick value
+        /// Value returned will be Stick (Vertical/Horizontal pair)
+        /// between -1(left and bottom) and 1(right and up)
+        /// \param stick Specific Stick to query
+        /// \return the Stick value
+        [[maybe_unused]][[nodiscard]] Stick GetKeyboardStick(KeyboardStick stick) const;
+
+        // end Keyboard
+
+#pragma endregion
+
+#pragma region Mouse Proxy
+
+        // Mouse access functions
+        // These are Proxy to access mouse controller functions
+
+        /// Get Mouse button state
+        /// \param button Specific button to query
+        /// \return true if button is pressed. Return false if button is not pressed
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonPressed(MouseButton button) const;
+
+        /// Check if Mouse button was just pressed
+        /// Just pressed means that in the last frame the button was "released" and in this frame it is "pressed"
+        /// \param button Specific button to query
+        /// \return true if button was just pressed. Return false if button was not just pressed
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustPressed(MouseButton button) const;
+
+        /// Check if Mouse button was just released
+        /// Just released means that in the last frame the button was "pressed" and in this frame it is "released"
+        /// \param button Specific button to query
+        /// \return true if button was just released. Return false if button was not just released
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustReleased(MouseButton button) const;
+
+        /// Get current Mouse axis value
+        /// Movement Axis are [0,1] top left is 0 and bottom right is 1
+        /// Wheel movement is[-1,1] and -1 is down and 1 is up
+        /// \param axis Specific Axis to query
+        /// \return the Axis value
+        [[maybe_unused]][[nodiscard]] float GetMouseAxis(MouseAxis axis) const;
+
+        /// Get current Stick value
+        /// Value returned will be Stick (Vertical/Horizontal pair)
+        /// \param stick Specific Stick to query
+        /// \return the Stick value
+        [[maybe_unused]][[nodiscard]] Stick GetMouseStick(MouseStick stick) const;
+
+        // end Keyboard
+
 #pragma endregion
 
 #pragma region Gamepad/Keyboard/Mouse Management
@@ -147,6 +232,10 @@ namespace Sparkle
         /// Get the Keyboard Controller
         /// \return the Keyboard Controller
         [[maybe_unused]][[nodiscard]] std::weak_ptr<class KeyboardController> GetKeyBoardController() { return KeyboardController; }
+
+        /// Get the Mouse Controller
+        /// \return the Mouse Controller
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<class MouseController> GetMouseController() { return MouseController; }
 
         /// Get an existing GamepadController at index. It might return nullptr if no Gamepad/Joystick were connected yet
         /// It might be already assigned to a player

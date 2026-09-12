@@ -12,7 +12,7 @@ void ButtonPressed(const std::weak_ptr<Sparkle::PlayerInputController>&, const S
             SDL_Log(">> Action[%s] BUTTON PRESSED %s", action.GetName().c_str(), buttonState.Value.ButtonPressed ? "PRESSED" : "RELEASED");
             break;
         case Sparkle::InputType::Axis:
-            SDL_Log(">> Action[%s] AXIS ACTIVE %f", action.GetName().c_str(), buttonState.Value.Axis);
+            SDL_Log(">> Action[%s] AXIS ACTIVE %f", action.GetName().c_str(), buttonState.Value.Axis.Value);
             break;
         case Sparkle::InputType::Stick:
             SDL_Log(">> Action[%s] STICK ACTIVE [%f,%f]", action.GetName().c_str(), buttonState.Value.Stick.Horizontal, buttonState.Value.Stick.Vertical);

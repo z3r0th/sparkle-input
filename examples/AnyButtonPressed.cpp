@@ -3,6 +3,8 @@
 
 void Update(Sparkle::Input& input)
 {
+    auto stick = input.GetGamepadStick(Sparkle::GamepadStick::STICK_LEFT);
+    SDL_Log(">> Left stick: %f, %f", stick.Horizontal, stick.Vertical);
 }
 
 int main(int argc, char* argv[])

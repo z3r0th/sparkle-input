@@ -155,7 +155,7 @@ E(Count)
     {
 #define MOUSE_STICK_LIST(E) \
 E(MOUSE_MOVEMENT) \
-E(COUNT)
+E(Count)
     public:
         enum MouseStickEnum
         {
@@ -630,8 +630,10 @@ E(Count)
 #define GAMEPAD_STICK_LIST(E) \
 E(STICK_LEFT) \
 E(STICK_RIGHT) \
-E(COUNT)
-    public:
+E(Count) \
+E(None)
+
+public:
         enum GamepadStickEnum
         {
 #define GAMEPAD_STICK_DEF(name) name,
@@ -1048,9 +1050,9 @@ E(UP)
         InputKeyboardButtonEvent KeyboardButtonEvent;
         InputKeyboardStickEvent KeyboardStickEvent;
         InputKeyboardAxisEvent KeyboardAxisEvent;
-        InputGamepadButtonEvent ButtonEvent;
-        InputGamepadStickEvent StickEvent;
-        InputGamepadAxisEvent AxisEvent;
+        InputGamepadButtonEvent GamepadButtonEvent;
+        InputGamepadStickEvent GamepadStickEvent;
+        InputGamepadAxisEvent GamepadAxisEvent;
         InputMouseButtonEvent MouseButtonEvent;
         InputMouseStickEvent MouseStickEvent;
         InputMouseAxisEvent MouseAxisEvent;
@@ -1128,25 +1130,25 @@ E(UP)
             switch (EventType) {
                 case InputEventType::GamePadButtonEventType:
                     return std::tie(EventType,
-                             Event.ButtonEvent.Button,
-                             Event.ButtonEvent.ButtonTrigger) <
+                             Event.GamepadButtonEvent.Button,
+                             Event.GamepadButtonEvent.ButtonTrigger) <
                            std::tie(rhs.EventType,
-                             rhs.Event.ButtonEvent.Button,
-                             rhs.Event.ButtonEvent.ButtonTrigger);
+                             rhs.Event.GamepadButtonEvent.Button,
+                             rhs.Event.GamepadButtonEvent.ButtonTrigger);
                 case InputEventType::GamePadAxisEventType:
                     return std::tie(EventType,
-                                    Event.AxisEvent.AxisTrigger,
-                                    Event.AxisEvent.Axis) <
+                                    Event.GamepadAxisEvent.AxisTrigger,
+                                    Event.GamepadAxisEvent.Axis) <
                            std::tie(rhs.EventType,
-                                    rhs.Event.AxisEvent.AxisTrigger,
-                                    rhs.Event.AxisEvent.Axis);
+                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
+                                    rhs.Event.GamepadAxisEvent.Axis);
                 case InputEventType::GamePadStickEventType:
                     return std::tie(EventType,
-                                    Event.StickEvent.StickTrigger,
-                                    Event.StickEvent.Stick) <
+                                    Event.GamepadStickEvent.StickTrigger,
+                                    Event.GamepadStickEvent.Stick) <
                            std::tie(rhs.EventType,
-                                    rhs.Event.StickEvent.StickTrigger,
-                                    rhs.Event.StickEvent.Stick);
+                                    rhs.Event.GamepadStickEvent.StickTrigger,
+                                    rhs.Event.GamepadStickEvent.Stick);
                 case InputEventType::KeyboardButtonEventType:
                     return std::tie(EventType,
                                     Event.KeyboardButtonEvent.ButtonTrigger,
@@ -1197,25 +1199,25 @@ E(UP)
             switch (EventType) {
                 case InputEventType::GamePadButtonEventType:
                     return std::tie(EventType,
-                                    Event.ButtonEvent.Button,
-                                    Event.ButtonEvent.ButtonTrigger) ==
+                                    Event.GamepadButtonEvent.Button,
+                                    Event.GamepadButtonEvent.ButtonTrigger) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.ButtonEvent.Button,
-                                    rhs.Event.ButtonEvent.ButtonTrigger);
+                                    rhs.Event.GamepadButtonEvent.Button,
+                                    rhs.Event.GamepadButtonEvent.ButtonTrigger);
                 case InputEventType::GamePadAxisEventType:
                     return std::tie(EventType,
-                                    Event.AxisEvent.AxisTrigger,
-                                    Event.AxisEvent.Axis) ==
+                                    Event.GamepadAxisEvent.AxisTrigger,
+                                    Event.GamepadAxisEvent.Axis) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.AxisEvent.AxisTrigger,
-                                    rhs.Event.AxisEvent.Axis);
+                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
+                                    rhs.Event.GamepadAxisEvent.Axis);
                 case InputEventType::GamePadStickEventType:
                     return std::tie(EventType,
-                                    Event.StickEvent.StickTrigger,
-                                    Event.StickEvent.Stick) ==
+                                    Event.GamepadStickEvent.StickTrigger,
+                                    Event.GamepadStickEvent.Stick) ==
                            std::tie(rhs.EventType,
-                                    rhs.Event.StickEvent.StickTrigger,
-                                    rhs.Event.StickEvent.Stick);
+                                    rhs.Event.GamepadStickEvent.StickTrigger,
+                                    rhs.Event.GamepadStickEvent.Stick);
                 case InputEventType::KeyboardButtonEventType:
                     return std::tie(EventType,
                                     Event.KeyboardButtonEvent.ButtonTrigger,
@@ -1290,20 +1292,20 @@ struct std::hash<Sparkle::InputTrigger>
             case Sparkle::InputEventType::GamePadButtonEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.ButtonEvent.Button,
-                            (int)k.Event.ButtonEvent.ButtonTrigger);
+                            (int)k.Event.GamepadButtonEvent.Button,
+                            (int)k.Event.GamepadButtonEvent.ButtonTrigger);
                 return h;
             case Sparkle::InputEventType::GamePadAxisEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.AxisEvent.Axis,
-                            (int)k.Event.AxisEvent.AxisTrigger);
+                            (int)k.Event.GamepadAxisEvent.Axis,
+                            (int)k.Event.GamepadAxisEvent.AxisTrigger);
                 return h;
             case Sparkle::InputEventType::GamePadStickEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.StickEvent.Stick,
-                            (int)k.Event.StickEvent.StickTrigger);
+                            (int)k.Event.GamepadStickEvent.Stick,
+                            (int)k.Event.GamepadStickEvent.StickTrigger);
                 return h;
             case Sparkle::InputEventType::KeyboardButtonEventType:
                 HashCombine(h,
@@ -1342,14 +1344,14 @@ struct std::hash<Sparkle::InputTrigger>
             case Sparkle::InputEventType::MouseAxisEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.AxisEvent.AxisTrigger,
-                            (int)k.Event.AxisEvent.Axis);
+                            (int)k.Event.GamepadAxisEvent.AxisTrigger,
+                            (int)k.Event.GamepadAxisEvent.Axis);
                 return h;
             case Sparkle::InputEventType::MouseStickEventType:
                 HashCombine(h,
                             (int)k.EventType,
-                            (int)k.Event.StickEvent.StickTrigger,
-                            (int)k.Event.StickEvent.Stick);
+                            (int)k.Event.GamepadStickEvent.StickTrigger,
+                            (int)k.Event.GamepadStickEvent.Stick);
                 return h;
         }
     }

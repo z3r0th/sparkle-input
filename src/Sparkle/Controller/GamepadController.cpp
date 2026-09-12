@@ -18,6 +18,10 @@ void Sparkle::GamepadController::ClearController()
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct Stick emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 void Sparkle::GamepadController::SetController(SDL_GameController *controller, int deviceIndex)
@@ -62,6 +66,27 @@ void Sparkle::GamepadController::Update() {
         }
         Axis[i] = axis;
     }
+
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadStick::Count) ; ++i)
+    {
+        static const std::map<GamepadStick, const std::vector<GamepadAxis>> StickAxis =
+        {
+            {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
+            {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
+        };
+        LastStick[i] = Stick[i];
+        GamepadStick UpdateStick = static_cast<GamepadStick::GamepadStickEnum>(i);
+        struct Stick stickValue = {0, 0 };
+        const std::vector<GamepadAxis>& axisAnalyses = StickAxis.at(UpdateStick);
+        int axisIndex = 0;
+        for (auto& axisEnum : axisAnalyses)
+        {
+            float axis = GetAxis(axisEnum);
+            assert (axisIndex <= 1 && "Support only two axis");
+            axisIndex++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
+        }
+        Stick[i] = stickValue;
+    }
 }
 
 Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
@@ -75,6 +100,10 @@ Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct Stick emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 Sparkle::GamepadController::GamepadController():
@@ -88,6 +117,10 @@ Sparkle::GamepadController::GamepadController():
 
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
+
+    struct Stick emptyStick{};
+    std::fill(Stick.begin(), Stick.end(), emptyStick);
+    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
 
 Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)

@@ -116,3 +116,18 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessStick(const Sparkle::In
     }
     return Sparkle::InputResult{false};
 }
+
+float Sparkle::KeyboardController::GetAxis(Sparkle::KeyboardAxis axis)
+{
+    auto event = Sparkle::InputKeyboardAxisEvent { .AxisTrigger = {InputAnalogEventTrigger::MOVEMENT}, .Axis = axis };
+    auto result = ProcessAxis(event);
+    return result.IsActive ? result.InputState.Value.Axis.Value : 0.0f;
+}
+
+Sparkle::Stick Sparkle::KeyboardController::GetStick(Sparkle::KeyboardStick stick)
+{
+    auto event = Sparkle::InputKeyboardStickEvent { .StickTrigger = {InputAnalogEventTrigger::MOVEMENT}, .Stick = stick };
+    auto result = ProcessStick(event);
+    Stick empty = {.Horizontal = 0.0f, .Vertical = 0.0f};
+    return result.IsActive ? result.InputState.Value.Stick : empty;
+}

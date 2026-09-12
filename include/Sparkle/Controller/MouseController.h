@@ -27,6 +27,9 @@ namespace Sparkle
         std::array<float, (int)MouseAxis::Count> Axis{};
         std::array<float, (int)MouseAxis::Count> LastAxis{};
 
+        std::array<struct Stick, (int)MouseStick::Count> Stick{};
+        std::array<struct Stick, (int)MouseStick::Count> LastStick{};
+
         // Input.h will update these variables for us
         float MouseWheelX = 0.0f;
         float MouseWheelY = 0.0f;
@@ -41,8 +44,6 @@ namespace Sparkle
         explicit MouseController();
 
         inline bool IsActive() override { return true; }
-
-
 
         InputResult ProcessEvent(const Sparkle::InputTrigger &event);
 
@@ -81,10 +82,10 @@ namespace Sparkle
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return MouseButton(MouseButton::MouseButtonEnum(i));
+                if (Buttons[i] && !LastButtons[i]) return {MouseButton::MouseButtonEnum(i)};
             }
 
-            return MouseButton(MouseButton::MouseButtonEnum::BUTTON_NONE);
+            return {MouseButton::MouseButtonEnum::BUTTON_NONE};
         }
 
         /// Get the current Mouse axis value
@@ -117,6 +118,27 @@ namespace Sparkle
                 if (HasAxisMoved(axis)) return axis;
             }
             return MouseAxis::MouseAxisEnum::AXIS_NONE;
+        }
+
+        /// Check if stick had a movement from last frame
+        /// It has moved if any Axis value difference from last frame to this is greater than epsilon
+        /// \param stick which device axis is being checked
+        /// \return true if moved
+        [[nodiscard]] inline bool HasStickMoved(MouseStick stick)
+        {
+            constexpr const float epsilon = std::numeric_limits<float>::epsilon();
+            int stickIndex = (int)stick;
+            struct Stick currentStick = Stick[stickIndex];
+            struct Stick lastStick = LastStick[stickIndex];
+            return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
+        }
+
+        /// Get the current Mouse stick value
+        /// \param stick which device stick is being checked
+        /// \return stick value
+        [[nodiscard]] inline const struct Stick& GetStick(MouseStick stick)
+        {
+            return Stick[(int)stick];
         }
     };
 

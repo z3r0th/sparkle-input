@@ -30,10 +30,10 @@ namespace Sparkle
             switch (static_cast<MouseAxis::MouseAxisEnum>(i))
             {
                 case MouseAxis::MouseAxisEnum::AXIS_X:
-                    axis = x;
+                    axis = (float)x;
                     break;
                 case MouseAxis::MouseAxisEnum::AXIS_Y:
-                    axis = y;
+                    axis = (float)y;
                     break;
                 case MouseAxis::MouseAxisEnum::SCROLL_WHEEL_X:
                     axis = MouseWheelX;
@@ -50,6 +50,26 @@ namespace Sparkle
                 axis = 0.0;
             }
             Axis[i] = axis;
+        }
+
+        static const std::map<MouseStick, const std::vector<MouseAxis>> StickAxis =
+        {
+            {MouseStick::MOUSE_MOVEMENT, {MouseAxis::AXIS_X, MouseAxis::AXIS_Y}},
+        };
+        for (unsigned int i = 0 ; i < static_cast<int>(MouseStick::Count) ; ++i)
+        {
+            LastStick[i] = Stick[i];
+            MouseStick UpdateStick = static_cast<MouseStick::MouseStickEnum>(i);
+            struct Stick stickValue = {0, 0 };
+            const std::vector<MouseAxis>& axisAnalyses = StickAxis.at(UpdateStick);
+            int axisIndex = 0;
+            for (auto& axisEnum : axisAnalyses)
+            {
+                float axis = GetAxis(axisEnum);
+                assert (axisIndex <= 1 && "Support only two axis");
+                axisIndex++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
+            }
+            Stick[i] = stickValue;
         }
     }
 
@@ -82,29 +102,12 @@ namespace Sparkle
 
     InputResult MouseController::ProcessStick(const InputMouseStickEvent &event)
     {
-        static const std::map<MouseStick, const std::vector<MouseAxis>> stickAxis =
-        {
-                {MouseStick::MOUSE_MOVEMENT, {MouseAxis::AXIS_X, MouseAxis::AXIS_Y}},
-        };
-        Stick stickValue = {0, 0 };
-        const std::vector<MouseAxis>& axisAnalyses = stickAxis.at(event.Stick);
-        bool triggerCallback = false;
-        int i = 0;
-        for (auto& axisEnum : axisAnalyses)
-        {
-            bool hasAxisMoved = HasAxisMoved(axisEnum);
-            float axis = GetAxis(axisEnum);
-            assert (i <= 1 && "Support only two axis");
-            i++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
-            if (hasAxisMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
-                || axis >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE
-                || axis <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
+        struct Stick stickValue = Stick[event.Stick];
+        bool hasStickMoved = HasStickMoved(event.Stick);
+        if (hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
+            || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
+            || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
 
-            {
-                triggerCallback = true;
-            }
-        }
-        if (triggerCallback)
         {
             return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stickValue}}};
         }

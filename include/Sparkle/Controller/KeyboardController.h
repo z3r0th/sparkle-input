@@ -77,6 +77,16 @@ namespace Sparkle
 
             return KeyboardButton(KeyboardButton::KeyboardButtonEnum::KEY_NONE);
         }
+
+        /// Get the current Keyboard axis value
+        /// \param axis which device axis is being checked
+        /// \return axis value
+        float GetAxis(KeyboardAxis);
+
+        /// Get the current Keyboard stick value
+        /// \param stick which device stick is being checked
+        /// \return stick value
+        Stick GetStick(Sparkle::KeyboardStick stick);
     };
 }
 

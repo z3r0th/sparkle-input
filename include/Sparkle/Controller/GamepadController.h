@@ -49,6 +49,9 @@ namespace Sparkle
         std::array<float, (int)GamepadAxis::Count> Axis{};
         std::array<float, (int)GamepadAxis::Count> LastAxis{};
 
+        std::array<struct Stick, (int)GamepadStick::Count> Stick{};
+        std::array<struct Stick, (int)GamepadStick::Count> LastStick{};
+
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
 
@@ -181,6 +184,14 @@ namespace Sparkle
             return Axis[(int)axis];
         }
 
+        /// Get the current Gamepad stick value
+        /// \param stick which device stick is being checked
+        /// \return stick value
+        [[nodiscard]] inline const struct Stick& GetStick(GamepadStick stick)
+        {
+            return Stick[(int)stick];
+        }
+
         /// Check if axis had a movement from last frame
         /// It has moved if an Axis value difference from last frame to this is greater than epsilon
         /// \param axis which device axis is being checked
@@ -189,6 +200,19 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
+        }
+
+        /// Check if stick had a movement from last frame
+        /// It has moved if any Axis value difference from last frame to this is greater than epsilon
+        /// \param stick which device axis is being checked
+        /// \return true if moved
+        [[nodiscard]] inline bool HasStickMoved(GamepadStick stick)
+        {
+            constexpr const float epsilon = std::numeric_limits<float>::epsilon();
+            int stickIndex = (int)stick;
+            struct Stick currentStick = Stick[stickIndex];
+            struct Stick lastStick = LastStick[stickIndex];
+            return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
         /// Check if axis had a movement from last frame
@@ -203,6 +227,20 @@ namespace Sparkle
                 if (HasAxisMoved(axis)) return axis;
             }
             return GamepadAxis::GamepadAxisEnum::AXIS_NONE;
+        }
+
+        /// Check if any stick had a movement from last frame
+        /// It has moved if any Axis value difference from last frame to this is greater than epsilon
+        /// \param axis which device axis is being checked
+        /// \return true if moved
+        [[nodiscard]] inline GamepadStick AnyStickMoved()
+        {
+            for (int i = 0 ; i < (int)GamepadStick::Count ; ++i)
+            {
+                auto stick = GamepadStick::GamepadStickEnum(i);
+                if (HasStickMoved(stick)) return stick;
+            }
+            return GamepadStick::GamepadStickEnum::None;
         }
     };
 }
