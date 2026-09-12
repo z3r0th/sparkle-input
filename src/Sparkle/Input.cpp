@@ -178,6 +178,33 @@ namespace Sparkle
         UpdateGamepad();
         UpdateKeyboard();
         UpdateMouse();
+
+        for (int i = 0 ; i < MouseStick::Count; ++i)
+        {
+            auto mouseStick = MouseStick::MouseStickEnum(i);
+            if (MouseController->HasStickMoved(mouseStick))
+            {
+                auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = MouseController->GetStick(MouseStick::MOUSE_MOVEMENT)},.ControllerType = InputControllerType::Mouse};
+                OnAnyMouseStickMovedEvent(MouseController, state, mouseStick);
+            }
+        }
+
+        for (auto & GamepadControllerPair : GamepadControllers)
+        {
+            auto GamepadController = GamepadControllerPair.second;
+            if (GamepadController->IsActive())
+            {
+                for (int i = 0 ; i < GamepadStick::Count; ++i)
+                {
+                    GamepadStick stick = GamepadStick::GamepadStickEnum(i);
+                    if (GamepadController->HasStickMoved(stick))
+                    {
+                        auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = GamepadController->GetStick(stick)}, .ControllerType = InputControllerType::Gamepad};
+                        OnAnyGamepadStickMovedEvent(GamepadController, state, stick);
+                    }
+                }
+            }
+        }
     }
 
     void Input::HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>& playerInputControllerPtr)
@@ -346,12 +373,12 @@ namespace Sparkle
             {
                 InputControllerReference reference { .Gamepad = std::weak_ptr<GamepadController>(gamepad) };
                 InputEventType eventType = InputEventType::GamePadButtonEventType;
-                InputState inputState = InputState {
+                auto inputState = InputState {
                     .Type = InputType::Button,
                     .Value = {.ButtonPressed = gamepad->IsButtonPressed(pressedButton)},
                     .ControllerType = InputControllerType::Gamepad
                 };
-                InputButton button = InputButton { .GamepadButton = pressedButton };
+                auto button = InputButton { .GamepadButton = pressedButton };
                 OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);
                 OnGamepadJustPressedEvent(gamepad, inputState, button);
             }
@@ -389,12 +416,12 @@ namespace Sparkle
         {
             InputControllerReference reference { .Keyboard = std::weak_ptr<class KeyboardController>(KeyboardController) };
             InputEventType eventType = InputEventType::KeyboardButtonEventType;
-            InputState inputState = InputState {
+            auto inputState = InputState {
                     .Type = InputType::Button,
                     .Value = { .ButtonPressed = true },
                     .ControllerType = InputControllerType::Keyboard
             };
-            InputButton button = InputButton { .KeyboardButton = pressedButton };
+            auto button = InputButton { .KeyboardButton = pressedButton };
             OnAnyKeyJustPressedEvent(eventType, reference, inputState, button);
             OnKeyboardJustPressedEvent(KeyboardController, inputState, button);
         }
