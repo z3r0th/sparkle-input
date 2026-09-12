@@ -3,15 +3,13 @@
 
 void Update(Sparkle::Input& input)
 {
-    auto stick = input.GetGamepadStick(Sparkle::GamepadStick::STICK_LEFT);
-    SDL_Log(">> Left stick: %f, %f", stick.Horizontal, stick.Vertical);
 }
 
 int main(int argc, char* argv[])
 {
     Sparkle::Input input;
     input.OnAnyKeyJustPressed()
-        .Bind([](const Sparkle::InputEventType&, const Sparkle::Input::InputControllerReference&, const Sparkle::InputState&, const Sparkle::Input::InputButton&)
+        .Bind([](const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputEventType&, const Sparkle::InputState&, const Sparkle::Input::InputButton&)
         {
             SDL_Log(">> ANY BUTTON PRESSED");
         });

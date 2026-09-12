@@ -25,13 +25,6 @@ namespace Sparkle
     class Input
     {
     public:
-        struct InputControllerReference
-        {
-            const std::weak_ptr<MouseController> Mouse;
-            const std::weak_ptr<GamepadController> Gamepad;
-            const std::weak_ptr<KeyboardController> Keyboard;
-        };
-
         union InputButton
         {
             class MouseButton MouseButton;
@@ -60,7 +53,7 @@ namespace Sparkle
         void UpdateGamepad();
         void UpdateKeyboard();
 
-        Event<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&> OnAnyKeyJustPressedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&, const InputButton&> OnAnyKeyJustPressedEvent;
         Event<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&> OnKeyboardJustPressedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&, const InputButton&> OnMouseJustPressedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&> OnAnyMouseStickMovedEvent;
@@ -87,7 +80,6 @@ namespace Sparkle
 
         // TODO: Maybe we should have a Continuos Movement at InputAnalogEventTrigger
         // TODO: Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
-        // TODO: OnAnyKeyJustPressedEvent should get the player reference and not a InputControllerReference
         // TODO: Should we add a Button/Axis/Stick specific type to the Action callback?
         // TODO: Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
         // TODO: Add function summary to all functions and classes
@@ -103,7 +95,7 @@ namespace Sparkle
         // TODO: Touch/Pad support
 
         EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
-        EventBinder<const InputEventType&, const InputControllerReference&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class MouseController>&, const InputState&, const InputButton&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
@@ -291,6 +283,14 @@ namespace Sparkle
         /// \param gamepad the gamepad to check
         /// \return the PlayerInputController or nullptr if it does not exist
         [[maybe_unused]][[nodiscard]] std::weak_ptr<PlayerInputController> GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad);
+
+        /// Get the PlayerInputControllers assigned to a mouse
+        /// \return the PlayerInputController or nullptr if it does not exist
+        std::vector<std::weak_ptr<PlayerInputController>> GetAssignedMousePlayerInputControllers();
+
+        /// Get the PlayerInputControllers assigned to a keyboard
+        /// \return the PlayerInputController or nullptr if it does not exist
+        std::vector<std::weak_ptr<PlayerInputController>> GetAssignedKeyboardPlayerInputControllers();
 
         /// Get or create new PlayerInputController. This Input Manager is responsible to manage, destroy and remove it.
         /// When deleting it, call `RemovePlayerInputController`
