@@ -18,7 +18,7 @@ namespace Sparkle
 #pragma region Enum Input Types
 
     /// MouseButton
-    class MouseButton
+    class MouseButtonType
     {
 #define MOUSE_BUTTON_LIST(E) \
 E(BUTTON_NONE) \
@@ -36,9 +36,9 @@ E(Count)
 #undef MOUSE_BUTTON_DEF
         };
 
-        MouseButton() = default;
+        MouseButtonType() = default;
 
-        constexpr MouseButton(MouseButtonEnum enumValue) : value(enumValue)
+        constexpr MouseButtonType(MouseButtonEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -85,15 +85,15 @@ E(Count)
     };
 
     /// MouseAxis
-    class MouseAxis
+    class MouseAxisType
     {
 #define MOUSE_AXIS_LIST(E) \
 E(AXIS_X) \
 E(AXIS_Y) \
 E(SCROLL_WHEEL_Y) \
 E(SCROLL_WHEEL_X) \
-E(AXIS_NONE) \
-E(Count)
+E(Count) \
+E(AXIS_NONE)
     public:
         enum MouseAxisEnum
         {
@@ -102,9 +102,9 @@ E(Count)
 #undef MOUSE_AXIS_DEF
         };
 
-        MouseAxis() = default;
+        MouseAxisType() = default;
 
-        constexpr MouseAxis(MouseAxisEnum enumValue) : value(enumValue)
+        constexpr MouseAxisType(MouseAxisEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -151,7 +151,7 @@ E(Count)
     };
 
     /// MouseStick
-    class MouseStick
+    class MouseStickType
     {
 #define MOUSE_STICK_LIST(E) \
 E(MOUSE_MOVEMENT) \
@@ -164,9 +164,9 @@ E(Count)
 #undef MOUSE_STICK_DEF
         };
 
-        MouseStick() = default;
+        MouseStickType() = default;
 
-        constexpr MouseStick(MouseStickEnum enumValue) : value(enumValue)
+        constexpr MouseStickType(MouseStickEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -213,7 +213,7 @@ E(Count)
     };
 
     /// KeyboardButton
-    class KeyboardButton
+    class KeyboardButtonType
     {
 #pragma region Key List
 /// This key enum is based on SDL_SCANCODE
@@ -509,8 +509,8 @@ E(KEY_SOFTLEFT)                 \
 E(KEY_SOFTRIGHT)                \
 E(KEY_CALL)                     \
 E(KEY_ENDCALL)                  \
-E(KEY_NONE)                     \
-E(Count)
+E(Count)                        \
+E(KEY_NONE)
 #pragma endregion Key List
     public:
         enum KeyboardButtonEnum
@@ -520,9 +520,9 @@ E(Count)
 #undef KEYBOARD_BUTTON_DEF
         };
 
-        KeyboardButton() = default;
+        KeyboardButtonType() = default;
 
-        constexpr KeyboardButton(KeyboardButtonEnum enumValue) : value(enumValue)
+        constexpr KeyboardButtonType(KeyboardButtonEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -569,15 +569,15 @@ E(Count)
     };
 
     /// KeyboardAxis
-    class KeyboardAxis
+    class KeyboardAxisType
     {
     public:
-        bool operator<(const KeyboardAxis &rhs) const
+        bool operator<(const KeyboardAxisType &rhs) const
         {
             return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
         }
 
-        bool operator==(const KeyboardAxis &rhs) const
+        bool operator==(const KeyboardAxisType &rhs) const
         {
             return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
         }
@@ -601,37 +601,37 @@ E(Count)
                 return Button == rhs.Button && Range == rhs.Range;
             }
 
-            KeyboardButton Button;
+            KeyboardButtonType Button;
             KeyboardAxisRange Range;
         } Motion1{}, Motion2{};
     };
 
     /// KeyboardStick
-    class KeyboardStick
+    class KeyboardStickType
     {
     public:
-        bool operator<(const KeyboardStick &rhs) const
+        bool operator<(const KeyboardStickType &rhs) const
         {
             return std::tie(Horizontal, Vertical) < std::tie(rhs.Horizontal, rhs.Vertical);
         }
 
-        bool operator==(const KeyboardStick &rhs) const
+        bool operator==(const KeyboardStickType &rhs) const
         {
             return Horizontal == rhs.Horizontal && Vertical == rhs.Vertical;
         }
 
-        KeyboardAxis Horizontal;
-        KeyboardAxis Vertical;
+        KeyboardAxisType Horizontal;
+        KeyboardAxisType Vertical;
     };
 
     /// GamepadStick
-    class GamepadStick
+    class GamepadStickType
     {
 #define GAMEPAD_STICK_LIST(E) \
 E(STICK_LEFT) \
 E(STICK_RIGHT) \
 E(Count) \
-E(None)
+E(STICK_NONE)
 
 public:
         enum GamepadStickEnum
@@ -641,9 +641,9 @@ public:
 #undef GAMEPAD_STICK_DEF
         };
 
-        GamepadStick() = default;
+        GamepadStickType() = default;
 
-        constexpr GamepadStick(GamepadStickEnum enumValue) : value(enumValue)
+        constexpr GamepadStickType(GamepadStickEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -690,7 +690,7 @@ public:
     };
 
     /// GamepadButton
-    class GamepadButton
+    class GamepadButtonType
     {
 #define GAMEPAD_BUTTON_LIST(E) \
 E(BUTTON_A) \
@@ -708,8 +708,8 @@ E(BUTTON_DPAD_UP) \
 E(BUTTON_DPAD_DOWN) \
 E(BUTTON_DPAD_LEFT) \
 E(BUTTON_DPAD_RIGHT) \
-E(BUTTON_NONE) \
-E(Count)
+E(Count) \
+E(BUTTON_NONE)
     public:
         enum GamepadButtonEnum
         {
@@ -718,9 +718,9 @@ E(Count)
 #undef GAMEPAD_BUTTON_DEF
         };
 
-        GamepadButton() = default;
+        GamepadButtonType() = default;
 
-        constexpr GamepadButton(GamepadButtonEnum enumValue) : value(enumValue)
+        constexpr GamepadButtonType(GamepadButtonEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -767,7 +767,7 @@ E(Count)
     };
 
     /// GamepadAxis
-    class GamepadAxis
+    class GamepadAxisType
     {
 #define GAMEPAD_AXIS_LIST(E) \
 E(AXIS_LEFT_X)  \
@@ -776,8 +776,8 @@ E(AXIS_RIGHT_X) \
 E(AXIS_RIGHT_Y) \
 E(TRIGGER_LEFT) \
 E(TRIGGER_RIGHT)\
-E(AXIS_NONE)    \
-E(Count)
+E(Count)        \
+E(AXIS_NONE)
     public:
         enum GamepadAxisEnum
         {
@@ -786,9 +786,9 @@ E(Count)
 #undef GAMEPAD_AXIS_DEF
         };
 
-        GamepadAxis() = default;
+        GamepadAxisType() = default;
 
-        constexpr GamepadAxis(GamepadAxisEnum enumValue) : value(enumValue)
+        constexpr GamepadAxisType(GamepadAxisEnum enumValue) : value(enumValue)
         {}
 
         // prevent using as a pointer or boolean operator
@@ -978,66 +978,66 @@ E(UP)
     struct InputMouseButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
-        MouseButton Button{};
+        MouseButtonType Button{};
     };
 
     struct InputMouseAxisEvent
     {
         InputAnalogEventTrigger AxisTrigger{};
-        MouseAxis Axis{};
+        MouseAxisType Axis{};
     };
 
     struct InputMouseStickEvent
     {
         InputAnalogEventTrigger StickTrigger{};
-        MouseStick Stick{};
+        MouseStickType Stick{};
     };
 
     struct InputKeyboardButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
-        KeyboardButton Button{};
+        KeyboardButtonType Button{};
     };
 
     struct InputKeyboardAxisEvent
     {
         InputAnalogEventTrigger AxisTrigger{};
-        KeyboardAxis Axis{};
+        KeyboardAxisType Axis{};
     };
 
     struct InputKeyboardStickEvent
     {
         InputAnalogEventTrigger StickTrigger{};
-        KeyboardStick Stick{};
+        KeyboardStickType Stick{};
     };
 
     struct InputGamepadButtonEvent
     {
         InputDigitalEventTrigger ButtonTrigger{};
-        GamepadButton Button{};
+        GamepadButtonType Button{};
     };
 
     struct InputGamepadAxisEvent
     {
         InputAnalogEventTrigger AxisTrigger{};
-        GamepadAxis Axis{};
+        GamepadAxisType Axis{};
     };
 
     struct InputGamepadStickEvent
     {
         InputAnalogEventTrigger StickTrigger{};
-        GamepadStick Stick{};
+        GamepadStickType Stick{};
     };
 
 #pragma endregion Struct Event Pair (Trigger/Input)
 
     /// Possible event types supported
-    /// Current support is Gamepad and Keyboard
+    /// Current support is Gamepad, Keyboard, and Mouse
     enum class InputEventType
     {
-        GamePadButtonEventType,
-        GamePadAxisEventType,
-        GamePadStickEventType,
+        GamepadButtonEventType,
+        GamepadAxisEventType,
+        GamepadStickEventType,
         KeyboardButtonEventType,
         KeyboardAxisEventType,
         KeyboardStickEventType,
@@ -1060,27 +1060,45 @@ E(UP)
         InputMouseAxisEvent MouseAxisEvent;
     };
 
+    /// Axis Type
+    /// Represents an axis on a controller (Gamepad, Mouse, Keyboard)
     union AxisType
     {
-        GamepadAxis GamepadAxis;
-        KeyboardAxis KeyboardAxis;
-        MouseAxis MouseAxis;
+        GamepadAxisType GamepadAxis;
+        KeyboardAxisType KeyboardAxis;
+        MouseAxisType MouseAxis;
     };
 
+    /// Stick Type
+    /// Represents a stick on a controller (Gamepad, Mouse, Keyboard)
     union StickType
     {
-        class MouseStick MouseStick;
-        class KeyboardStick KeyboardStick;
-        class GamepadStick GamepadStick;
+        class MouseStickType MouseStick;
+        class KeyboardStickType KeyboardStick;
+        class GamepadStickType GamepadStick;
     };
 
+    /// Button Type
+    /// Represents a button on a controller (Gamepad, Mouse, Keyboard)
     union ButtonType
     {
-        class MouseButton MouseButton;
-        class GamepadButton GamepadButton;
-        class KeyboardButton KeyboardButton;
+        class MouseButtonType MouseButton;
+        class GamepadButtonType GamepadButton;
+        class KeyboardButtonType KeyboardButton;
     };
 
+    /// Input Vector
+    /// Represents a pair of Axis.
+    /// It is a pair of floats representing the horizontal and vertical movement.
+    struct InputVector
+    {
+        float Horizontal;
+        float Vertical;
+    };
+
+    /// Input Event
+    /// Describes the Axis with the current state and the Type of the Axis (Gamepad::LEFT_TRIGGER, Mouse::WHEEL, etc)
+    /// You must know the Controller type to consult the AxisType
     struct Axis
     {
         AxisType AxisType;
@@ -1090,19 +1108,21 @@ E(UP)
         { return Value; }
     };
 
-    struct InputVector
-    {
-        float Horizontal;
-        float Vertical;
-    };
-
-    /// 2D Stick value
+    /// Input Stick
+    /// Describes the Stick with the current state and the Type of the Stick (Gamepad::LEFT_STICK, Mouse::MOVEMENT, etc)
+    /// You must know the Controller type to consult the StickType
     struct Stick
     {
         StickType StickType;
-        InputVector Stick;
+        InputVector Value;
+
+        operator InputVector() const
+        { return Value; }
     };
 
+    /// Input Button
+    /// Describes the Button with the current state and the Type of the Button (Gamepad::X, Keyboard::A, Mouse::Left, etc)
+    /// You must know the Controller type to consult the ButtonType
     struct Button
     {
         ButtonType ButtonType;
@@ -1112,41 +1132,53 @@ E(UP)
         { return Pressed; }
     };
 
+    /// Input Type
+    /// Input Type can be three:
+    /// 1. Button - This is a digital input, it can be pressed or released.
+    /// 2. Axis - This is an analog input. Represents one axis [-1, 1]. Some axis might have a constraint to [0, 1] - Can be one direction of a gamepad stick, a gamepad trigger, or a mouse wheel, etc.
+    /// 3. Stick - This is an Axis pair. It represents a Stick on a controller. It can be used to represent a mouse cursor movement, or a gamepad stick.
     enum struct InputType
     {
-        Button,
-        Axis,
-        Stick
+        BUTTON,
+        AXIS,
+        STICK
     };
 
+    /// Controller Type
+    /// Input controller describes the physical device that is being interacted with.
     enum struct InputControllerType
     {
-        Keyboard,
-        Mouse,
-        Gamepad
+        KEYBOARD,
+        MOUSE,
+        GAMEPAD
     };
 
+    /// Input State Value
+    /// This represents the current value for an Input. It can be a Button, Axis or Stick (the three possible supported inputs).
     union InputStateValue
     {
-        Button Button;
+        Button Button {};
         Stick Stick;
         Axis Axis;
     };
 
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
+    /// To proper use it, check the InputType and get the appropriate InputStateValue (If Type is Button, read the Input Value for Button, and so on)
     struct InputState
     {
-        InputType Type;
-        InputStateValue Value;
-        InputControllerType ControllerType;
+        InputType Type {};
+        InputStateValue Input {};
+        InputControllerType ControllerType {};
     };
 
     /// The result of an Event Trigger processed
+    /// The Result is only valid if "IsActive" is true. It will be false if the controller is inactive.
+    /// This is the result of an EventTrigger process
     struct InputResult
     {
-        bool IsActive;
-        InputState InputState;
+        bool IsActive {};
+        InputState InputState {};
     };
 
     /// The Input Trigger description
@@ -1159,21 +1191,21 @@ E(UP)
         bool operator <(const InputTrigger& rhs) const
         {
             switch (EventType) {
-                case InputEventType::GamePadButtonEventType:
+                case InputEventType::GamepadButtonEventType:
                     return std::tie(EventType,
                              Event.GamepadButtonEvent.Button,
                              Event.GamepadButtonEvent.ButtonTrigger) <
                            std::tie(rhs.EventType,
                              rhs.Event.GamepadButtonEvent.Button,
                              rhs.Event.GamepadButtonEvent.ButtonTrigger);
-                case InputEventType::GamePadAxisEventType:
+                case InputEventType::GamepadAxisEventType:
                     return std::tie(EventType,
                                     Event.GamepadAxisEvent.AxisTrigger,
                                     Event.GamepadAxisEvent.Axis) <
                            std::tie(rhs.EventType,
                                     rhs.Event.GamepadAxisEvent.AxisTrigger,
                                     rhs.Event.GamepadAxisEvent.Axis);
-                case InputEventType::GamePadStickEventType:
+                case InputEventType::GamepadStickEventType:
                     return std::tie(EventType,
                                     Event.GamepadStickEvent.StickTrigger,
                                     Event.GamepadStickEvent.Stick) <
@@ -1228,21 +1260,21 @@ E(UP)
         bool operator ==(const InputTrigger& rhs) const
         {
             switch (EventType) {
-                case InputEventType::GamePadButtonEventType:
+                case InputEventType::GamepadButtonEventType:
                     return std::tie(EventType,
                                     Event.GamepadButtonEvent.Button,
                                     Event.GamepadButtonEvent.ButtonTrigger) ==
                            std::tie(rhs.EventType,
                                     rhs.Event.GamepadButtonEvent.Button,
                                     rhs.Event.GamepadButtonEvent.ButtonTrigger);
-                case InputEventType::GamePadAxisEventType:
+                case InputEventType::GamepadAxisEventType:
                     return std::tie(EventType,
                                     Event.GamepadAxisEvent.AxisTrigger,
                                     Event.GamepadAxisEvent.Axis) ==
                            std::tie(rhs.EventType,
                                     rhs.Event.GamepadAxisEvent.AxisTrigger,
                                     rhs.Event.GamepadAxisEvent.Axis);
-                case InputEventType::GamePadStickEventType:
+                case InputEventType::GamepadStickEventType:
                     return std::tie(EventType,
                                     Event.GamepadStickEvent.StickTrigger,
                                     Event.GamepadStickEvent.Stick) ==
@@ -1320,19 +1352,19 @@ struct std::hash<Sparkle::InputTrigger>
         using std::string;
         std::size_t h = 0;
         switch (k.EventType) {
-            case Sparkle::InputEventType::GamePadButtonEventType:
+            case Sparkle::InputEventType::GamepadButtonEventType:
                 HashCombine(h,
                             (int)k.EventType,
                             (int)k.Event.GamepadButtonEvent.Button,
                             (int)k.Event.GamepadButtonEvent.ButtonTrigger);
                 return h;
-            case Sparkle::InputEventType::GamePadAxisEventType:
+            case Sparkle::InputEventType::GamepadAxisEventType:
                 HashCombine(h,
                             (int)k.EventType,
                             (int)k.Event.GamepadAxisEvent.Axis,
                             (int)k.Event.GamepadAxisEvent.AxisTrigger);
                 return h;
-            case Sparkle::InputEventType::GamePadStickEventType:
+            case Sparkle::InputEventType::GamepadStickEventType:
                 HashCombine(h,
                             (int)k.EventType,
                             (int)k.Event.GamepadStickEvent.Stick,

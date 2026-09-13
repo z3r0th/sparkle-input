@@ -50,13 +50,13 @@ void Sparkle::GamepadController::Update() {
         return;
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadButton::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadButtonType::Count) ; ++i)
     {
         LastButtons[i] = Buttons[i];
         Buttons[i] = SDL_GameControllerGetButton(InternalGameController, static_cast<SDL_GameControllerButton>(i));
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxis::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxisType::Count) ; ++i)
     {
         LastAxis[i] = Axis[i];
         float axis = (float)(SDL_GameControllerGetAxis(InternalGameController, static_cast<SDL_GameControllerAxis>(i))) / (float)(SDL_MAX_SINT16);
@@ -67,17 +67,17 @@ void Sparkle::GamepadController::Update() {
         Axis[i] = axis;
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadStick::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<int>(GamepadStickType::Count) ; ++i)
     {
-        static const std::map<GamepadStick, const std::vector<GamepadAxis>> StickAxis =
+        static const std::map<GamepadStickType, const std::vector<GamepadAxisType>> StickAxis =
         {
-            {GamepadStick::STICK_LEFT, {GamepadAxis::AXIS_LEFT_X, GamepadAxis::AXIS_LEFT_Y}},
-            {GamepadStick::STICK_RIGHT, {GamepadAxis::AXIS_RIGHT_X, GamepadAxis::AXIS_RIGHT_Y}}
+            {GamepadStickType::STICK_LEFT,  {GamepadAxisType::AXIS_LEFT_X,  GamepadAxisType::AXIS_LEFT_Y}},
+            {GamepadStickType::STICK_RIGHT, {GamepadAxisType::AXIS_RIGHT_X, GamepadAxisType::AXIS_RIGHT_Y}}
         };
         LastStick[i] = Stick[i];
-        GamepadStick UpdateStick = static_cast<GamepadStick::GamepadStickEnum>(i);
+        GamepadStickType UpdateStick = static_cast<GamepadStickType::GamepadStickEnum>(i);
         struct InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
-        const std::vector<GamepadAxis>& axisAnalyses = StickAxis.at(UpdateStick);
+        const std::vector<GamepadAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
         int axisIndex = 0;
         for (auto& axisEnum : axisAnalyses)
         {

@@ -107,28 +107,28 @@ namespace Sparkle
         /// \param button Specific button to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return true if button is pressed. Return false if button is not pressed or if no gamepad was found
-        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonPressed(GamepadButton button, unsigned int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonPressed(GamepadButtonType button, unsigned int controllerIndex = 0) const;
 
         /// Check if gamepad button was just pressed
         /// Just pressed means that in the last frame the button was "released" and in this frame it is "pressed"
         /// \param button Specific button to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return true if button was just pressed. Return false if button was not just pressed or if no gamepad was found
-        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonJustPressed(GamepadButton button, unsigned int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonJustPressed(GamepadButtonType button, unsigned int controllerIndex = 0) const;
 
         /// Check if gamepad button was just released
         /// Just released means that in the last frame the button was "pressed" and in this frame it is "released"
         /// \param button Specific button to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return true if button was just released. Return false if button was not just released or if no gamepad was found
-        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonJustReleased(GamepadButton button, unsigned int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] bool IsGamepadButtonJustReleased(GamepadButtonType button, unsigned int controllerIndex = 0) const;
 
         /// Get current axis value
         /// Value returned will be between -1(left and bottom) and 1(right and up). For Trigger (TRIGGER_LEFT, TRIGGER_RIGHT) it will return a value between 0 and 1.
         /// \param axis Specific Axis to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return the Axis value
-        [[maybe_unused]][[nodiscard]] float GetGamepadAxis(GamepadAxis axis, int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] float GetGamepadAxis(GamepadAxisType axis, int controllerIndex = 0) const;
 
         /// Get current Stick value
         /// Value returned will be Stick (Vertical/Horizontal pair)
@@ -136,7 +136,7 @@ namespace Sparkle
         /// \param stick Specific Stick to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return the Stick value
-        [[maybe_unused]][[nodiscard]] InputVector GetGamepadStick(GamepadStick stick, int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] InputVector GetGamepadStick(GamepadStickType stick, int controllerIndex = 0) const;
 
         // end Gamepad
 #pragma endregion
@@ -149,32 +149,32 @@ namespace Sparkle
         /// Get Keyboard button state
         /// \param button Specific button to query
         /// \return true if button is pressed. Return false if button is not pressed
-        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonPressed(KeyboardButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonPressed(KeyboardButtonType button) const;
 
         /// Check if Keyboard button was just pressed
         /// Just pressed means that in the last frame the button was "released" and in this frame it is "pressed"
         /// \param button Specific button to query
         /// \return true if button was just pressed. Return false if button was not just pressed
-        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustPressed(KeyboardButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustPressed(KeyboardButtonType button) const;
 
         /// Check if Keyboard button was just released
         /// Just released means that in the last frame the button was "pressed" and in this frame it is "released"
         /// \param button Specific button to query
         /// \return true if button was just released. Return false if button was not just released
-        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustReleased(KeyboardButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsKeyboardButtonJustReleased(KeyboardButtonType button) const;
 
         /// Get current axis value
         /// Value returned will be between -1(left and bottom) and 1(right and up)
         /// \param axis Specific Axis to query
         /// \return the Axis value
-        [[maybe_unused]][[nodiscard]] float GetKeyboardAxis(KeyboardAxis axis) const;
+        [[maybe_unused]][[nodiscard]] float GetKeyboardAxis(KeyboardAxisType axis) const;
 
         /// Get current Stick value
         /// Value returned will be Stick (Vertical/Horizontal pair)
         /// between -1(left and bottom) and 1(right and up)
         /// \param stick Specific Stick to query
         /// \return the Stick value
-        [[maybe_unused]][[nodiscard]] Stick GetKeyboardStick(KeyboardStick stick) const;
+        [[maybe_unused]][[nodiscard]] Stick GetKeyboardStick(KeyboardStickType stick) const;
 
         // end Keyboard
 
@@ -188,32 +188,32 @@ namespace Sparkle
         /// Get Mouse button state
         /// \param button Specific button to query
         /// \return true if button is pressed. Return false if button is not pressed
-        [[maybe_unused]][[nodiscard]] bool IsMouseButtonPressed(MouseButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonPressed(MouseButtonType button) const;
 
         /// Check if Mouse button was just pressed
         /// Just pressed means that in the last frame the button was "released" and in this frame it is "pressed"
         /// \param button Specific button to query
         /// \return true if button was just pressed. Return false if button was not just pressed
-        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustPressed(MouseButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustPressed(MouseButtonType button) const;
 
         /// Check if Mouse button was just released
         /// Just released means that in the last frame the button was "pressed" and in this frame it is "released"
         /// \param button Specific button to query
         /// \return true if button was just released. Return false if button was not just released
-        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustReleased(MouseButton button) const;
+        [[maybe_unused]][[nodiscard]] bool IsMouseButtonJustReleased(MouseButtonType button) const;
 
         /// Get current Mouse axis value
         /// Movement Axis are [0,1] top left is 0 and bottom right is 1
         /// Wheel movement is[-1,1] and -1 is down and 1 is up
         /// \param axis Specific Axis to query
         /// \return the Axis value
-        [[maybe_unused]][[nodiscard]] float GetMouseAxis(MouseAxis axis) const;
+        [[maybe_unused]][[nodiscard]] float GetMouseAxis(MouseAxisType axis) const;
 
         /// Get current Stick value
         /// Value returned will be Stick (Vertical/Horizontal pair)
         /// \param stick Specific Stick to query
         /// \return the Stick value
-        [[maybe_unused]][[nodiscard]] InputVector GetMouseStick(MouseStick stick) const;
+        [[maybe_unused]][[nodiscard]] InputVector GetMouseStick(MouseStickType stick) const;
 
         // end Keyboard
 

@@ -21,14 +21,14 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        std::array<bool, (int)MouseButton::Count> Buttons;
-        std::array<bool, (int)MouseButton::Count> LastButtons;
+        std::array<bool, (int)MouseButtonType::Count> Buttons;
+        std::array<bool, (int)MouseButtonType::Count> LastButtons;
 
-        std::array<float, (int)MouseAxis::Count> Axis{};
-        std::array<float, (int)MouseAxis::Count> LastAxis{};
+        std::array<float, (int)MouseAxisType::Count> Axis{};
+        std::array<float, (int)MouseAxisType::Count> LastAxis{};
 
-        std::array<struct InputVector, (int)MouseStick::Count> Stick{};
-        std::array<struct InputVector, (int)MouseStick::Count> LastStick{};
+        std::array<struct InputVector, (int)MouseStickType::Count> Stick{};
+        std::array<struct InputVector, (int)MouseStickType::Count> LastStick{};
 
         // Input.h will update these variables for us
         float MouseWheelX = 0.0f;
@@ -51,7 +51,7 @@ namespace Sparkle
         /// Keyboard Buttons are updated on Input update
         /// \param key which device button is being checked
         /// \return true if button is currently pressed
-        [[nodiscard]] inline bool IsButtonPressed(MouseButton key)
+        [[nodiscard]] inline bool IsButtonPressed(MouseButtonType key)
         {
             return Buttons[static_cast<unsigned int>(key)];
         }
@@ -60,7 +60,7 @@ namespace Sparkle
         /// Just pressed means that it is currently pressed, but last frame it was not
         /// \param key which device button is being checked
         /// \return true if just pressed
-        [[nodiscard]] inline bool IsButtonJustPressed(MouseButton key)
+        [[nodiscard]] inline bool IsButtonJustPressed(MouseButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
             return Buttons[index] && !LastButtons[index];
@@ -70,7 +70,7 @@ namespace Sparkle
         /// Just released means that it is not currently pressed, but last frame it was
         /// \param key which device button is being checked
         /// \return true if just released
-        [[nodiscard]] inline bool IsButtonJustReleased(MouseButton key)
+        [[nodiscard]] inline bool IsButtonJustReleased(MouseButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
             return !Buttons[index] && LastButtons[index];
@@ -78,20 +78,20 @@ namespace Sparkle
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
-        inline MouseButton AnyJustPressedButton()
+        inline MouseButtonType AnyJustPressedButton()
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return {MouseButton::MouseButtonEnum(i)};
+                if (Buttons[i] && !LastButtons[i]) return {MouseButtonType::MouseButtonEnum(i)};
             }
 
-            return {MouseButton::MouseButtonEnum::BUTTON_NONE};
+            return {MouseButtonType::MouseButtonEnum::BUTTON_NONE};
         }
 
         /// Get the current Mouse axis value
         /// \param axis which mouse axis is being checked
         /// \return axis value
-        [[nodiscard]] inline const float& GetAxis(MouseAxis axis)
+        [[nodiscard]] inline const float& GetAxis(MouseAxisType axis)
         {
             return Axis[(int)axis];
         }
@@ -100,7 +100,7 @@ namespace Sparkle
         /// It has moved if an Axis value difference from last frame to this is greater than epsilon
         /// \param axis which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline bool HasAxisMoved(MouseAxis axis)
+        [[nodiscard]] inline bool HasAxisMoved(MouseAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
@@ -110,21 +110,21 @@ namespace Sparkle
         /// It has moved if an Axis value difference from last frame to this is greater than epsilon
         /// \param axis which axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline MouseAxis AnyAxisMoved()
+        [[nodiscard]] inline MouseAxisType AnyAxisMoved()
         {
-            for (int i = 0 ; i < (int)MouseAxis::Count ; ++i)
+            for (int i = 0 ; i < (int)MouseAxisType::Count ; ++i)
             {
-                auto axis = MouseAxis::MouseAxisEnum(i);
+                auto axis = MouseAxisType::MouseAxisEnum(i);
                 if (HasAxisMoved(axis)) return axis;
             }
-            return MouseAxis::MouseAxisEnum::AXIS_NONE;
+            return MouseAxisType::MouseAxisEnum::AXIS_NONE;
         }
 
         /// Check if stick had a movement from last frame
         /// It has moved if any Axis value difference from last frame to this is greater than epsilon
         /// \param stick which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline bool HasStickMoved(MouseStick stick)
+        [[nodiscard]] inline bool HasStickMoved(MouseStickType stick)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
@@ -136,7 +136,7 @@ namespace Sparkle
         /// Get the current Mouse stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct InputVector& GetStick(MouseStick stick)
+        [[nodiscard]] inline const struct InputVector& GetStick(MouseStickType stick)
         {
             return Stick[(int)stick];
         }

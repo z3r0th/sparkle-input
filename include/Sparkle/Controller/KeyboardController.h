@@ -21,8 +21,8 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        std::array<bool, (int)KeyboardButton::Count> Buttons;
-        std::array<bool, (int)KeyboardButton::Count> LastButtons;
+        std::array<bool, (int)KeyboardButtonType::Count> Buttons;
+        std::array<bool, (int)KeyboardButtonType::Count> LastButtons;
 
     protected:
         void Update() override;
@@ -41,7 +41,7 @@ namespace Sparkle
         /// Keyboard Buttons are updated on Input update
         /// \param key which device button is being checked
         /// \return true if button is currently pressed
-        [[nodiscard]] inline bool IsButtonPressed(KeyboardButton key)
+        [[nodiscard]] inline bool IsButtonPressed(KeyboardButtonType key)
         {
             return Buttons[static_cast<unsigned int>(key)];
         }
@@ -50,7 +50,7 @@ namespace Sparkle
         /// Just pressed means that it is currently pressed, but last frame it was not
         /// \param key which device button is being checked
         /// \return true if just pressed
-        [[nodiscard]] inline bool IsButtonJustPressed(KeyboardButton key)
+        [[nodiscard]] inline bool IsButtonJustPressed(KeyboardButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
             return Buttons[index] && !LastButtons[index];
@@ -60,7 +60,7 @@ namespace Sparkle
         /// Just released means that it is not currently pressed, but last frame it was
         /// \param key which device button is being checked
         /// \return true if just released
-        [[nodiscard]] inline bool IsButtonJustReleased(KeyboardButton key)
+        [[nodiscard]] inline bool IsButtonJustReleased(KeyboardButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
             return !Buttons[index] && LastButtons[index];
@@ -68,25 +68,25 @@ namespace Sparkle
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
-        inline KeyboardButton AnyJustPressedButton()
+        inline KeyboardButtonType AnyJustPressedButton()
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return KeyboardButton(KeyboardButton::KeyboardButtonEnum(i));
+                if (Buttons[i] && !LastButtons[i]) return KeyboardButtonType(KeyboardButtonType::KeyboardButtonEnum(i));
             }
 
-            return {KeyboardButton::KeyboardButtonEnum::KEY_NONE};
+            return {KeyboardButtonType::KeyboardButtonEnum::KEY_NONE};
         }
 
         /// Get the current Keyboard axis value
         /// \param axis which device axis is being checked
         /// \return axis value
-        float GetAxis(KeyboardAxis);
+        float GetAxis(KeyboardAxisType);
 
         /// Get the current Keyboard stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        Stick GetStick(Sparkle::KeyboardStick stick);
+        Stick GetStick(Sparkle::KeyboardStickType stick);
     };
 }
 

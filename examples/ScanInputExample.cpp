@@ -5,7 +5,7 @@ void Update(Sparkle::Input& input)
 {
     if (auto keyboard = input.GetKeyBoardController().lock())
     {
-        if (keyboard->IsButtonPressed(Sparkle::KeyboardButton::KEY_SPACE))
+        if (keyboard->IsButtonPressed(Sparkle::KeyboardButtonType::KEY_SPACE))
         {
             SDL_Log(">> SPACE PRESSED");
         }

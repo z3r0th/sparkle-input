@@ -43,14 +43,14 @@ namespace Sparkle
         Sparkle::Event<const std::weak_ptr<GamepadController>&> OnDisconnectedEvent;
         Sparkle::Event<const std::weak_ptr<GamepadController>&> OnConnectedEvent;
 
-        std::array<bool, (int)GamepadButton::Count> Buttons;
-        std::array<bool, (int)GamepadButton::Count> LastButtons;
+        std::array<bool, (int)GamepadButtonType::Count> Buttons;
+        std::array<bool, (int)GamepadButtonType::Count> LastButtons;
 
-        std::array<float, (int)GamepadAxis::Count> Axis{};
-        std::array<float, (int)GamepadAxis::Count> LastAxis{};
+        std::array<float, (int)GamepadAxisType::Count> Axis{};
+        std::array<float, (int)GamepadAxisType::Count> LastAxis{};
 
-        std::array<struct InputVector, (int)GamepadStick::Count> Stick{};
-        std::array<struct InputVector, (int)GamepadStick::Count> LastStick{};
+        std::array<struct InputVector, (int)GamepadStickType::Count> Stick{};
+        std::array<struct InputVector, (int)GamepadStickType::Count> LastStick{};
 
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
@@ -100,7 +100,7 @@ namespace Sparkle
         /// Buttons are updated on Input update
         /// \param button which device button is being checked
         /// \return true if button is currently pressed
-        [[nodiscard]] inline bool IsButtonPressed(GamepadButton button)
+        [[nodiscard]] inline bool IsButtonPressed(GamepadButtonType button)
         {
             return Buttons[static_cast<unsigned int>(button)];
         }
@@ -109,7 +109,7 @@ namespace Sparkle
         /// Just pressed means that it is currently pressed, but last frame it was not
         /// \param button which device button is being checked
         /// \return true if just pressed
-        [[nodiscard]] inline bool IsButtonJustPressed(GamepadButton button)
+        [[nodiscard]] inline bool IsButtonJustPressed(GamepadButtonType button)
         {
             auto index = static_cast<unsigned int>(button);
             return Buttons[index] && !LastButtons[index];
@@ -119,7 +119,7 @@ namespace Sparkle
         /// Just released means that it is not currently pressed, but last frame it was
         /// \param button which device button is being checked
         /// \return true if just released
-        [[nodiscard]] inline bool IsButtonJustReleased(GamepadButton button)
+        [[nodiscard]] inline bool IsButtonJustReleased(GamepadButtonType button)
         {
             auto index = static_cast<unsigned int>(button);
             return !Buttons[index] && LastButtons[index];
@@ -127,36 +127,36 @@ namespace Sparkle
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
-        inline GamepadButton AnyPressedButton()
+        inline GamepadButtonType AnyPressedButton()
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i]) return GamepadButton(GamepadButton::GamepadButtonEnum(i));
+                if (Buttons[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
             }
 
-            return GamepadButton(GamepadButton::GamepadButtonEnum::BUTTON_NONE);
+            return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
         }
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
-        inline GamepadButton AnyJustPressedButton()
+        inline GamepadButtonType AnyJustPressedButton()
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return GamepadButton(GamepadButton::GamepadButtonEnum(i));
+                if (Buttons[i] && !LastButtons[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
             }
 
-            return GamepadButton(GamepadButton::GamepadButtonEnum::BUTTON_NONE);
+            return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
         }
 
         /// Get all pressed buttons
         /// \return all pressed buttons
-        inline std::vector<GamepadButton> PressedButtons()
+        inline std::vector<GamepadButtonType> PressedButtons()
         {
-            std::vector<GamepadButton> pressedButtons;
+            std::vector<GamepadButtonType> pressedButtons;
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i]) pressedButtons.push_back(GamepadButton(GamepadButton::GamepadButtonEnum(i)));
+                if (Buttons[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
             }
 
             return pressedButtons;
@@ -164,12 +164,12 @@ namespace Sparkle
 
         /// Get all pressed buttons
         /// \return all pressed buttons
-        inline std::vector<GamepadButton> JustPressedButtons()
+        inline std::vector<GamepadButtonType> JustPressedButtons()
         {
-            std::vector<GamepadButton> pressedButtons;
+            std::vector<GamepadButtonType> pressedButtons;
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) pressedButtons.push_back(GamepadButton(GamepadButton::GamepadButtonEnum(i)));
+                if (Buttons[i] && !LastButtons[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
             }
 
             return pressedButtons;
@@ -179,7 +179,7 @@ namespace Sparkle
         /// Currently we apply 2% movement as dead-zone
         /// \param axis which device axis is being checked
         /// \return axis or trigger value - Axis is ranged[0,1] and trigger [0,1]
-        [[nodiscard]] inline const float& GetAxis(GamepadAxis axis)
+        [[nodiscard]] inline const float& GetAxis(GamepadAxisType axis)
         {
             return Axis[(int)axis];
         }
@@ -187,7 +187,7 @@ namespace Sparkle
         /// Get the current Gamepad stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct InputVector& GetStick(GamepadStick stick)
+        [[nodiscard]] inline const struct InputVector& GetStick(GamepadStickType stick)
         {
             return Stick[(int)stick];
         }
@@ -196,7 +196,7 @@ namespace Sparkle
         /// It has moved if an Axis value difference from last frame to this is greater than epsilon
         /// \param axis which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline bool HasAxisMoved(GamepadAxis axis)
+        [[nodiscard]] inline bool HasAxisMoved(GamepadAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
@@ -206,7 +206,7 @@ namespace Sparkle
         /// It has moved if any Axis value difference from last frame to this is greater than epsilon
         /// \param stick which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline bool HasStickMoved(GamepadStick stick)
+        [[nodiscard]] inline bool HasStickMoved(GamepadStickType stick)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
@@ -219,28 +219,28 @@ namespace Sparkle
         /// It has moved if an Axis value difference from last frame to this is greater than epsilon
         /// \param axis which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline GamepadAxis AnyAxisMoved()
+        [[nodiscard]] inline GamepadAxisType AnyAxisMoved()
         {
-            for (int i = 0 ; i < (int)GamepadAxis::Count ; ++i)
+            for (int i = 0 ; i < (int)GamepadAxisType::Count ; ++i)
             {
-                auto axis = GamepadAxis::GamepadAxisEnum(i);
+                auto axis = GamepadAxisType::GamepadAxisEnum(i);
                 if (HasAxisMoved(axis)) return axis;
             }
-            return GamepadAxis::GamepadAxisEnum::AXIS_NONE;
+            return GamepadAxisType::GamepadAxisEnum::AXIS_NONE;
         }
 
         /// Check if any stick had a movement from last frame
         /// It has moved if any Axis value difference from last frame to this is greater than epsilon
         /// \param axis which device axis is being checked
         /// \return true if moved
-        [[nodiscard]] inline GamepadStick AnyStickMoved()
+        [[nodiscard]] inline GamepadStickType AnyStickMoved()
         {
-            for (int i = 0 ; i < (int)GamepadStick::Count ; ++i)
+            for (int i = 0 ; i < (int)GamepadStickType::Count ; ++i)
             {
-                auto stick = GamepadStick::GamepadStickEnum(i);
+                auto stick = GamepadStickType::GamepadStickEnum(i);
                 if (HasStickMoved(stick)) return stick;
             }
-            return GamepadStick::GamepadStickEnum::None;
+            return GamepadStickType::GamepadStickEnum::STICK_NONE;
         }
     };
 }
