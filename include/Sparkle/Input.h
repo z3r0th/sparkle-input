@@ -26,42 +26,45 @@ namespace Sparkle
     {
     private:
         std::shared_ptr<PlayerInputController> CreateInputController(unsigned int index);
+
         std::map<unsigned int, std::shared_ptr<PlayerInputController>> PlayerInputControllers;
         std::map<unsigned int, std::shared_ptr<GamepadController>> GamepadControllers;
-        std::shared_ptr<MouseController> MouseController;
         std::shared_ptr<KeyboardController> KeyboardController;
+        std::shared_ptr<MouseController> MouseController;
 
-        void RemoveGamepadFromPlayer(const std::weak_ptr<GamepadController>&);
         std::shared_ptr<GamepadController> GetInactiveOrNewGamepadController(int device);
         std::shared_ptr<GamepadController> GetUnassignedGamepadController();
+        void RemoveGamepadFromPlayer(const std::weak_ptr<GamepadController>&);
         unsigned int GetNextPlayerIndex();
-
-        void HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>&);
 
         void GamepadControllerDisconnected(const ControllerDeviceEvent& event);
         void GamepadControllerConnected(const ControllerDeviceEvent& event);
 
-        void UpdateMouse();
-        void UpdateGamepad();
-        void UpdateKeyboard();
+        void HandlePlayerInputControllerRequest(const std::weak_ptr<PlayerInputController>&);
 
-        Event<const std::weak_ptr<PlayerInputController>&, const InputState&> OnAnyKeyJustPressedEvent;
+        void UpdateKeyboard();
+        void UpdateGamepad();
+        void UpdateMouse();
+
+        Event<const std::weak_ptr<class PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
+        Event<const std::weak_ptr<class PlayerInputController>&, const InputState&> OnAnyKeyJustPressedEvent;
+        Event<const std::weak_ptr<class GamepadController>&, const InputState&> OnAnyGamepadStickMovedEvent;
         Event<const std::weak_ptr<class KeyboardController>&, const InputState&> OnKeyboardJustPressedEvent;
+        Event<const std::weak_ptr<class GamepadController>&, const InputState&> OnGamepadJustPressedEvent;
+        Event<const std::weak_ptr<class MouseController>&, const InputState&> OnAnyMouseStickMovedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&> OnMouseJustPressedEvent;
-        Event<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&> OnAnyMouseStickMovedEvent;
-        Event<const std::weak_ptr<class GamepadController>&, const InputState&, const GamepadStick&> OnAnyGamepadStickMovedEvent;
-        Event<const std::weak_ptr<GamepadController>&, const InputState&> OnGamepadJustPressedEvent;
-        Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
 
     public:
 
 #pragma region Player Index
+
         static constexpr unsigned int FirstPlayerIndex = 0;
         static constexpr unsigned int SecondPlayerIndex = 1;
         static constexpr unsigned int ThirdPlayerIndex = 2;
         static constexpr unsigned int FourthPlayerIndex = 3;
         static constexpr unsigned int FifthPlayerIndex = 4;
         static constexpr unsigned int SixthPlayerIndex = 5;
+
 #pragma endregion
 
         void UpdateEvent(InputEvent& event);
@@ -88,13 +91,13 @@ namespace Sparkle
         // TODO: Connection/Disconnection of multiple gamepads test. It should always be reassigned to the assigned player.
         // TODO: Touch/Pad support
 
-        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnAnyMouseStickMoved() { return OnAnyMouseStickMovedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&>& OnAnyMouseStickMoved() { return OnAnyMouseStickMovedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&, const GamepadStick&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
 
 #pragma region Gamepad Proxy
         // Gamepad access functions

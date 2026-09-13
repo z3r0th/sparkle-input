@@ -186,7 +186,7 @@ namespace Sparkle
             {
                 auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Stick = MouseController->GetStick(mouseStick)};
                 auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = stick},.ControllerType = InputControllerType::Mouse};
-                OnAnyMouseStickMovedEvent(MouseController, state, mouseStick);
+                OnAnyMouseStickMovedEvent(MouseController, state);
             }
         }
 
@@ -202,7 +202,7 @@ namespace Sparkle
                     {
                         auto stick = Stick {.StickType = {.GamepadStick = stickType}, .Stick = GamepadController->GetStick(stickType)};
                         auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = stick}};
-                        OnAnyGamepadStickMovedEvent(GamepadController, state, stickType);
+                        OnAnyGamepadStickMovedEvent(GamepadController, state);
                     }
                 }
             }
