@@ -1067,6 +1067,10 @@ E(UP)
         GamepadAxisType GamepadAxis;
         KeyboardAxisType KeyboardAxis;
         MouseAxisType MouseAxis;
+
+        operator GamepadAxisType() const { return GamepadAxis; }
+        operator KeyboardAxisType() const { return KeyboardAxis; }
+        operator MouseAxisType() const { return MouseAxis; }
     };
 
     /// Stick Type
@@ -1076,6 +1080,10 @@ E(UP)
         class MouseStickType MouseStick;
         class KeyboardStickType KeyboardStick;
         class GamepadStickType GamepadStick;
+
+        operator MouseStickType() const { return MouseStick; }
+        operator KeyboardStickType() const { return KeyboardStick; }
+        operator GamepadStickType() const { return GamepadStick; }
     };
 
     /// Button Type
@@ -1085,6 +1093,10 @@ E(UP)
         class MouseButtonType MouseButton;
         class GamepadButtonType GamepadButton;
         class KeyboardButtonType KeyboardButton;
+
+        operator MouseButtonType() const { return MouseButton; }
+        operator GamepadButtonType() const { return GamepadButton; }
+        operator KeyboardButtonType() const { return KeyboardButton; }
     };
 
     /// Input Vector
@@ -1160,6 +1172,10 @@ E(UP)
         Button Button {};
         Stick Stick;
         Axis Axis;
+
+        operator struct Button() const { return Button; }
+        operator struct Stick() const { return Stick; }
+        operator struct Axis() const { return Axis; }
     };
 
     /// The input state for the action performed (Button, Stick or Axis)
