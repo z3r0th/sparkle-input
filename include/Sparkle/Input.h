@@ -73,31 +73,29 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        // TODO: * Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
         // TODO: * Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
-        // TODO: * Add function summary to all functions and classes
 
         // TODO: Make at least one complete example
         // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
 
-        // TODO: Refactor and Documentation
+        // TODO: Documentation
 
         // Next Version:
         // TODO: Add Mouse movement relative to last frame
-        // TODO: Add Specific input support: DoubleClick, Drag, HoldingFor, maybe specific combination sequence (down, forward, X = Haduken)
+        // TODO: Add Specific input support: DoubleClick, Drag, HoldingFor, maybe specific combination sequence (down, forward, X = PowerBall)
         // TODO: Add Modifier keys (SHIFT, ALT, CTRL, LeftTrigger, etc), so when we are pressing a combination (CTRL + A) we can check trigger a different action
         // TODO: Add Keyboard text function - capture text/character instead of action trigger
         // TODO: A way to check for Specific Controller Type/Layout (playstation, xbox, etc)
         // TODO: Connection/Disconnection of multiple gamepads test. It should always be reassigned to the assigned player.
         // TODO: Touch/Pad support
 
-        EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnAnyMouseStickMoved() { return OnAnyMouseStickMovedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnAnyMouseStickMoved() { return OnAnyMouseStickMovedEvent.GetBinder(); }
+        [[maybe_unused]] EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
 
 #pragma region Gamepad Proxy
         // Gamepad access functions

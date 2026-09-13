@@ -17,7 +17,7 @@
 
 namespace Sparkle
 {
-    /// Map a physical InputType (Button, Key, Mouse, Axis) to specific InputAction
+    /// Map a physical InputType (Button, Key, Mouse, Axis, Stick) to specific InputAction
     class InputMap
     {
         friend class PlayerInputController;
@@ -50,6 +50,10 @@ namespace Sparkle
             return InputMapDescription;
         }
 
+        /// Binds a MouseButtonInput to a specific Action through a specific Trigger (on Pressed, Released, Hold, etc)
+        /// \param button a specific Mouse Button
+        /// \param trigger a specific Mouse Button state to trigger the Action
+        /// \param action a specific Action
         void Bind(const MouseButtonType& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
@@ -59,6 +63,10 @@ namespace Sparkle
             ActionTrigger[event] = action;
         }
 
+        /// Binds a MouseAxisInput to a specific Action through a specific Trigger (Movement, Full Positive, Full Negative, etc)
+        /// \param axis a specific Mouse Axis
+        /// \param trigger a specific Mouse Axis state to trigger the Action
+        /// \param action a specific Action
         void Bind(const MouseAxisType& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
@@ -68,6 +76,10 @@ namespace Sparkle
             ActionTrigger[event] = action;
         }
 
+        /// Binds a MouseStickInput to a specific Action through a specific Trigger (Movement, Full Positive, Full Negative, etc)
+        /// \param stick a specific Mouse Stick
+        /// \param trigger a specific Mouse Stick state to trigger the Action
+        /// \param action a specific Action
         void Bind(const MouseStickType& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
@@ -77,6 +89,10 @@ namespace Sparkle
             ActionTrigger[event] = action;
         }
 
+        /// Binds a KeyboardButtonInput to a specific Action through a specific Trigger (on Pressed, Released, Hold, etc)
+        /// \param button a specific Keyboard Button
+        /// \param trigger a specific Keyboard Button state to trigger the Action
+        /// \param action a specific Action
         void Bind(const KeyboardButtonType& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
@@ -86,6 +102,10 @@ namespace Sparkle
             ActionTrigger[event] = action;
         }
 
+        /// Binds a KeyboardAxisInput to a specific Action through a specific Trigger (Movement, Full Positive, Full Negative, etc)
+        /// \param axis a specific Keyboard Axis
+        /// \param trigger a specific Keyboard Axis state to trigger the Action
+        /// \param action a specific Action
         void Bind(const KeyboardAxisType& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
@@ -95,6 +115,10 @@ namespace Sparkle
             ActionTrigger[event] = action;
         }
 
+        /// Binds a KeyboardStickInput to a specific Action through a specific Trigger (Movement, Full Positive, Full Negative, etc)
+        /// \param stick a specific Keyboard Stick
+        /// \param trigger a specific Keyboard Stick state to trigger the Action
+        /// \param action a specific Action
         void Bind(const KeyboardStickType& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();

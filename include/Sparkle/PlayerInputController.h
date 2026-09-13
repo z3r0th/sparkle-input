@@ -83,12 +83,18 @@ namespace Sparkle
         /// Raises `OnGamepadDisconnectedEvent`
         void RemoveGamepadController();
 
+        /// Assigns the keyboardController and connects to the events.
+        /// \param keyboardController to assign
         void SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController>& keyboardController);
 
+        /// Disconnects from events and sets the KeyboardController to null (reset)
         void RemoveKeyboardController();
 
+        /// Assigns the mouseController and connects to the events.
+        /// \param mouseController to assign
         void SetMouseController(const std::weak_ptr<Sparkle::MouseController>& mouseController);
 
+        /// Disconnects from events and sets the MouseController to null (reset)
         void RemoveMouseController();
 
     public:

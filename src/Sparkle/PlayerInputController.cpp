@@ -95,4 +95,15 @@ namespace Sparkle
     {
         KeyboardController.reset();
     }
+
+    void PlayerInputController::SetMouseController(const std::weak_ptr<Sparkle::MouseController> &mouseController)
+    {
+        assert(MouseController == nullptr);
+        MouseController = mouseController.lock();
+    }
+
+    void PlayerInputController::RemoveMouseController()
+    {
+        MouseController.reset();
+    }
 } // Sparkle
