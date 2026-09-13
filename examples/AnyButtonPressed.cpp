@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
     Sparkle::Input input;
     input.OnAnyKeyJustPressed()
-        .Bind([](const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputEventType&, const Sparkle::InputState&)
+        .Bind([](const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputState&)
         {
             SDL_Log(">> ANY BUTTON PRESSED");
         });

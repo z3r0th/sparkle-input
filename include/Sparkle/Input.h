@@ -45,7 +45,7 @@ namespace Sparkle
         void UpdateGamepad();
         void UpdateKeyboard();
 
-        Event<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&> OnAnyKeyJustPressedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&, const InputState&> OnAnyKeyJustPressedEvent;
         Event<const std::weak_ptr<class KeyboardController>&, const InputState&> OnKeyboardJustPressedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&> OnMouseJustPressedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&> OnAnyMouseStickMovedEvent;
@@ -74,7 +74,6 @@ namespace Sparkle
         // TODO: * Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
         // TODO: * Add function summary to all functions and classes
 
-        // TODO: *** Should we add a Button/Axis/Stick specific type to the Action callback?
         // TODO: Make at least one complete example
         // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
 
@@ -90,7 +89,7 @@ namespace Sparkle
         // TODO: Touch/Pad support
 
         EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }

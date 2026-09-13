@@ -379,7 +379,7 @@ namespace Sparkle
                     .Value = {.Button = {.ButtonType = {.GamepadButton = pressedButton}, .Pressed = true}},
                     .ControllerType = InputControllerType::Gamepad
                 };
-                OnAnyKeyJustPressedEvent(GetAssignedPlayerInputController(gamepad), eventType, inputState);
+                OnAnyKeyJustPressedEvent(GetAssignedPlayerInputController(gamepad), inputState);
                 OnGamepadJustPressedEvent(gamepad, inputState);
             }
             if (gamepad->AnyAxisMoved() != GamepadAxis::AXIS_NONE)
@@ -402,7 +402,7 @@ namespace Sparkle
             auto players = GetAssignedMousePlayerInputControllers();
             for (auto & player : players)
             {
-                OnAnyKeyJustPressedEvent(player, eventType, inputState);
+                OnAnyKeyJustPressedEvent(player, inputState);
             }
             OnMouseJustPressedEvent(MouseController, inputState);
         }
@@ -425,7 +425,7 @@ namespace Sparkle
             auto players = GetAssignedKeyboardPlayerInputControllers();
             for (auto & player : players)
             {
-                OnAnyKeyJustPressedEvent(player, eventType, inputState);
+                OnAnyKeyJustPressedEvent(player, inputState);
             }
             OnKeyboardJustPressedEvent(KeyboardController, inputState);
         }
