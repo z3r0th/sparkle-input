@@ -49,8 +49,8 @@ namespace Sparkle
         std::array<float, (int)GamepadAxis::Count> Axis{};
         std::array<float, (int)GamepadAxis::Count> LastAxis{};
 
-        std::array<struct Stick, (int)GamepadStick::Count> Stick{};
-        std::array<struct Stick, (int)GamepadStick::Count> LastStick{};
+        std::array<struct InputVector, (int)GamepadStick::Count> Stick{};
+        std::array<struct InputVector, (int)GamepadStick::Count> LastStick{};
 
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
@@ -187,7 +187,7 @@ namespace Sparkle
         /// Get the current Gamepad stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct Stick& GetStick(GamepadStick stick)
+        [[nodiscard]] inline const struct InputVector& GetStick(GamepadStick stick)
         {
             return Stick[(int)stick];
         }
@@ -210,8 +210,8 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
-            struct Stick currentStick = Stick[stickIndex];
-            struct Stick lastStick = LastStick[stickIndex];
+            struct InputVector currentStick = Stick[stickIndex];
+            struct InputVector lastStick = LastStick[stickIndex];
             return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 

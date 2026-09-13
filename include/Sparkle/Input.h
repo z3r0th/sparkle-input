@@ -24,14 +24,6 @@ namespace Sparkle
     /// Get the Player Controllers, Gamepad or Mouse and keyboard to inspect the state or Bind event actions
     class Input
     {
-    public:
-        union InputButton
-        {
-            class MouseButton MouseButton;
-            class GamepadButton GamepadButton;
-            class KeyboardButton KeyboardButton;
-        };
-
     private:
         std::shared_ptr<PlayerInputController> CreateInputController(unsigned int index);
         std::map<unsigned int, std::shared_ptr<PlayerInputController>> PlayerInputControllers;
@@ -53,12 +45,12 @@ namespace Sparkle
         void UpdateGamepad();
         void UpdateKeyboard();
 
-        Event<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&, const InputButton&> OnAnyKeyJustPressedEvent;
-        Event<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&> OnKeyboardJustPressedEvent;
-        Event<const std::weak_ptr<class MouseController>&, const InputState&, const InputButton&> OnMouseJustPressedEvent;
+        Event<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&> OnAnyKeyJustPressedEvent;
+        Event<const std::weak_ptr<class KeyboardController>&, const InputState&> OnKeyboardJustPressedEvent;
+        Event<const std::weak_ptr<class MouseController>&, const InputState&> OnMouseJustPressedEvent;
         Event<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&> OnAnyMouseStickMovedEvent;
         Event<const std::weak_ptr<class GamepadController>&, const InputState&, const GamepadStick&> OnAnyGamepadStickMovedEvent;
-        Event<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&> OnGamepadJustPressedEvent;
+        Event<const std::weak_ptr<GamepadController>&, const InputState&> OnGamepadJustPressedEvent;
         Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&> OnAnyActionEvent;
 
     public:
@@ -77,27 +69,31 @@ namespace Sparkle
 
         explicit Input();
         ~Input();
-        
-        // TODO: Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
-        // TODO: Should we add a Button/Axis/Stick specific type to the Action callback?
-        // TODO: Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
-        // TODO: Add function summary to all functions and classes
-        // TODO: Add Mouse movement relative to last frame
+
+        // TODO: * Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
+        // TODO: * Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
+        // TODO: * Add function summary to all functions and classes
+
+        // TODO: *** Should we add a Button/Axis/Stick specific type to the Action callback?
         // TODO: Make at least one complete example
-        // TODO: Refactor and Documentation
-        // TODO: A way to check for Specific Controller Type/Layout (playstation, xbox, etc)
         // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
+
+        // TODO: Refactor and Documentation
+
+        // Next Version:
+        // TODO: Add Mouse movement relative to last frame
         // TODO: Add Specific input support: DoubleClick, Drag, HoldingFor, maybe specific combination sequence (down, forward, X = Haduken)
         // TODO: Add Modifier keys (SHIFT, ALT, CTRL, LeftTrigger, etc), so when we are pressing a combination (CTRL + A) we can check trigger a different action
         // TODO: Add Keyboard text function - capture text/character instead of action trigger
+        // TODO: A way to check for Specific Controller Type/Layout (playstation, xbox, etc)
         // TODO: Connection/Disconnection of multiple gamepads test. It should always be reassigned to the assigned player.
         // TODO: Touch/Pad support
 
         EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&, const InputButton&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&, const InputButton&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&, const InputButton&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
-        EventBinder<const std::weak_ptr<GamepadController>&, const InputState&, const InputButton&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<PlayerInputController>&, const InputEventType&, const InputState&>& OnAnyKeyJustPressed() { return OnAnyKeyJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class KeyboardController>&, const InputState&>& OnKeyboardJustPressed() { return OnKeyboardJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<class MouseController>&, const InputState&>& OnMouseJustPressed() { return OnMouseJustPressedEvent.GetBinder(); }
+        EventBinder<const std::weak_ptr<GamepadController>&, const InputState&>& OnGamepadJustPressed() { return OnGamepadJustPressedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class MouseController>&, const InputState&, const MouseStick&>& OnAnyMouseStickMoved() { return OnAnyMouseStickMovedEvent.GetBinder(); }
         EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&, const GamepadStick&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
 
@@ -138,7 +134,7 @@ namespace Sparkle
         /// \param stick Specific Stick to query
         /// \param controllerIndex the controller index. Default is 0
         /// \return the Stick value
-        [[maybe_unused]][[nodiscard]] Stick GetGamepadStick(GamepadStick stick, int controllerIndex = 0) const;
+        [[maybe_unused]][[nodiscard]] InputVector GetGamepadStick(GamepadStick stick, int controllerIndex = 0) const;
 
         // end Gamepad
 #pragma endregion
@@ -215,7 +211,7 @@ namespace Sparkle
         /// Value returned will be Stick (Vertical/Horizontal pair)
         /// \param stick Specific Stick to query
         /// \return the Stick value
-        [[maybe_unused]][[nodiscard]] Stick GetMouseStick(MouseStick stick) const;
+        [[maybe_unused]][[nodiscard]] InputVector GetMouseStick(MouseStick stick) const;
 
         // end Keyboard
 

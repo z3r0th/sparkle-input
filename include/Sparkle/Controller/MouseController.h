@@ -27,8 +27,8 @@ namespace Sparkle
         std::array<float, (int)MouseAxis::Count> Axis{};
         std::array<float, (int)MouseAxis::Count> LastAxis{};
 
-        std::array<struct Stick, (int)MouseStick::Count> Stick{};
-        std::array<struct Stick, (int)MouseStick::Count> LastStick{};
+        std::array<struct InputVector, (int)MouseStick::Count> Stick{};
+        std::array<struct InputVector, (int)MouseStick::Count> LastStick{};
 
         // Input.h will update these variables for us
         float MouseWheelX = 0.0f;
@@ -128,15 +128,15 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
-            struct Stick currentStick = Stick[stickIndex];
-            struct Stick lastStick = LastStick[stickIndex];
+            auto currentStick = Stick[stickIndex];
+            auto lastStick = LastStick[stickIndex];
             return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
         /// Get the current Mouse stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct Stick& GetStick(MouseStick stick)
+        [[nodiscard]] inline const struct InputVector& GetStick(MouseStick stick)
         {
             return Stick[(int)stick];
         }

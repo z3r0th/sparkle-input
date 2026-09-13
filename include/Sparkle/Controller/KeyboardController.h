@@ -75,7 +75,7 @@ namespace Sparkle
                 if (Buttons[i] && !LastButtons[i]) return KeyboardButton(KeyboardButton::KeyboardButtonEnum(i));
             }
 
-            return KeyboardButton(KeyboardButton::KeyboardButtonEnum::KEY_NONE);
+            return {KeyboardButton::KeyboardButtonEnum::KEY_NONE};
         }
 
         /// Get the current Keyboard axis value

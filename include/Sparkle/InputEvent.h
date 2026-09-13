@@ -1060,18 +1060,25 @@ E(UP)
         InputMouseAxisEvent MouseAxisEvent;
     };
 
-    /// 2D Stick value
-    struct Stick
-    {
-        float Horizontal;
-        float Vertical;
-    };
-
     union AxisType
     {
         GamepadAxis GamepadAxis;
         KeyboardAxis KeyboardAxis;
         MouseAxis MouseAxis;
+    };
+
+    union StickType
+    {
+        class MouseStick MouseStick;
+        class KeyboardStick KeyboardStick;
+        class GamepadStick GamepadStick;
+    };
+
+    union ButtonType
+    {
+        class MouseButton MouseButton;
+        class GamepadButton GamepadButton;
+        class KeyboardButton KeyboardButton;
     };
 
     struct Axis
@@ -1081,6 +1088,28 @@ E(UP)
 
         operator float() const
         { return Value; }
+    };
+
+    struct InputVector
+    {
+        float Horizontal;
+        float Vertical;
+    };
+
+    /// 2D Stick value
+    struct Stick
+    {
+        StickType StickType;
+        InputVector Stick;
+    };
+
+    struct Button
+    {
+        ButtonType ButtonType;
+        bool Pressed;
+
+        operator bool() const
+        { return Pressed; }
     };
 
     enum struct InputType
@@ -1099,7 +1128,7 @@ E(UP)
 
     union InputStateValue
     {
-        bool ButtonPressed;
+        Button Button;
         Stick Stick;
         Axis Axis;
     };

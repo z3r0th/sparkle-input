@@ -73,8 +73,10 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessButton(const Sparkle::I
     if (isButtonJustPressed && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_PRESSED
         || isButtonJustReleased && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_RELEASED
         || IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
-        || !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::UP) {
-        return Sparkle::InputResult{true, {.Type = InputType::Button, .Value = {.ButtonPressed = IsButtonPressed(keyboardEvent.Button)}}};
+        || !IsButtonPressed(keyboardEvent.Button) && keyboardEvent.ButtonTrigger == InputDigitalEventTrigger::UP)
+    {
+        Button button = {.ButtonType = {.KeyboardButton = keyboardEvent.Button}, .Pressed = IsButtonPressed(keyboardEvent.Button)};
+        return Sparkle::InputResult{true, {.Type = InputType::Button, .Value = {.Button = button}}};
     }
     return Sparkle::InputResult{false};
 }
@@ -105,15 +107,17 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessStick(const Sparkle::In
         float verticalAxis = GetValueFromAxis(this, keyboardEvent.Stick.Vertical, keyboardEvent.StickTrigger);
         float horizontalAxis = GetValueFromAxis(this, keyboardEvent.Stick.Horizontal,
                                                 keyboardEvent.StickTrigger);
-        return Sparkle::InputResult{true,
-                                    {.Type = InputType::Stick, .Value = {.Stick = {.Horizontal = horizontalAxis, .Vertical = verticalAxis}}}};
+
+        Stick stick = {.StickType = {.KeyboardStick = keyboardEvent.Stick}, .Stick = {.Horizontal = horizontalAxis, .Vertical = verticalAxis}};
+        return Sparkle::InputResult{true, {.Type = InputType::Stick, .Value = {.Stick = stick}}};
     }
     if ((IsButtonJustReleased(keyboardEvent.Stick.Vertical.Motion1.Button) || IsButtonJustReleased(keyboardEvent.Stick.Vertical.Motion2.Button)
          || IsButtonJustReleased(keyboardEvent.Stick.Horizontal.Motion1.Button) || IsButtonJustReleased(keyboardEvent.Stick.Horizontal.Motion2.Button)) &&
         (!IsButtonPressed(keyboardEvent.Stick.Vertical.Motion1.Button) && !IsButtonPressed(keyboardEvent.Stick.Vertical.Motion2.Button) &&
          !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion1.Button) || !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion2.Button)))
     {
-        return Sparkle::InputResult{true, {.Type = InputType::Stick, .Value = {.Stick = {.Horizontal = 0.0f, .Vertical = 0.0f}}}};
+        Stick stick = {.StickType = {.KeyboardStick = keyboardEvent.Stick}, .Stick = {.Horizontal = 0.0f, .Vertical = 0.0f}};
+        return Sparkle::InputResult{true, {.Type = InputType::Stick, .Value = {.Stick = stick}}};
     }
     return Sparkle::InputResult{false};
 }
@@ -129,6 +133,6 @@ Sparkle::Stick Sparkle::KeyboardController::GetStick(Sparkle::KeyboardStick stic
 {
     auto event = Sparkle::InputKeyboardStickEvent { .StickTrigger = {InputAnalogEventTrigger::MOVEMENT}, .Stick = stick };
     auto result = ProcessStick(event);
-    Stick empty = {.Horizontal = 0.0f, .Vertical = 0.0f};
+    Stick empty = {.StickType = {.KeyboardStick = stick}, .Stick = {.Horizontal = 0.0f, .Vertical = 0.0f}};
     return result.IsActive ? result.InputState.Value.Stick : empty;
 }

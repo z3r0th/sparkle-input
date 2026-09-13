@@ -184,7 +184,8 @@ namespace Sparkle
             auto mouseStick = MouseStick::MouseStickEnum(i);
             if (MouseController->HasStickMoved(mouseStick))
             {
-                auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = MouseController->GetStick(MouseStick::MOUSE_MOVEMENT)},.ControllerType = InputControllerType::Mouse};
+                auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Stick = MouseController->GetStick(mouseStick)};
+                auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = stick},.ControllerType = InputControllerType::Mouse};
                 OnAnyMouseStickMovedEvent(MouseController, state, mouseStick);
             }
         }
@@ -196,11 +197,12 @@ namespace Sparkle
             {
                 for (int i = 0 ; i < GamepadStick::Count; ++i)
                 {
-                    GamepadStick stick = GamepadStick::GamepadStickEnum(i);
-                    if (GamepadController->HasStickMoved(stick))
+                    GamepadStick stickType = GamepadStick::GamepadStickEnum(i);
+                    if (GamepadController->HasStickMoved(stickType))
                     {
-                        auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = GamepadController->GetStick(stick)}, .ControllerType = InputControllerType::Gamepad};
-                        OnAnyGamepadStickMovedEvent(GamepadController, state, stick);
+                        auto stick = Stick {.StickType = {.GamepadStick = stickType}, .Stick = GamepadController->GetStick(stickType)};
+                        auto state = InputState {.Type = InputType::Stick, .Value = {.Stick = stick}};
+                        OnAnyGamepadStickMovedEvent(GamepadController, state, stickType);
                     }
                 }
             }
@@ -318,7 +320,7 @@ namespace Sparkle
         return controller->GetAxis(axis);
     }
 
-    Stick Input::GetGamepadStick(GamepadStick stick, int controllerIndex) const
+    InputVector Input::GetGamepadStick(GamepadStick stick, int controllerIndex) const
     {
         auto controller= GetController(controllerIndex);
         if (controller == nullptr)
@@ -374,12 +376,11 @@ namespace Sparkle
                 InputEventType eventType = InputEventType::GamePadButtonEventType;
                 auto inputState = InputState {
                     .Type = InputType::Button,
-                    .Value = {.ButtonPressed = gamepad->IsButtonPressed(pressedButton)},
+                    .Value = {.Button = {.ButtonType = {.GamepadButton = pressedButton}, .Pressed = true}},
                     .ControllerType = InputControllerType::Gamepad
                 };
-                auto button = InputButton { .GamepadButton = pressedButton };
-                OnAnyKeyJustPressedEvent(GetAssignedPlayerInputController(gamepad), eventType, inputState, button);
-                OnGamepadJustPressedEvent(gamepad, inputState, button);
+                OnAnyKeyJustPressedEvent(GetAssignedPlayerInputController(gamepad), eventType, inputState);
+                OnGamepadJustPressedEvent(gamepad, inputState);
             }
             if (gamepad->AnyAxisMoved() != GamepadAxis::AXIS_NONE)
             {}
@@ -395,16 +396,15 @@ namespace Sparkle
             InputEventType eventType = InputEventType::MouseButtonEventType;
             auto inputState = InputState {
                     .Type = InputType::Button,
-                    .Value = {.ButtonPressed = MouseController->IsButtonPressed(pressedButton)},
+                    .Value = {.Button = {.ButtonType = {.MouseButton = pressedButton}, .Pressed = true} },
                     .ControllerType = InputControllerType::Mouse
             };
-            auto button = InputButton { .MouseButton = pressedButton };
             auto players = GetAssignedMousePlayerInputControllers();
             for (auto & player : players)
             {
-                OnAnyKeyJustPressedEvent(player, eventType, inputState, button);
+                OnAnyKeyJustPressedEvent(player, eventType, inputState);
             }
-            OnMouseJustPressedEvent(MouseController, inputState, button);
+            OnMouseJustPressedEvent(MouseController, inputState);
         }
         if (MouseController->AnyAxisMoved() != MouseAxis::AXIS_NONE)
         {}
@@ -419,16 +419,15 @@ namespace Sparkle
             InputEventType eventType = InputEventType::KeyboardButtonEventType;
             auto inputState = InputState {
                     .Type = InputType::Button,
-                    .Value = { .ButtonPressed = true },
+                    .Value = { .Button = {.ButtonType={.KeyboardButton = pressedButton}, .Pressed = true} },
                     .ControllerType = InputControllerType::Keyboard
             };
-            auto button = InputButton { .KeyboardButton = pressedButton };
             auto players = GetAssignedKeyboardPlayerInputControllers();
             for (auto & player : players)
             {
-                OnAnyKeyJustPressedEvent(player, eventType, inputState, button);
+                OnAnyKeyJustPressedEvent(player, eventType, inputState);
             }
-            OnKeyboardJustPressedEvent(KeyboardController, inputState, button);
+            OnKeyboardJustPressedEvent(KeyboardController, inputState);
         }
     }
 
@@ -511,7 +510,7 @@ namespace Sparkle
         return MouseController->IsButtonJustReleased(button);
     }
 
-    Stick Input::GetMouseStick(MouseStick stick) const
+    InputVector Input::GetMouseStick(MouseStick stick) const
     {
         return MouseController->GetStick(stick);
     }

@@ -19,7 +19,7 @@ void Sparkle::GamepadController::ClearController()
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
 
-    struct Stick emptyStick{};
+    struct InputVector emptyStick{};
     std::fill(Stick.begin(), Stick.end(), emptyStick);
     std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
@@ -76,7 +76,7 @@ void Sparkle::GamepadController::Update() {
         };
         LastStick[i] = Stick[i];
         GamepadStick UpdateStick = static_cast<GamepadStick::GamepadStickEnum>(i);
-        struct Stick stickValue = {0, 0 };
+        struct InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
         const std::vector<GamepadAxis>& axisAnalyses = StickAxis.at(UpdateStick);
         int axisIndex = 0;
         for (auto& axisEnum : axisAnalyses)
@@ -101,7 +101,7 @@ Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
 
-    struct Stick emptyStick{};
+    struct InputVector emptyStick{};
     std::fill(Stick.begin(), Stick.end(), emptyStick);
     std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }
@@ -118,7 +118,7 @@ Sparkle::GamepadController::GamepadController():
     std::fill(Axis.begin(), Axis.end(), false);
     std::fill(LastAxis.begin(), LastAxis.end(), false);
 
-    struct Stick emptyStick{};
+    struct InputVector emptyStick{};
     std::fill(Stick.begin(), Stick.end(), emptyStick);
     std::fill(LastStick.begin(), LastStick.end(), emptyStick);
 }

@@ -60,7 +60,7 @@ namespace Sparkle
         {
             LastStick[i] = Stick[i];
             MouseStick UpdateStick = static_cast<MouseStick::MouseStickEnum>(i);
-            struct Stick stickValue = {0, 0 };
+            struct InputVector stickValue = {0, 0 };
             const std::vector<MouseAxis>& axisAnalyses = StickAxis.at(UpdateStick);
             int axisIndex = 0;
             for (auto& axisEnum : axisAnalyses)
@@ -80,8 +80,10 @@ namespace Sparkle
         if (isButtonJustPressed && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_PRESSED
             || isButtonJustReleased && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::JUST_RELEASED
             || IsButtonPressed(mouseEvent.Button) && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
-            || !IsButtonPressed(mouseEvent.Button) && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::UP) {
-            return Sparkle::InputResult{true, {.Type = InputType::Button, .Value = {.ButtonPressed = IsButtonPressed(mouseEvent.Button)}}};
+            || !IsButtonPressed(mouseEvent.Button) && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::UP)
+        {
+            Button button = {.ButtonType = {.MouseButton = mouseEvent.Button}, .Pressed = IsButtonPressed(mouseEvent.Button)};
+            return Sparkle::InputResult{true, {.Type = InputType::Button, .Value = {.Button = button}}};
         }
         return Sparkle::InputResult{false};
     }
@@ -103,14 +105,15 @@ namespace Sparkle
 
     InputResult MouseController::ProcessStick(const InputMouseStickEvent &event)
     {
-        struct Stick stickValue = Stick[event.Stick];
+        struct InputVector stickValue = Stick[event.Stick];
         bool hasStickMoved = HasStickMoved(event.Stick);
         if (hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
             || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
             || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
 
         {
-            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stickValue}}};
+            struct Stick stick = {.StickType = {.MouseStick = event.Stick}, .Stick = stickValue};
+            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stick}}};
         }
         return InputResult{false};
     }

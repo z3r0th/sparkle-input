@@ -12,13 +12,14 @@ namespace Sparkle
     {
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasStickMoved = GamepadController->HasStickMoved(event.Stick);
-        Stick stickValue = GamepadController->GetStick(event.Stick);
+        InputVector stickValue = GamepadController->GetStick(event.Stick);
         if (event.StickTrigger == InputAnalogEventTrigger::CONTINUOUS
             || hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
             || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
             || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
         {
-            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stickValue}}};
+            Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Stick = stickValue};
+            return InputResult{true, InputState{.Type=InputType::Stick, .Value={.Stick = stick}}};
         }
         return InputResult{false};
     }
@@ -33,7 +34,8 @@ namespace Sparkle
             || GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
             || !GamepadController->IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::UP)
         {
-            return InputResult{true, InputState{.Type=InputType::Button, .Value={.ButtonPressed = GamepadController->IsButtonPressed(event.Button)}}};
+            Button button = {.ButtonType = {.GamepadButton = event.Button}, .Pressed = GamepadController->IsButtonPressed(event.Button)};
+            return InputResult{true, InputState{.Type=InputType::Button, .Value={.Button = button}}};
         }
         return InputResult{false};
     }
