@@ -90,7 +90,8 @@ namespace Sparkle
     {
         bool hasAxisMoved = HasAxisMoved(event.Axis);
         float axisValue = GetAxis(event.Axis);
-        if (hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
+        if (event.AxisTrigger == InputAnalogEventTrigger::CONTINUOUS
+            || hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
             || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
             || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {

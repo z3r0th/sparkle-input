@@ -77,8 +77,7 @@ namespace Sparkle
 
         explicit Input();
         ~Input();
-
-        // TODO: Maybe we should have a Continuos Movement at InputAnalogEventTrigger
+        
         // TODO: Review Naming events (MouseAxis::AXIS_X vs GamepadAxis::AXIS_RIGHT_X)
         // TODO: Should we add a Button/Axis/Stick specific type to the Action callback?
         // TODO: Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;

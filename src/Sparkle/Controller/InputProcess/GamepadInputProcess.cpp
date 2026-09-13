@@ -13,7 +13,8 @@ namespace Sparkle
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasStickMoved = GamepadController->HasStickMoved(event.Stick);
         Stick stickValue = GamepadController->GetStick(event.Stick);
-        if (hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
+        if (event.StickTrigger == InputAnalogEventTrigger::CONTINUOUS
+            || hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
             || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
             || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
         {
@@ -42,7 +43,8 @@ namespace Sparkle
         assert(GamepadController && "GamepadController should never be NULL");
         bool hasAxisMoved = GamepadController->HasAxisMoved(event.Axis);
         float axisValue = GamepadController->GetAxis(event.Axis);
-        if (hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
+        if (event.AxisTrigger == InputAnalogEventTrigger::CONTINUOUS
+            || hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
             || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
             || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {

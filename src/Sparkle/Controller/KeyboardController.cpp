@@ -14,6 +14,7 @@ float GetValueFromAxis(Sparkle::KeyboardController* controller, Sparkle::Keyboar
     switch (trigger)
     {
         case Sparkle::InputAnalogEventTrigger::MOVEMENT:
+        case Sparkle::InputAnalogEventTrigger::CONTINUOUS:
             if (motion1Button) return axis.Motion1.Range == Sparkle::KeyboardAxis::POSITIVE ? 1.0f : -1.0f;
             if (motion2Button) return axis.Motion2.Range == Sparkle::KeyboardAxis::POSITIVE ? 1.0f : -1.0f;
         case Sparkle::InputAnalogEventTrigger::FULL_POSITIVE:

@@ -844,7 +844,9 @@ E(Count)
 #define INPUT_STICK_EVENT_TRIGGER_LIST(E) \
 E(MOVEMENT) \
 E(FULL_POSITIVE) \
-E(FULL_NEGATIVE)
+E(FULL_NEGATIVE) \
+E(CONTINUOUS)
+
     public:
         enum InputAnalogEventTriggerEnum
         {
