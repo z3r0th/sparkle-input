@@ -8,6 +8,8 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnusedParameter"
 
+
+#pragma region Input Actions
 Sparkle::InputAction PauseAction("Pause");
 Sparkle::InputAction JumpAction("Jump");
 Sparkle::InputAction FireAction("Fire");
@@ -21,6 +23,9 @@ Sparkle::InputAction MoveRightAction("Right");
 Sparkle::InputAction MoveUpAction("Up");
 Sparkle::InputAction MoveDownAction("Down");
 Sparkle::InputAction ConfirmAction("Confirm");
+#pragma endregion
+
+#pragma region Input Maps
 
 Sparkle::InputMap CreateInGameMap()
 {
@@ -181,6 +186,8 @@ Sparkle::InputMap SecondPlayerInputMap = CreateSecondPlayerMap();
 Sparkle::InputMap InPauseMenuInputMap = CreateInPauseMenuMap();
 Sparkle::InputMap InGameInputMap = CreateInGameMap();
 
+#pragma endregion
+
 std::shared_ptr<Sparkle::PlayerInputController> firstPlayer;
 std::shared_ptr<Sparkle::PlayerInputController> secondPlayer;
 Sparkle::InputAction lastAction;
@@ -260,6 +267,22 @@ void OnInput(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle
     }
 }
 
+void SetupInputActionCallback(const std::shared_ptr<Sparkle::PlayerInputController>& player)
+{
+    player->OnAction(JumpAction).Bind(&OnInput);
+    player->OnAction(MoveAction).Bind(&OnInput);
+    player->OnAction(AimAction).Bind(&OnInput);
+    player->OnAction(NextItemAction).Bind(&OnInput);
+    player->OnAction(PreviousItemAction).Bind(&OnInput);
+
+    // PAUSE MENU ACTIONS:
+    player->OnAction(MoveLeftAction).Bind(&OnInput);
+    player->OnAction(MoveRightAction).Bind(&OnInput);
+    player->OnAction(MoveUpAction).Bind(&OnInput);
+    player->OnAction(MoveDownAction).Bind(&OnInput);
+    player->OnAction(ConfirmAction).Bind(&OnInput);
+}
+
 int main(int argc, char* argv[])
 {
     Sparkle::Input input;
@@ -300,37 +323,13 @@ int main(int argc, char* argv[])
     firstPlayer->OnAction(ResumeAction).Bind(&OnGameResumed);
     secondPlayer->OnAction(ResumeAction).Bind(&OnGameResumed);
 
+    // Fire Action callback
     firstPlayer->OnAction(FireAction).Bind(&OnFire);
     secondPlayer->OnAction(FireAction).Bind(&OnFire);
 
-    firstPlayer->OnAction(JumpAction).Bind(&OnInput);
-    firstPlayer->OnAction(MoveAction).Bind(&OnInput);
-    firstPlayer->OnAction(AimAction).Bind(&OnInput);
-    firstPlayer->OnAction(NextItemAction).Bind(&OnInput);
-    firstPlayer->OnAction(PreviousItemAction).Bind(&OnInput);
-
-    // PAUSE MENU ACTIONS:
-    firstPlayer->OnAction(MoveLeftAction).Bind(&OnInput);
-    firstPlayer->OnAction(MoveRightAction).Bind(&OnInput);
-    firstPlayer->OnAction(MoveUpAction).Bind(&OnInput);
-    firstPlayer->OnAction(MoveDownAction).Bind(&OnInput);
-    firstPlayer->OnAction(ConfirmAction).Bind(&OnInput);
-
-    // Second Player
-    secondPlayer->OnAction(JumpAction).Bind(&OnInput);
-    secondPlayer->OnAction(MoveAction).Bind(&OnInput);
-    secondPlayer->OnAction(AimAction).Bind(&OnInput);
-    secondPlayer->OnAction(NextItemAction).Bind(&OnInput);
-    secondPlayer->OnAction(PreviousItemAction).Bind(&OnInput);
-
-    // PAUSE MENU ACTIONS:
-    secondPlayer->OnAction(MoveLeftAction).Bind(&OnInput);
-    secondPlayer->OnAction(MoveRightAction).Bind(&OnInput);
-    secondPlayer->OnAction(MoveUpAction).Bind(&OnInput);
-    secondPlayer->OnAction(MoveDownAction).Bind(&OnInput);
-    secondPlayer->OnAction(ConfirmAction).Bind(&OnInput);
-
-    // TODO: Refactor and add comments
+    // setup generic callbacks for all remaining actions
+    SetupInputActionCallback(firstPlayer);
+    SetupInputActionCallback(secondPlayer);
 
     return InitializeSDLAndRunInput(input);
 }
