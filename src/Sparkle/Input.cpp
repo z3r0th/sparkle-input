@@ -39,12 +39,12 @@ namespace Sparkle
         assert(false);
     }
 
-    std::shared_ptr<GamepadController> Input::GetController(unsigned int index) const
+    std::weak_ptr<GamepadController> Input::GetGamepadController(unsigned int index) const
     {
         auto it = GamepadControllers.find(index);
         if (it == GamepadControllers.end())
         {
-            return nullptr;
+            return {};
         }
         return it->second;
     }
@@ -278,57 +278,57 @@ namespace Sparkle
 
     [[maybe_unused]] bool Input::IsGamepadButtonPressed(GamepadButtonType button, unsigned int controllerIndex) const
     {
-        auto controller = GetController(controllerIndex);
-        if (controller == nullptr)
+        auto controller = GetGamepadController(controllerIndex);
+        if (controller.expired())
         {
             return false;
         }
 
-        return controller->IsButtonPressed(button);
+        return controller.lock()->IsButtonPressed(button);
     }
 
     bool Input::IsGamepadButtonJustPressed(GamepadButtonType button, unsigned int controllerIndex) const
     {
-        auto controller = GetController(controllerIndex);
-        if (controller == nullptr)
+        auto controller = GetGamepadController(controllerIndex);
+        if (controller.expired())
         {
             return false;
         }
 
-        return controller->IsButtonJustPressed(button);
+        return controller.lock()->IsButtonJustPressed(button);
     }
 
     bool Input::IsGamepadButtonJustReleased(GamepadButtonType button, unsigned int controllerIndex) const
     {
-        auto controller = GetController(controllerIndex);
-        if (controller == nullptr)
+        auto controller = GetGamepadController(controllerIndex);
+        if (controller.expired())
         {
             return false;
         }
 
-        return controller->IsButtonJustReleased(button);
+        return controller.lock()->IsButtonJustReleased(button);
     }
 
     float Input::GetGamepadAxis(GamepadAxisType axis, int controllerIndex) const
     {
-        auto controller= GetController(controllerIndex);
-        if (controller == nullptr)
+        auto controller= GetGamepadController(controllerIndex);
+        if (controller.expired())
         {
             return 0.0;
         }
 
-        return controller->GetAxis(axis);
+        return controller.lock()->GetAxis(axis);
     }
 
     InputVector Input::GetGamepadStick(GamepadStickType stick, int controllerIndex) const
     {
-        auto controller= GetController(controllerIndex);
-        if (controller == nullptr)
+        auto controller= GetGamepadController(controllerIndex);
+        if (controller.expired())
         {
             return {};
         }
 
-        return controller->GetStick(stick);
+        return controller.lock()->GetStick(stick);
     }
 
     std::weak_ptr<PlayerInputController> Input::GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad)

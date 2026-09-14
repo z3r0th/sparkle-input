@@ -73,9 +73,6 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        // TODO: * Can we add auto Convertion functions to the Event classes, so we get the type directly from InputState. For example: bool ButtonPressed = InputState;
-
-        // TODO: Make at least one complete example
         // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
 
         // TODO: Documentation
@@ -231,7 +228,7 @@ namespace Sparkle
         /// It might be already assigned to a player
         /// \param index GamepadController index
         /// \return
-        [[maybe_unused]][[nodiscard]] std::shared_ptr<GamepadController> GetController(unsigned int index) const;
+        [[maybe_unused]][[nodiscard]] std::weak_ptr<GamepadController> GetGamepadController(unsigned int index) const;
 
         ///  Remove Gamepad from player - if any assigned. This do not destroy the GamepadController.
         /// \param playerInputController the player input controller to remove the gamepad from
