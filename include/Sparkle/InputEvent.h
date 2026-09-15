@@ -9,6 +9,7 @@
 
 #include <string>
 #include <cassert>
+#include <utility>
 
 namespace Sparkle
 {
@@ -1271,7 +1272,7 @@ E(UP)
                                     rhs.Event.MouseStickEvent.StickTrigger,
                                     rhs.Event.MouseStickEvent.Stick);
             }
-            assert(false && "No input event type verified");
+            return false;
         }
         bool operator ==(const InputTrigger& rhs) const
         {
@@ -1340,7 +1341,7 @@ E(UP)
                                     rhs.Event.MouseStickEvent.StickTrigger,
                                     rhs.Event.MouseStickEvent.Stick);
             }
-            assert(false && "No input event type verified");
+            return false;
         }
     };
 }

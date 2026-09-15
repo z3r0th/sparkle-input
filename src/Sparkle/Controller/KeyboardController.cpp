@@ -17,11 +17,13 @@ float GetValueFromAxis(Sparkle::KeyboardController* controller, Sparkle::Keyboar
         case Sparkle::InputAnalogEventTrigger::CONTINUOUS:
             if (motion1Button) return axis.Motion1.Range == Sparkle::KeyboardAxisType::POSITIVE ? 1.0f : -1.0f;
             if (motion2Button) return axis.Motion2.Range == Sparkle::KeyboardAxisType::POSITIVE ? 1.0f : -1.0f;
+            break;
         case Sparkle::InputAnalogEventTrigger::FULL_POSITIVE:
             if (motion1Button && axis.Motion1.Range == Sparkle::KeyboardAxisType::POSITIVE || motion1Button && axis.Motion1.Range == Sparkle::KeyboardAxisType::FULL)
                 return 1.0f;
             if (motion2Button && axis.Motion2.Range == Sparkle::KeyboardAxisType::POSITIVE || motion2Button && axis.Motion2.Range == Sparkle::KeyboardAxisType::FULL)
                 return 1.0f;
+            break;
         case Sparkle::InputAnalogEventTrigger::FULL_NEGATIVE:
             if (motion1Button && axis.Motion1.Range == Sparkle::KeyboardAxisType::NEGATIVE || motion1Button && axis.Motion1.Range == Sparkle::KeyboardAxisType::FULL)
                 return -1.0f;
@@ -114,7 +116,7 @@ Sparkle::InputResult Sparkle::KeyboardController::ProcessStick(const Sparkle::In
     if ((IsButtonJustReleased(keyboardEvent.Stick.Vertical.Motion1.Button) || IsButtonJustReleased(keyboardEvent.Stick.Vertical.Motion2.Button)
          || IsButtonJustReleased(keyboardEvent.Stick.Horizontal.Motion1.Button) || IsButtonJustReleased(keyboardEvent.Stick.Horizontal.Motion2.Button)) &&
         (!IsButtonPressed(keyboardEvent.Stick.Vertical.Motion1.Button) && !IsButtonPressed(keyboardEvent.Stick.Vertical.Motion2.Button) &&
-         !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion1.Button) || !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion2.Button)))
+         !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion1.Button) && !IsButtonPressed(keyboardEvent.Stick.Horizontal.Motion2.Button)))
     {
         Stick stick = {.StickType = {.KeyboardStick = keyboardEvent.Stick}, .Value = {.Horizontal = 0.0f, .Vertical = 0.0f}};
         return Sparkle::InputResult{true, {.Type = InputType::STICK, .Input = {.Stick = stick}}};

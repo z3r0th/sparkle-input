@@ -54,6 +54,11 @@ namespace Sparkle
     {
         assert(GamepadController == nullptr);
         GamepadController = gamepadController.lock();
+        if (GamepadController == nullptr)
+        {
+            SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Couldn't lock to gamepad controller.");
+            return;
+        }
         GamepadController->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
         GamepadController->OnDisconnected().Bind(&PlayerInputController::OnGamepadDisconnected, this);
 

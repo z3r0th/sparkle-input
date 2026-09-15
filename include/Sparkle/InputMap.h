@@ -192,6 +192,10 @@ namespace Sparkle
                 actions.push_back(ButtonAction.second);
             }
 
+            std::sort(actions.begin(), actions.end());
+            auto it = std::unique(actions.begin(), actions.end());
+            actions.erase(it, actions.end());
+
             return actions;
         }
 
@@ -208,6 +212,10 @@ namespace Sparkle
                     events.push_back(ButtonAction.first);
                 }
             }
+
+            std::sort(events.begin(), events.end());
+            auto it = std::unique(events.begin(), events.end());
+            events.erase(it, events.end());
 
             return events;
         }

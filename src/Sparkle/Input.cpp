@@ -35,8 +35,7 @@ namespace Sparkle
             }
         }
 
-        // should never reach this part of code
-        assert(false);
+        return {};
     }
 
     std::weak_ptr<GamepadController> Input::GetGamepadController(unsigned int index) const
@@ -75,7 +74,7 @@ namespace Sparkle
         }
 
         // should never reach this part of code
-        assert(false);
+        return -1;
     }
 
     void Input::GamepadControllerDisconnected(const ControllerDeviceEvent &event)
@@ -101,7 +100,6 @@ namespace Sparkle
             return;
         }
         SDL_Log("Connecting Device {%u}", device);
-        auto sdl_controller = SDL_GameControllerOpen(device);
         auto gamepad = GetInactiveOrNewGamepadController(device);
         if (gamepad->IsActive())
         {
@@ -109,12 +107,14 @@ namespace Sparkle
             // In such cases, the gamepad still holds the reference and should not call SetController again
             return;
         }
+        auto sdl_controller = SDL_GameControllerOpen(device);
         gamepad->SetController(sdl_controller, device);
     }
 
     std::weak_ptr<PlayerInputController> Input::GetNewPlayerInputController()
     {
         auto index = GetNextPlayerIndex();
+        if (index == -1) return {};
         assert(PlayerInputControllers.find(index) == PlayerInputControllers.end());
         PlayerInputControllers[index] = CreateInputController(index);
         return { PlayerInputControllers[index] };

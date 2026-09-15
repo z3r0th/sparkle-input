@@ -19,8 +19,8 @@ namespace Sparkle
     class InputAction
     {
     protected:
-        std::string ActionDescription;
         std::string ActionName;
+        std::string ActionDescription;
 
     public:
         explicit InputAction(std::string  actionName, std::string  actionDescription = "")

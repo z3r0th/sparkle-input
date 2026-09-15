@@ -60,8 +60,8 @@ namespace Sparkle
         /// Private constructor that Input (friend class) can access
         explicit PlayerInputController(unsigned int index) :
                 PlayerInputIndex(index),
-                OnGamepadConnectedEvent(std::string(PLAYER_CONTROLLER_CONNECTED_EVENT_NAME) + std::to_string(index)),
                 OnGamepadDisconnectedEvent(std::string(PLAYER_CONTROLLER_DISCONNECTED_EVENT_NAME) + std::to_string(index)),
+                OnGamepadConnectedEvent(std::string(PLAYER_CONTROLLER_CONNECTED_EVENT_NAME) + std::to_string(index)),
                 OnInputMapUpdatedEvent(std::string(PLAYER_CONTROLLER_UPDATE_INPUT_MAP_EVENT_NAME) + std::to_string(index))
         { }
 
