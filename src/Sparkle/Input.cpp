@@ -124,7 +124,7 @@ namespace Sparkle
     {
         if (auto inputController = inputControllerPtr.lock())
         {
-            return RemovePlayerInputController(inputController->PlayerInputIndex);
+            return RemovePlayerInputController(inputController->GetPlayerInputIndex());
         }
 
         return false;
@@ -137,7 +137,7 @@ namespace Sparkle
         {
             return false;
         }
-        RemoveGamepadFromPlayer(it->second->GamepadController);
+        RemoveGamepadFromPlayer(it->second->GetGamepadController());
         it->second.reset();
         PlayerInputControllers.erase(it);
         return true;
@@ -162,7 +162,7 @@ namespace Sparkle
 
     void Input::RemoveGamepadControllerFrom(PlayerInputController *playerInputController)
     {
-        RemoveGamepadFromPlayer(playerInputController->GamepadController);
+        RemoveGamepadFromPlayer(playerInputController->GetGamepadController());
     }
 
     void Input::Update()
@@ -213,23 +213,20 @@ namespace Sparkle
     {
         if (auto playerInputController = playerInputControllerPtr.lock())
         {
-            if (playerInputController->RequestGamepad && playerInputController->GamepadController.expired())
+            if (playerInputController->IsRequestingGamepad() && playerInputController->GetGamepadController().expired())
             {
                 auto gamepadController = GetUnassignedGamepadController();
                 if (gamepadController != nullptr)
                 {
-                    playerInputController->RequestGamepad = false;
                     playerInputController->SetGamepadController(gamepadController);
                 }
             }
-            if (playerInputController->RequestKeyboard && playerInputController->KeyboardController.expired())
+            if (playerInputController->IsRequestingKeyboard() && playerInputController->GetKeyboardController().expired())
             {
-                playerInputController->RequestKeyboard = false;
                 playerInputController->SetKeyboardController(KeyboardController);
             }
-            if (playerInputController->RequestMouse && playerInputController->MouseController.expired())
+            if (playerInputController->IsRequestingMouse() && playerInputController->GetMouseController().expired())
             {
-                playerInputController->RequestMouse = false;
                 playerInputController->SetMouseController(MouseController);
             }
         }
@@ -337,7 +334,7 @@ namespace Sparkle
         auto gamepadController = gamepad.lock();
         for (const auto& it: PlayerInputControllers)
         {
-            if (it.second->GamepadController.lock() == gamepadController) return it.second;
+            if (it.second->GetGamepadController().lock() == gamepadController) return it.second;
         }
         return {};
     }
@@ -357,7 +354,7 @@ namespace Sparkle
             auto gamepadAssignedIt = PlayerInputControllers.find(playerInputController->GetPlayerInputIndex());
             if (gamepadAssignedIt == PlayerInputControllers.end()) return false;
             const auto& gamepadAssigned = *gamepadAssignedIt;
-            return gamepadAssigned.second->GamepadController.lock() == gamepad.lock();
+            return gamepadAssigned.second->GetGamepadController().lock() == gamepad.lock();
         }
 
         return false;
@@ -520,7 +517,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->MouseController.lock() == MouseController)
+            if (playerInputController->GetMouseController().lock() == MouseController)
             {
                 assignedPlayers.push_back(playerInputController);
             }
@@ -534,7 +531,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->KeyboardController.lock() == KeyboardController)
+            if (playerInputController->GetKeyboardController().lock() == KeyboardController)
             {
                 assignedPlayers.push_back(playerInputController);
             }

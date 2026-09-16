@@ -79,23 +79,13 @@ namespace Sparkle
         /// \param gamepadController to assign
         void SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController);
 
-        /// Disconnects from events and sets the GamepadController to null (reset)
-        /// Raises `OnGamepadDisconnectedEvent`
-        void RemoveGamepadController();
-
         /// Assigns the keyboardController and connects to the events.
         /// \param keyboardController to assign
         void SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController>& keyboardController);
 
-        /// Disconnects from events and sets the KeyboardController to null (reset)
-        void RemoveKeyboardController();
-
         /// Assigns the mouseController and connects to the events.
         /// \param mouseController to assign
         void SetMouseController(const std::weak_ptr<Sparkle::MouseController>& mouseController);
-
-        /// Disconnects from events and sets the MouseController to null (reset)
-        void RemoveMouseController();
 
     public:
         /// Bind to the action
@@ -103,6 +93,10 @@ namespace Sparkle
 
         /// PlayerInputController cannot be directly created, get it from Input
         PlayerInputController() = delete;
+
+        bool IsRequestingKeyboard() const { return RequestKeyboard; }
+        bool IsRequestingGamepad() const { return RequestGamepad; }
+        bool IsRequestingMouse() const { return RequestMouse; }
 
         /// Get this Player Input Controller Index.
         /// The index should always be valid and greater than -1
@@ -149,25 +143,15 @@ namespace Sparkle
         /// \return weak ptr to GamepadController
         [[maybe_unused]] [[nodiscard]] std::weak_ptr<Sparkle::GamepadController> GetGamepadController() const { return GamepadController; }
 
+        /// Disconnects from events and sets the GamepadController to null (reset)
+        /// Raises `OnGamepadDisconnectedEvent`
+        void RemoveGamepadController();
+
         /// Requests a controller to the Input.
         /// When a controller is available it will be assign to this PlayerInputController and the OnGamepadConnected callback will be called
         inline void AssignGamepad()
         {
             RequestGamepad = true;
-        }
-
-        /// Requests a keyboard to the Input.
-        /// When a controller is available it will be assign to this PlayerInputController
-        inline void AssignKeyboard()
-        {
-            RequestKeyboard = true;
-        }
-
-        /// Requests a Mouse to the Input.
-        /// When a controller is available it will be assign to this PlayerInputController
-        inline void AssignMouse()
-        {
-            RequestMouse = true;
         }
 
         /// Is this PlayerInputController's Gamepad assigned active and connected
@@ -193,6 +177,42 @@ namespace Sparkle
         [[maybe_unused]] [[nodiscard]] EventBinder<const std::weak_ptr<PlayerInputController>&>& OnGamepadConnected() { return OnGamepadConnectedEvent.GetBinder(); }
 
 #pragma endregion Gamepad Methods
+
+#pragma region Keyboard Methods
+
+        /// Requests a keyboard to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController
+        inline void AssignKeyboard()
+        {
+            RequestKeyboard = true;
+        }
+
+        /// GetKeyboardController
+        /// \return weak ptr to KeyboardController
+        std::weak_ptr<class KeyboardController> GetKeyboardController() const { return KeyboardController; }
+
+        /// Disconnects from events and sets the KeyboardController to null (reset)
+        void RemoveKeyboardController();
+
+#pragma endregion
+
+#pragma region Mouse Methods
+
+        /// Requests a Mouse to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController
+        inline void AssignMouse()
+        {
+            RequestMouse = true;
+        }
+
+        /// GetMouseController
+        /// \return weak ptr to MouseController
+        std::weak_ptr<class MouseController> GetMouseController() const { return MouseController; }
+
+        /// Disconnects from events and sets the MouseController to null (reset)
+        void RemoveMouseController();
+
+#pragma endregion
 
         /// Clears all callbacks including input connection, input map update and gamepad/kbm input
         [[maybe_unused]] void Clear()

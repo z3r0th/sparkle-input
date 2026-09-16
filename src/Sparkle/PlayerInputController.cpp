@@ -71,6 +71,7 @@ namespace Sparkle
             return;
         }
         GamepadController = gamepadController;
+        RequestGamepad = false;
         if (auto gamepadControllerPtr = GamepadController.lock(); gamepadControllerPtr != nullptr)
         {
             gamepadControllerPtr->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
@@ -112,6 +113,7 @@ namespace Sparkle
     {
         assert(KeyboardController.expired());
         KeyboardController = keyboardController;
+        RequestKeyboard = false;
     }
 
     void PlayerInputController::RemoveKeyboardController()
@@ -123,6 +125,7 @@ namespace Sparkle
     {
         assert(MouseController.expired());
         MouseController = mouseController;
+        RequestMouse = false;
     }
 
     void PlayerInputController::RemoveMouseController()
