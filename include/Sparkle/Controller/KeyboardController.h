@@ -72,7 +72,7 @@ namespace Sparkle
         {
             for(int i = 0 ; i < Buttons.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return KeyboardButtonType(KeyboardButtonType::KeyboardButtonEnum(i));
+                if (Buttons[i] && !LastButtons[i]) return {KeyboardButtonType::KeyboardButtonEnum(i)};
             }
 
             return {KeyboardButtonType::KeyboardButtonEnum::KEY_NONE};

@@ -22,7 +22,6 @@ using RawGameController = SDL_GameController;
 
 namespace Sparkle
 {
-    class GamepadInputProcess;
     class InputTrigger;
     class InputAction;
     class Input;
@@ -75,7 +74,7 @@ namespace Sparkle
     public:
         explicit GamepadController(RawGameController *controller);
         explicit GamepadController();
-        virtual ~GamepadController();
+        virtual ~GamepadController() = default;
 
         InputResult ProcessEvent(const InputTrigger &event);
 

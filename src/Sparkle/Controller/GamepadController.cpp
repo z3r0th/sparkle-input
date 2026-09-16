@@ -181,5 +181,3 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessAxis(const InputGamepadA
     }
     return InputResult{false};
 }
-
-Sparkle::GamepadController::~GamepadController() = default;
