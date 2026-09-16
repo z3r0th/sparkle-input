@@ -40,9 +40,9 @@ namespace Sparkle
     private:
         unsigned int PlayerInputIndex = -1;
 
-        std::shared_ptr<KeyboardController> KeyboardController = nullptr;
-        std::shared_ptr<GamepadController> GamepadController = nullptr;
-        std::shared_ptr<MouseController> MouseController = nullptr;
+        std::weak_ptr<KeyboardController> KeyboardController;
+        std::weak_ptr<GamepadController> GamepadController;
+        std::weak_ptr<MouseController> MouseController;
 
         std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>> ActionEventMap;
 
@@ -172,11 +172,11 @@ namespace Sparkle
 
         /// Is this PlayerInputController's Gamepad assigned active and connected
         /// \return
-        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && GamepadController->IsActive(); }
+        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && GamepadController.lock()->IsActive(); }
 
         /// Does this PlayerInputController has a gamepad assigned
         /// \return
-        [[nodiscard]] bool IsGamepadAssigned() { return GamepadController != nullptr; }
+        [[nodiscard]] bool IsGamepadAssigned() { return !GamepadController.expired(); }
 
         /// Binding to Gamepad Disconnected event
         /// \example OnGamepadDisconnected().Bind(&Class::Method, &object);

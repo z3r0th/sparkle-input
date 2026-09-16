@@ -213,7 +213,7 @@ namespace Sparkle
     {
         if (auto playerInputController = playerInputControllerPtr.lock())
         {
-            if (playerInputController->RequestGamepad && playerInputController->GamepadController == nullptr)
+            if (playerInputController->RequestGamepad && playerInputController->GamepadController.expired())
             {
                 auto gamepadController = GetUnassignedGamepadController();
                 if (gamepadController != nullptr)
@@ -222,15 +222,15 @@ namespace Sparkle
                     playerInputController->SetGamepadController(gamepadController);
                 }
             }
-            if (playerInputController->RequestKeyboard && playerInputController->KeyboardController == nullptr)
+            if (playerInputController->RequestKeyboard && playerInputController->KeyboardController.expired())
             {
                 playerInputController->RequestKeyboard = false;
-                playerInputController->KeyboardController = KeyboardController;
+                playerInputController->SetKeyboardController(KeyboardController);
             }
-            if (playerInputController->RequestMouse && playerInputController->MouseController == nullptr)
+            if (playerInputController->RequestMouse && playerInputController->MouseController.expired())
             {
                 playerInputController->RequestMouse = false;
-                playerInputController->MouseController = MouseController;
+                playerInputController->SetMouseController(MouseController);
             }
         }
     }
@@ -333,14 +333,12 @@ namespace Sparkle
 
     std::weak_ptr<PlayerInputController> Input::GetAssignedPlayerInputController(const std::weak_ptr<GamepadController>& gamepad)
     {
-        if (auto gamepadController = gamepad.lock())
+        if (gamepad.expired()) return {};
+        auto gamepadController = gamepad.lock();
+        for (const auto& it: PlayerInputControllers)
         {
-            for (const auto& it: PlayerInputControllers)
-            {
-                if (it.second->GamepadController == gamepadController) return it.second;
-            }
+            if (it.second->GamepadController.lock() == gamepadController) return it.second;
         }
-
         return {};
     }
 
@@ -353,12 +351,13 @@ namespace Sparkle
 
     bool Input::IsGamepadAssigned(const std::weak_ptr<GamepadController>& gamepad, const std::weak_ptr<PlayerInputController>& player)
     {
+        if (gamepad.expired() || player.expired()) return false;
         if (auto playerInputController = player.lock())
         {
             auto gamepadAssignedIt = PlayerInputControllers.find(playerInputController->GetPlayerInputIndex());
             if (gamepadAssignedIt == PlayerInputControllers.end()) return false;
             const auto& gamepadAssigned = *gamepadAssignedIt;
-            return gamepadAssigned.second->GamepadController == gamepad.lock();
+            return gamepadAssigned.second->GamepadController.lock() == gamepad.lock();
         }
 
         return false;
@@ -378,7 +377,10 @@ namespace Sparkle
                     .Input = {.Button = {.ButtonType = {.GamepadButton = pressedButton}, .Pressed = true}},
                     .ControllerType = InputControllerType::GAMEPAD
                 };
-                OnAnyKeyJustPressedEvent(GetAssignedPlayerInputController(gamepad), inputState);
+                if (auto player = GetAssignedPlayerInputController(gamepad); !player.expired())
+                {
+                    OnAnyKeyJustPressedEvent(player, inputState);
+                }
                 OnGamepadJustPressedEvent(gamepad, inputState);
             }
             if (gamepad->AnyAxisMoved() != GamepadAxisType::AXIS_NONE)
@@ -518,7 +520,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->MouseController == MouseController)
+            if (playerInputController->MouseController.lock() == MouseController)
             {
                 assignedPlayers.push_back(playerInputController);
             }
@@ -532,7 +534,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->KeyboardController == KeyboardController)
+            if (playerInputController->KeyboardController.lock() == KeyboardController)
             {
                 assignedPlayers.push_back(playerInputController);
             }

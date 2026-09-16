@@ -12,39 +12,50 @@ namespace Sparkle
         {
             const auto event = ButtonAction.first;
 
-            if (GamepadController != nullptr && GamepadController->IsActive())
+            if (auto gamepadController = GamepadController.lock(); gamepadController != nullptr)
             {
-                if (const auto Result = GamepadController->ProcessEvent(event); Result.IsActive)
+                if (gamepadController != nullptr && gamepadController->IsActive())
                 {
-                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                    auto it = ActionEventMap.find(ButtonAction.second);
-                    if (it == ActionEventMap.end()) continue;
-                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                    continue;
+                    if (const auto Result = gamepadController->ProcessEvent(event); Result.IsActive)
+                    {
+                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                        auto it = ActionEventMap.find(ButtonAction.second);
+                        if (it == ActionEventMap.end()) continue;
+                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                        continue;
+                    }
                 }
             }
 
-            if (KeyboardController != nullptr && KeyboardController->IsActive())
+
+            if (auto keyboardController = KeyboardController.lock(); keyboardController != nullptr)
             {
-                if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
+                if (keyboardController != nullptr && keyboardController->IsActive())
                 {
-                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                    auto it = ActionEventMap.find(ButtonAction.second);
-                    if (it == ActionEventMap.end()) continue;
-                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                    continue;
+                    if (const auto Result = keyboardController->ProcessEvent(event); Result.IsActive)
+                    {
+                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                        auto it = ActionEventMap.find(ButtonAction.second);
+                        if (it == ActionEventMap.end()) continue;
+                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                        continue;
+                    }
                 }
             }
 
-            if (MouseController != nullptr && MouseController->IsActive())
+
+            if (auto mouseController = MouseController.lock(); mouseController != nullptr)
             {
-                if (const auto Result = MouseController->ProcessEvent(event); Result.IsActive)
+                if (mouseController != nullptr && mouseController->IsActive())
                 {
-                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                    auto it = ActionEventMap.find(ButtonAction.second);
-                    if (it == ActionEventMap.end()) continue;
-                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                    continue;
+                    if (const auto Result = mouseController->ProcessEvent(event); Result.IsActive)
+                    {
+                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                        auto it = ActionEventMap.find(ButtonAction.second);
+                        if (it == ActionEventMap.end()) continue;
+                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                        continue;
+                    }
                 }
             }
         }
@@ -52,29 +63,36 @@ namespace Sparkle
 
     void PlayerInputController::SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController)
     {
-        assert(GamepadController == nullptr);
-        GamepadController = gamepadController.lock();
-        if (GamepadController == nullptr)
+        assert(GamepadController.expired());
+        GamepadController.reset();
+        if (gamepadController.expired())
         {
-            SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Couldn't lock to gamepad controller.");
+            SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Gamepad controller is invalid. Aborting.");
             return;
         }
-        GamepadController->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
-        GamepadController->OnDisconnected().Bind(&PlayerInputController::OnGamepadDisconnected, this);
-
-        // if the gamepad is active, it is already connected. Call the event as we are just subscribing to an already connected controller
-        if (GamepadController->IsActive())
+        GamepadController = gamepadController;
+        if (auto gamepadControllerPtr = GamepadController.lock(); gamepadControllerPtr != nullptr)
         {
-            OnGamepadConnected(gamepadController);
+            gamepadControllerPtr->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
+            gamepadControllerPtr->OnDisconnected().Bind(&PlayerInputController::OnGamepadDisconnected, this);
+
+            // if the gamepad is active, it is already connected. Call the event as we are just subscribing to an already connected controller
+            if (gamepadControllerPtr->IsActive())
+            {
+                OnGamepadConnected(gamepadController);
+            }
         }
     }
 
     void PlayerInputController::RemoveGamepadController()
     {
-        assert(GamepadController != nullptr);
+        assert(!GamepadController.expired());
         OnGamepadDisconnectedEvent(weak_from_this());
-        GamepadController->OnConnected().Remove(this);
-        GamepadController->OnDisconnected().Remove(this);
+        if (auto gamepadController = GamepadController.lock(); gamepadController != nullptr)
+        {
+            gamepadController->OnConnected().Remove(this);
+            gamepadController->OnDisconnected().Remove(this);
+        }
         GamepadController.reset();
     }
 
@@ -92,8 +110,8 @@ namespace Sparkle
 
     void PlayerInputController::SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController> &keyboardController)
     {
-        assert(KeyboardController == nullptr);
-        KeyboardController = keyboardController.lock();
+        assert(KeyboardController.expired());
+        KeyboardController = keyboardController;
     }
 
     void PlayerInputController::RemoveKeyboardController()
@@ -103,8 +121,8 @@ namespace Sparkle
 
     void PlayerInputController::SetMouseController(const std::weak_ptr<Sparkle::MouseController> &mouseController)
     {
-        assert(MouseController == nullptr);
-        MouseController = mouseController.lock();
+        assert(MouseController.expired());
+        MouseController = mouseController;
     }
 
     void PlayerInputController::RemoveMouseController()
