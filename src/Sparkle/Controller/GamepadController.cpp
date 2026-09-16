@@ -2,7 +2,6 @@
 // Created by z3r0_ on 15/01/2024.
 //
 
-#include "Sparkle/Controller/InputProcess/GamepadInputProcess.h"
 #include "Sparkle/Controller/GamepadController.h"
 #include <SDL.h>
 
@@ -89,7 +88,6 @@ void Sparkle::GamepadController::Update() {
 }
 
 Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
-        InputProcess(std::make_unique<GamepadInputProcess>(this)),
         InternalGameController(controller), Buttons(), LastButtons(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
@@ -106,7 +104,6 @@ Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
 }
 
 Sparkle::GamepadController::GamepadController():
-        InputProcess(std::make_unique<GamepadInputProcess>(this)),
         InternalGameController(nullptr), Buttons(), LastButtons(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
@@ -124,7 +121,65 @@ Sparkle::GamepadController::GamepadController():
 
 Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)
 {
-    return InputProcess->ProcessEvent(event);
+    switch (event.EventType)
+    {
+        case InputEventType::GamepadButtonEventType:
+            return ProcessButton(event.Event.GamepadButtonEvent);
+
+        case InputEventType::GamepadAxisEventType:
+            return ProcessAxis(event.Event.GamepadAxisEvent);
+
+        case InputEventType::GamepadStickEventType:
+            return ProcessStick(event.Event.GamepadStickEvent);
+
+        default:
+            return Sparkle::InputResult{false};
+    }
+}
+
+Sparkle::InputResult Sparkle::GamepadController::ProcessStick(const InputGamepadStickEvent &event)
+{
+    bool hasStickMoved = HasStickMoved(event.Stick);
+    InputVector stickValue = GetStick(event.Stick);
+    if (event.StickTrigger == InputAnalogEventTrigger::CONTINUOUS
+        || hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
+        || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
+        || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
+    {
+        class Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Value = stickValue};
+        return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
+    }
+    return InputResult{false};
+}
+
+Sparkle::InputResult Sparkle::GamepadController::ProcessButton(const InputGamepadButtonEvent &event)
+{
+    bool isButtonJustPressed = IsButtonJustPressed(event.Button);
+    bool isButtonJustReleased = IsButtonJustReleased(event.Button);
+    if (isButtonJustPressed && event.ButtonTrigger == InputDigitalEventTrigger::JUST_PRESSED
+        || isButtonJustReleased && event.ButtonTrigger == InputDigitalEventTrigger::JUST_RELEASED
+        || IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::HOLDING_DOWN
+        || !IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::UP)
+    {
+        Button button = {.ButtonType = {.GamepadButton = event.Button}, .Pressed = IsButtonPressed(event.Button)};
+        return InputResult{true, InputState{.Type=InputType::BUTTON, .Input={.Button = button}}};
+    }
+    return InputResult{false};
+}
+
+Sparkle::InputResult Sparkle::GamepadController::ProcessAxis(const InputGamepadAxisEvent &event)
+{
+    bool hasAxisMoved = HasAxisMoved(event.Axis);
+    float axisValue = GetAxis(event.Axis);
+    if (event.AxisTrigger == InputAnalogEventTrigger::CONTINUOUS
+        || hasAxisMoved && event.AxisTrigger == InputAnalogEventTrigger::MOVEMENT
+        || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
+        || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
+    {
+        class Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
+        return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
+    }
+    return InputResult{false};
 }
 
 Sparkle::GamepadController::~GamepadController() = default;

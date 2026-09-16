@@ -55,8 +55,6 @@ namespace Sparkle
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
 
-        std::unique_ptr<GamepadInputProcess> InputProcess;
-
         /// Sets a GameController
         /// It MUST HAVE been opened before
         /// \param controller
@@ -65,6 +63,10 @@ namespace Sparkle
         /// Set InternalGameController to nullptr
         /// InternalGameController MUST HAVE been closed before this method can be called
         void ClearController();
+
+        InputResult ProcessAxis(const InputGamepadAxisEvent &event);
+        InputResult ProcessButton(const InputGamepadButtonEvent &event);
+        InputResult ProcessStick(const InputGamepadStickEvent &event);
 
     protected:
         /// If active, it should update buttons and lastButtons, axis and lastAxis with the device status
