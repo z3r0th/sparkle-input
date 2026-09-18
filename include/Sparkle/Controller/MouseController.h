@@ -21,18 +21,18 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        std::array<bool, (int)MouseButtonType::Count> Buttons;
-        std::array<bool, (int)MouseButtonType::Count> LastButtons;
+        std::array<bool, (int)MouseButtonType::Count> ButtonsValue;
+        std::array<bool, (int)MouseButtonType::Count> LastButtonsValue;
 
-        std::array<float, (int)MouseAxisType::Count> Axis{};
-        std::array<float, (int)MouseAxisType::Count> LastAxis{};
+        std::array<float, (int)MouseAxisType::Count> AxisValue{};
+        std::array<float, (int)MouseAxisType::Count> LastAxisValue{};
 
-        std::array<struct InputVector, (int)MouseStickType::Count> Stick{};
-        std::array<struct InputVector, (int)MouseStickType::Count> LastStick{};
+        std::array<InputVector, (int)MouseStickType::Count> StickValue{};
+        std::array<InputVector, (int)MouseStickType::Count> LastStickValue{};
 
         // Input.h will update these variables for us
-        float MouseWheelX = 0.0f;
-        float MouseWheelY = 0.0f;
+        float MouseWheelXValue = 0.0f;
+        float MouseWheelYValue = 0.0f;
 
     protected:
         void Update() override;
@@ -53,7 +53,7 @@ namespace Sparkle
         /// \return true if button is currently pressed
         [[nodiscard]] inline bool IsButtonPressed(MouseButtonType key)
         {
-            return Buttons[static_cast<unsigned int>(key)];
+            return ButtonsValue[static_cast<unsigned int>(key)];
         }
 
         /// Check if Keyboard button was just pressed
@@ -63,7 +63,7 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustPressed(MouseButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
-            return Buttons[index] && !LastButtons[index];
+            return ButtonsValue[index] && !LastButtonsValue[index];
         }
 
         /// Check if Keyboard button was just released
@@ -73,16 +73,16 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustReleased(MouseButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
-            return !Buttons[index] && LastButtons[index];
+            return !ButtonsValue[index] && LastButtonsValue[index];
         }
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline MouseButtonType AnyJustPressedButton()
         {
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return {MouseButtonType::MouseButtonEnum(i)};
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return {MouseButtonType::MouseButtonEnum(i)};
             }
 
             return {MouseButtonType::MouseButtonEnum::BUTTON_NONE};
@@ -93,7 +93,7 @@ namespace Sparkle
         /// \return axis value
         [[nodiscard]] inline const float& GetAxis(MouseAxisType axis)
         {
-            return Axis[(int)axis];
+            return AxisValue[(int)axis];
         }
 
         /// Check if axis had a movement from last frame
@@ -103,7 +103,7 @@ namespace Sparkle
         [[nodiscard]] inline bool HasAxisMoved(MouseAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
-            return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
+            return abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
         }
 
         /// Check if axis had a movement from last frame
@@ -128,17 +128,17 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
-            auto currentStick = Stick[stickIndex];
-            auto lastStick = LastStick[stickIndex];
+            auto currentStick = StickValue[stickIndex];
+            auto lastStick = LastStickValue[stickIndex];
             return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
         /// Get the current Mouse stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct InputVector& GetStick(MouseStickType stick)
+        [[nodiscard]] inline const InputVector& GetStick(MouseStickType stick)
         {
-            return Stick[(int)stick];
+            return StickValue[(int)stick];
         }
     };
 

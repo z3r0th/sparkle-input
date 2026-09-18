@@ -39,15 +39,15 @@ void Sparkle::KeyboardController::Update()
     const Uint8* keyState = SDL_GetKeyboardState(nullptr);
     for (unsigned int i = 0 ; i < static_cast<int>(KeyboardButtonType::Count) ; ++i)
     {
-        LastButtons[i] = Buttons[i];
-        Buttons[i] = keyState[static_cast<SDL_Scancode>(i)];
+        LastButtonsValue[i] = ButtonsValue[i];
+        ButtonsValue[i] = keyState[static_cast<SDL_Scancode>(i)];
     }
 }
 
-Sparkle::KeyboardController::KeyboardController() : Buttons(), LastButtons()
+Sparkle::KeyboardController::KeyboardController() : ButtonsValue(), LastButtonsValue()
 {
-    std::fill(LastButtons.begin(), LastButtons.end(), false);
-    std::fill(Buttons.begin(), Buttons.end(), false);
+    std::fill(LastButtonsValue.begin(), LastButtonsValue.end(), false);
+    std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
 }
 
 Sparkle::InputResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputTrigger &event)

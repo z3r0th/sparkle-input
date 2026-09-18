@@ -12,7 +12,7 @@ namespace Sparkle
         {
             const auto event = ButtonAction.first;
 
-            if (auto gamepadController = GamepadController.lock(); gamepadController != nullptr)
+            if (auto gamepadController = GamepadDeviceController.lock(); gamepadController != nullptr)
             {
                 if (gamepadController != nullptr && gamepadController->IsActive())
                 {
@@ -28,7 +28,7 @@ namespace Sparkle
             }
 
 
-            if (auto keyboardController = KeyboardController.lock(); keyboardController != nullptr)
+            if (auto keyboardController = KeyboardDeviceController.lock(); keyboardController != nullptr)
             {
                 if (keyboardController != nullptr && keyboardController->IsActive())
                 {
@@ -44,7 +44,7 @@ namespace Sparkle
             }
 
 
-            if (auto mouseController = MouseController.lock(); mouseController != nullptr)
+            if (auto mouseController = MouseDeviceController.lock(); mouseController != nullptr)
             {
                 if (mouseController != nullptr && mouseController->IsActive())
                 {
@@ -63,16 +63,16 @@ namespace Sparkle
 
     void PlayerInputController::SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController)
     {
-        assert(GamepadController.expired());
-        GamepadController.reset();
+        assert(GamepadDeviceController.expired());
+        GamepadDeviceController.reset();
         if (gamepadController.expired())
         {
             SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Gamepad controller is invalid. Aborting.");
             return;
         }
-        GamepadController = gamepadController;
+        GamepadDeviceController = gamepadController;
         RequestGamepad = false;
-        if (auto gamepadControllerPtr = GamepadController.lock(); gamepadControllerPtr != nullptr)
+        if (auto gamepadControllerPtr = GamepadDeviceController.lock(); gamepadControllerPtr != nullptr)
         {
             gamepadControllerPtr->OnConnected().Bind(&PlayerInputController::OnGamepadConnected, this);
             gamepadControllerPtr->OnDisconnected().Bind(&PlayerInputController::OnGamepadDisconnected, this);
@@ -87,14 +87,14 @@ namespace Sparkle
 
     void PlayerInputController::RemoveGamepadController()
     {
-        assert(!GamepadController.expired());
+        assert(!GamepadDeviceController.expired());
         OnGamepadDisconnectedEvent(weak_from_this());
-        if (auto gamepadController = GamepadController.lock(); gamepadController != nullptr)
+        if (auto gamepadController = GamepadDeviceController.lock(); gamepadController != nullptr)
         {
             gamepadController->OnConnected().Remove(this);
             gamepadController->OnDisconnected().Remove(this);
         }
-        GamepadController.reset();
+        GamepadDeviceController.reset();
     }
 
     EventBinder<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>&
@@ -111,25 +111,25 @@ namespace Sparkle
 
     void PlayerInputController::SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController> &keyboardController)
     {
-        assert(KeyboardController.expired());
-        KeyboardController = keyboardController;
+        assert(KeyboardDeviceController.expired());
+        KeyboardDeviceController = keyboardController;
         RequestKeyboard = false;
     }
 
     void PlayerInputController::RemoveKeyboardController()
     {
-        KeyboardController.reset();
+        KeyboardDeviceController.reset();
     }
 
     void PlayerInputController::SetMouseController(const std::weak_ptr<Sparkle::MouseController> &mouseController)
     {
-        assert(MouseController.expired());
-        MouseController = mouseController;
+        assert(MouseDeviceController.expired());
+        MouseDeviceController = mouseController;
         RequestMouse = false;
     }
 
     void PlayerInputController::RemoveMouseController()
     {
-        MouseController.reset();
+        MouseDeviceController.reset();
     }
 } // Sparkle

@@ -21,8 +21,8 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        std::array<bool, (int)KeyboardButtonType::Count> Buttons;
-        std::array<bool, (int)KeyboardButtonType::Count> LastButtons;
+        std::array<bool, (int)KeyboardButtonType::Count> ButtonsValue;
+        std::array<bool, (int)KeyboardButtonType::Count> LastButtonsValue;
 
     protected:
         void Update() override;
@@ -43,7 +43,7 @@ namespace Sparkle
         /// \return true if button is currently pressed
         [[nodiscard]] inline bool IsButtonPressed(KeyboardButtonType key)
         {
-            return Buttons[static_cast<unsigned int>(key)];
+            return ButtonsValue[static_cast<unsigned int>(key)];
         }
 
         /// Check if Keyboard button was just pressed
@@ -53,7 +53,7 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustPressed(KeyboardButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
-            return Buttons[index] && !LastButtons[index];
+            return ButtonsValue[index] && !LastButtonsValue[index];
         }
 
         /// Check if Keyboard button was just released
@@ -63,16 +63,16 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustReleased(KeyboardButtonType key)
         {
             auto index = static_cast<unsigned int>(key);
-            return !Buttons[index] && LastButtons[index];
+            return !ButtonsValue[index] && LastButtonsValue[index];
         }
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline KeyboardButtonType AnyJustPressedButton()
         {
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return {KeyboardButtonType::KeyboardButtonEnum(i)};
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return {KeyboardButtonType::KeyboardButtonEnum(i)};
             }
 
             return {KeyboardButtonType::KeyboardButtonEnum::KEY_NONE};

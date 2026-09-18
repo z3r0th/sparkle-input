@@ -40,9 +40,9 @@ namespace Sparkle
     private:
         unsigned int PlayerInputIndex = -1;
 
-        std::weak_ptr<KeyboardController> KeyboardController;
-        std::weak_ptr<GamepadController> GamepadController;
-        std::weak_ptr<MouseController> MouseController;
+        std::weak_ptr<KeyboardController> KeyboardDeviceController;
+        std::weak_ptr<GamepadController> GamepadDeviceController;
+        std::weak_ptr<MouseController> MouseDeviceController;
 
         std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>> ActionEventMap;
 
@@ -141,7 +141,7 @@ namespace Sparkle
         /// GetGamepadController
         /// The gamepad might not exist (nullptr) and/or might not be connected or valid
         /// \return weak ptr to GamepadController
-        [[maybe_unused]] [[nodiscard]] std::weak_ptr<Sparkle::GamepadController> GetGamepadController() const { return GamepadController; }
+        [[maybe_unused]] [[nodiscard]] std::weak_ptr<Sparkle::GamepadController> GetGamepadController() const { return GamepadDeviceController; }
 
         /// Disconnects from events and sets the GamepadController to null (reset)
         /// Raises `OnGamepadDisconnectedEvent`
@@ -156,11 +156,11 @@ namespace Sparkle
 
         /// Is this PlayerInputController's Gamepad assigned active and connected
         /// \return
-        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && GamepadController.lock()->IsActive(); }
+        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && GamepadDeviceController.lock()->IsActive(); }
 
         /// Does this PlayerInputController has a gamepad assigned
         /// \return
-        [[nodiscard]] bool IsGamepadAssigned() { return !GamepadController.expired(); }
+        [[nodiscard]] bool IsGamepadAssigned() { return !GamepadDeviceController.expired(); }
 
         /// Binding to Gamepad Disconnected event
         /// \example OnGamepadDisconnected().Bind(&Class::Method, &object);
@@ -189,7 +189,7 @@ namespace Sparkle
 
         /// GetKeyboardController
         /// \return weak ptr to KeyboardController
-        std::weak_ptr<class KeyboardController> GetKeyboardController() const { return KeyboardController; }
+        std::weak_ptr<KeyboardController> GetKeyboardController() const { return KeyboardDeviceController; }
 
         /// Disconnects from events and sets the KeyboardController to null (reset)
         void RemoveKeyboardController();
@@ -207,7 +207,7 @@ namespace Sparkle
 
         /// GetMouseController
         /// \return weak ptr to MouseController
-        std::weak_ptr<class MouseController> GetMouseController() const { return MouseController; }
+        std::weak_ptr<MouseController> GetMouseController() const { return MouseDeviceController; }
 
         /// Disconnects from events and sets the MouseController to null (reset)
         void RemoveMouseController();

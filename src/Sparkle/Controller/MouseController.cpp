@@ -19,13 +19,13 @@ namespace Sparkle
 
         for (unsigned int i = 0 ; i < static_cast<int>(MouseButtonType::Count) ; ++i)
         {
-            LastButtons[i] = Buttons[i];
-            Buttons[i] = buttons & SDL_BUTTON(static_cast<int>(i));
+            LastButtonsValue[i] = ButtonsValue[i];
+            ButtonsValue[i] = buttons & SDL_BUTTON(static_cast<int>(i));
         }
 
         for (unsigned int i = 0 ; i < static_cast<int>(MouseAxisType::Count) ; ++i)
         {
-            LastAxis[i] = Axis[i];
+            LastAxisValue[i] = AxisValue[i];
             float axis = 0.0f;
             switch (static_cast<MouseAxisType::MouseAxisEnum>(i))
             {
@@ -36,10 +36,10 @@ namespace Sparkle
                     axis = (float)y;
                     break;
                 case MouseAxisType::MouseAxisEnum::SCROLL_WHEEL_X:
-                    axis = MouseWheelX;
+                    axis = MouseWheelXValue;
                     break;
                 case MouseAxisType::MouseAxisEnum::SCROLL_WHEEL_Y:
-                    axis = MouseWheelY;
+                    axis = MouseWheelYValue;
                     break;
                 case MouseAxisType::MouseAxisEnum::AXIS_NONE:
                 case MouseAxisType::MouseAxisEnum::Count:
@@ -49,7 +49,7 @@ namespace Sparkle
             {
                 axis = 0.0;
             }
-            Axis[i] = axis;
+            AxisValue[i] = axis;
         }
 
         static const std::map<MouseStickType, const std::vector<MouseAxisType>> StickAxis =
@@ -58,9 +58,9 @@ namespace Sparkle
         };
         for (unsigned int i = 0 ; i < static_cast<int>(MouseStickType::Count) ; ++i)
         {
-            LastStick[i] = Stick[i];
+            LastStickValue[i] = StickValue[i];
             MouseStickType UpdateStick = static_cast<MouseStickType::MouseStickEnum>(i);
-            struct InputVector stickValue = {0, 0 };
+            InputVector stickValue = {0, 0 };
             const std::vector<MouseAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
             int axisIndex = 0;
             for (auto& axisEnum : axisAnalyses)
@@ -69,7 +69,7 @@ namespace Sparkle
                 assert (axisIndex <= 1 && "Support only two axis");
                 axisIndex++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
             }
-            Stick[i] = stickValue;
+            StickValue[i] = stickValue;
         }
     }
 
@@ -97,7 +97,7 @@ namespace Sparkle
             || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
             || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {
-            class Axis axis = {.AxisType = {.MouseAxis = event.Axis}, .Value = axisValue};
+            Axis axis = {.AxisType = {.MouseAxis = event.Axis}, .Value = axisValue};
             return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
         }
         return InputResult{false};
@@ -105,14 +105,14 @@ namespace Sparkle
 
     InputResult MouseController::ProcessStick(const InputMouseStickEvent &event)
     {
-        struct InputVector stickValue = Stick[event.Stick];
+        InputVector stickValue = StickValue[event.Stick];
         bool hasStickMoved = HasStickMoved(event.Stick);
         if (hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
             || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
             || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
 
         {
-            struct Stick stick = {.StickType = {.MouseStick = event.Stick}, .Value = stickValue};
+            Stick stick = {.StickType = {.MouseStick = event.Stick}, .Value = stickValue};
             return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
         }
         return InputResult{false};
@@ -136,12 +136,12 @@ namespace Sparkle
         }
     }
 
-    Sparkle::MouseController::MouseController() : Buttons(), LastButtons()
+    Sparkle::MouseController::MouseController() : ButtonsValue(), LastButtonsValue()
     {
-        std::fill(LastButtons.begin(), LastButtons.end(), false);
-        std::fill(Buttons.begin(), Buttons.end(), false);
+        std::fill(LastButtonsValue.begin(), LastButtonsValue.end(), false);
+        std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
 
-        std::fill(Axis.begin(), Axis.end(), false);
-        std::fill(LastAxis.begin(), LastAxis.end(), false);
+        std::fill(AxisValue.begin(), AxisValue.end(), false);
+        std::fill(LastAxisValue.begin(), LastAxisValue.end(), false);
     }
 } // Sparkle

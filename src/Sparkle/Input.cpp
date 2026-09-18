@@ -8,8 +8,8 @@ namespace Sparkle
 {
     Input::Input()
     {
-        KeyboardController = std::make_shared<class KeyboardController>();
-        MouseController = std::make_shared<class MouseController>();
+        KeyboardDeviceController = std::make_shared<KeyboardController>();
+        MouseDeviceController = std::make_shared<MouseController>();
     }
 
     std::shared_ptr<GamepadController> Input::GetInactiveOrNewGamepadController(int device)
@@ -18,16 +18,16 @@ namespace Sparkle
         {
             // reach an index that does not have a Gamepad controller,
             // this means that we already check any other index
-            if (GamepadControllers.count(i) == 0)
+            if (GamepadDeviceControllers.count(i) == 0)
             {
                 auto gamepad = std::make_shared<GamepadController>();
                 gamepad->GamepadIndex = i;
-                GamepadControllers[i] = gamepad;
+                GamepadDeviceControllers[i] = gamepad;
                 return gamepad;
             }
 
             // we have a gamepad controller in this index, check if we can use it
-            auto gamepad = GamepadControllers[i];
+            auto gamepad = GamepadDeviceControllers[i];
             assert(gamepad != nullptr);
             if (gamepad->DeviceIndex == device || !gamepad->IsActive())
             {
@@ -40,8 +40,8 @@ namespace Sparkle
 
     std::weak_ptr<GamepadController> Input::GetGamepadController(unsigned int index) const
     {
-        auto it = GamepadControllers.find(index);
-        if (it == GamepadControllers.end())
+        auto it = GamepadDeviceControllers.find(index);
+        if (it == GamepadDeviceControllers.end())
         {
             return {};
         }
@@ -50,7 +50,7 @@ namespace Sparkle
 
     std::shared_ptr<GamepadController> Input::GetUnassignedGamepadController()
     {
-        for (auto & it : GamepadControllers)
+        for (auto & it : GamepadDeviceControllers)
         {
             auto GamepadController = it.second;
             if (!IsGamepadAssigned(GamepadController))
@@ -80,7 +80,7 @@ namespace Sparkle
     void Input::GamepadControllerDisconnected(const ControllerDeviceEvent &event)
     {
         auto device = event.which;
-        for (auto & GamepadController : GamepadControllers)
+        for (auto & GamepadController : GamepadDeviceControllers)
         {
             if (device == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(GamepadController.second->InternalGameController)))
             {
@@ -182,15 +182,15 @@ namespace Sparkle
         for (int i = 0 ; i < MouseStickType::Count; ++i)
         {
             auto mouseStick = MouseStickType::MouseStickEnum(i);
-            if (MouseController->HasStickMoved(mouseStick))
+            if (MouseDeviceController->HasStickMoved(mouseStick))
             {
-                auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Value = MouseController->GetStick(mouseStick)};
+                auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Value = MouseDeviceController->GetStick(mouseStick)};
                 auto state = InputState {.Type = InputType::STICK, .Input = {.Stick = stick},.ControllerType = InputControllerType::MOUSE};
-                OnAnyMouseStickMovedEvent(MouseController, state);
+                OnAnyMouseStickMovedEvent(MouseDeviceController, state);
             }
         }
 
-        for (auto & GamepadControllerPair : GamepadControllers)
+        for (auto & GamepadControllerPair : GamepadDeviceControllers)
         {
             auto GamepadController = GamepadControllerPair.second;
             if (GamepadController->IsActive())
@@ -223,11 +223,11 @@ namespace Sparkle
             }
             if (playerInputController->IsRequestingKeyboard() && playerInputController->GetKeyboardController().expired())
             {
-                playerInputController->SetKeyboardController(KeyboardController);
+                playerInputController->SetKeyboardController(KeyboardDeviceController);
             }
             if (playerInputController->IsRequestingMouse() && playerInputController->GetMouseController().expired())
             {
-                playerInputController->SetMouseController(MouseController);
+                playerInputController->SetMouseController(MouseDeviceController);
             }
         }
     }
@@ -245,10 +245,10 @@ namespace Sparkle
         }
         else if (event.type == SDL_MOUSEWHEEL)
         {
-            MouseController->MouseWheelY = 0.0f;
-            MouseController->MouseWheelX = 0.0f;
-            MouseController->MouseWheelX += (float)event.wheel.x;
-            MouseController->MouseWheelY += (float)event.wheel.y;
+            MouseDeviceController->MouseWheelYValue = 0.0f;
+            MouseDeviceController->MouseWheelXValue = 0.0f;
+            MouseDeviceController->MouseWheelXValue += (float)event.wheel.x;
+            MouseDeviceController->MouseWheelYValue += (float)event.wheel.y;
         }
     }
 
@@ -268,9 +268,9 @@ namespace Sparkle
             inputControllers.clear();
             PlayerInputControllers.clear();
         }
-        KeyboardController.reset();
-        GamepadControllers.clear();
-        MouseController.reset();
+        KeyboardDeviceController.reset();
+        GamepadDeviceControllers.clear();
+        MouseDeviceController.reset();
     }
 
     [[maybe_unused]] bool Input::IsGamepadButtonPressed(GamepadButtonType button, unsigned int controllerIndex) const
@@ -362,7 +362,7 @@ namespace Sparkle
 
     void Input::UpdateGamepad()
     {
-        for (auto & gamepadController : GamepadControllers)
+        for (auto & gamepadController : GamepadDeviceControllers)
         {
             std::shared_ptr<GamepadController> gamepad = gamepadController.second;
             gamepad->Update();
@@ -387,8 +387,8 @@ namespace Sparkle
 
     void Input::UpdateMouse()
     {
-        MouseController->Update();
-        auto pressedButton = MouseController->AnyJustPressedButton();
+        MouseDeviceController->Update();
+        auto pressedButton = MouseDeviceController->AnyJustPressedButton();
         if (pressedButton != MouseButtonType::BUTTON_NONE)
         {
             auto inputState = InputState {
@@ -401,16 +401,16 @@ namespace Sparkle
             {
                 OnAnyKeyJustPressedEvent(player, inputState);
             }
-            OnMouseJustPressedEvent(MouseController, inputState);
+            OnMouseJustPressedEvent(MouseDeviceController, inputState);
         }
-        if (MouseController->AnyAxisMoved() != MouseAxisType::AXIS_NONE)
+        if (MouseDeviceController->AnyAxisMoved() != MouseAxisType::AXIS_NONE)
         {}
     }
 
     void Input::UpdateKeyboard()
     {
-        KeyboardController->Update();
-        auto pressedButton = KeyboardController->AnyJustPressedButton();
+        KeyboardDeviceController->Update();
+        auto pressedButton = KeyboardDeviceController->AnyJustPressedButton();
         if (pressedButton != KeyboardButtonType::KEY_NONE)
         {
             auto inputState = InputState {
@@ -423,7 +423,7 @@ namespace Sparkle
             {
                 OnAnyKeyJustPressedEvent(player, inputState);
             }
-            OnKeyboardJustPressedEvent(KeyboardController, inputState);
+            OnKeyboardJustPressedEvent(KeyboardDeviceController, inputState);
         }
     }
 
@@ -463,52 +463,52 @@ namespace Sparkle
 
     bool Input::IsMouseButtonPressed(MouseButtonType button) const
     {
-        return MouseController->IsButtonPressed(button);
+        return MouseDeviceController->IsButtonPressed(button);
     }
 
     float Input::GetMouseAxis(MouseAxisType axis) const
     {
-        return MouseController->GetAxis(axis);
+        return MouseDeviceController->GetAxis(axis);
     }
 
     bool Input::IsKeyboardButtonPressed(KeyboardButtonType button) const
     {
-        return KeyboardController->IsButtonPressed(button);
+        return KeyboardDeviceController->IsButtonPressed(button);
     }
 
     bool Input::IsKeyboardButtonJustPressed(KeyboardButtonType button) const
     {
-        return KeyboardController->IsButtonJustPressed(button);
+        return KeyboardDeviceController->IsButtonJustPressed(button);
     }
 
     bool Input::IsKeyboardButtonJustReleased(KeyboardButtonType button) const
     {
-        return KeyboardController->IsButtonJustReleased(button);
+        return KeyboardDeviceController->IsButtonJustReleased(button);
     }
 
     float Input::GetKeyboardAxis(KeyboardAxisType axis) const
     {
-        return KeyboardController->GetAxis(axis);
+        return KeyboardDeviceController->GetAxis(axis);
     }
 
     Stick Input::GetKeyboardStick(KeyboardStickType stick) const
     {
-        return KeyboardController->GetStick(stick);
+        return KeyboardDeviceController->GetStick(stick);
     }
 
     bool Input::IsMouseButtonJustPressed(MouseButtonType button) const
     {
-        return MouseController->IsButtonJustPressed(button);
+        return MouseDeviceController->IsButtonJustPressed(button);
     }
 
     bool Input::IsMouseButtonJustReleased(MouseButtonType button) const
     {
-        return MouseController->IsButtonJustReleased(button);
+        return MouseDeviceController->IsButtonJustReleased(button);
     }
 
     InputVector Input::GetMouseStick(MouseStickType stick) const
     {
-        return MouseController->GetStick(stick);
+        return MouseDeviceController->GetStick(stick);
     }
 
     std::vector<std::weak_ptr<PlayerInputController>> Input::GetAssignedMousePlayerInputControllers()
@@ -517,7 +517,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->GetMouseController().lock() == MouseController)
+            if (playerInputController->GetMouseController().lock() == MouseDeviceController)
             {
                 assignedPlayers.push_back(playerInputController);
             }
@@ -531,7 +531,7 @@ namespace Sparkle
         for (auto & it : PlayerInputControllers)
         {
             auto playerInputController = it.second;
-            if (playerInputController->GetKeyboardController().lock() == KeyboardController)
+            if (playerInputController->GetKeyboardController().lock() == KeyboardDeviceController)
             {
                 assignedPlayers.push_back(playerInputController);
             }

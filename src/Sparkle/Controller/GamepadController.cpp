@@ -12,15 +12,15 @@ void Sparkle::GamepadController::ClearController()
     std::weak_ptr<GamepadController> weak_this = weak_from_this();
     OnDisconnectedEvent.Raise(weak_this);
 
-    std::fill(Buttons.begin(), Buttons.end(), false);
-    std::fill(LastButtons.begin(), LastButtons.end(), false);
+    std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
+    std::fill(LastButtonsValue.begin(), LastButtonsValue.end(), false);
 
-    std::fill(Axis.begin(), Axis.end(), false);
-    std::fill(LastAxis.begin(), LastAxis.end(), false);
+    std::fill(AxisValue.begin(), AxisValue.end(), false);
+    std::fill(LastAxisValue.begin(), LastAxisValue.end(), false);
 
-    struct InputVector emptyStick{};
-    std::fill(Stick.begin(), Stick.end(), emptyStick);
-    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
+    InputVector emptyStick{};
+    std::fill(StickValue.begin(), StickValue.end(), emptyStick);
+    std::fill(LastStickValue.begin(), LastStickValue.end(), emptyStick);
 }
 
 void Sparkle::GamepadController::SetController(SDL_GameController *controller, int deviceIndex)
@@ -50,19 +50,19 @@ void Sparkle::GamepadController::Update() {
 
     for (unsigned int i = 0 ; i < static_cast<int>(GamepadButtonType::Count) ; ++i)
     {
-        LastButtons[i] = Buttons[i];
-        Buttons[i] = SDL_GameControllerGetButton(InternalGameController, static_cast<SDL_GameControllerButton>(i));
+        LastButtonsValue[i] = ButtonsValue[i];
+        ButtonsValue[i] = SDL_GameControllerGetButton(InternalGameController, static_cast<SDL_GameControllerButton>(i));
     }
 
     for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxisType::Count) ; ++i)
     {
-        LastAxis[i] = Axis[i];
+        LastAxisValue[i] = AxisValue[i];
         float axis = (float)(SDL_GameControllerGetAxis(InternalGameController, static_cast<SDL_GameControllerAxis>(i))) / (float)(SDL_MAX_SINT16);
         if (abs(axis) <= DEAD_ZONE)
         {
             axis = 0.0;
         }
-        Axis[i] = axis;
+        AxisValue[i] = axis;
     }
 
     for (unsigned int i = 0 ; i < static_cast<int>(GamepadStickType::Count) ; ++i)
@@ -72,9 +72,9 @@ void Sparkle::GamepadController::Update() {
             {GamepadStickType::STICK_LEFT,  {GamepadAxisType::AXIS_LEFT_X,  GamepadAxisType::AXIS_LEFT_Y}},
             {GamepadStickType::STICK_RIGHT, {GamepadAxisType::AXIS_RIGHT_X, GamepadAxisType::AXIS_RIGHT_Y}}
         };
-        LastStick[i] = Stick[i];
+        LastStickValue[i] = StickValue[i];
         GamepadStickType UpdateStick = static_cast<GamepadStickType::GamepadStickEnum>(i);
-        struct InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
+        InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
         const std::vector<GamepadAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
         int axisIndex = 0;
         for (auto& axisEnum : axisAnalyses)
@@ -83,40 +83,40 @@ void Sparkle::GamepadController::Update() {
             assert (axisIndex <= 1 && "Support only two axis");
             axisIndex++ == 0 ? stickValue.Horizontal = axis : stickValue.Vertical = axis;
         }
-        Stick[i] = stickValue;
+        StickValue[i] = stickValue;
     }
 }
 
 Sparkle::GamepadController::GamepadController(SDL_GameController *controller):
-        InternalGameController(controller), Buttons(), LastButtons(),
+        InternalGameController(controller), ButtonsValue(), LastButtonsValue(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
 {
-    std::fill(Buttons.begin(), Buttons.end(), false);
-    std::fill(LastButtons.begin(), LastButtons.end(), false);
+    std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
+    std::fill(LastButtonsValue.begin(), LastButtonsValue.end(), false);
 
-    std::fill(Axis.begin(), Axis.end(), false);
-    std::fill(LastAxis.begin(), LastAxis.end(), false);
+    std::fill(AxisValue.begin(), AxisValue.end(), false);
+    std::fill(LastAxisValue.begin(), LastAxisValue.end(), false);
 
-    struct InputVector emptyStick{};
-    std::fill(Stick.begin(), Stick.end(), emptyStick);
-    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
+    InputVector emptyStick{};
+    std::fill(StickValue.begin(), StickValue.end(), emptyStick);
+    std::fill(LastStickValue.begin(), LastStickValue.end(), emptyStick);
 }
 
 Sparkle::GamepadController::GamepadController():
-        InternalGameController(nullptr), Buttons(), LastButtons(),
+        InternalGameController(nullptr), ButtonsValue(), LastButtonsValue(),
         OnDisconnectedEvent(ON_DISCONNECTED_EVENT_NAME),
         OnConnectedEvent(ON_CONNECTED_EVENT_NAME)
 {
-    std::fill(Buttons.begin(), Buttons.end(), false);
-    std::fill(LastButtons.begin(), LastButtons.end(), false);
+    std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
+    std::fill(LastButtonsValue.begin(), LastButtonsValue.end(), false);
 
-    std::fill(Axis.begin(), Axis.end(), false);
-    std::fill(LastAxis.begin(), LastAxis.end(), false);
+    std::fill(AxisValue.begin(), AxisValue.end(), false);
+    std::fill(LastAxisValue.begin(), LastAxisValue.end(), false);
 
-    struct InputVector emptyStick{};
-    std::fill(Stick.begin(), Stick.end(), emptyStick);
-    std::fill(LastStick.begin(), LastStick.end(), emptyStick);
+    InputVector emptyStick{};
+    std::fill(StickValue.begin(), StickValue.end(), emptyStick);
+    std::fill(LastStickValue.begin(), LastStickValue.end(), emptyStick);
 }
 
 Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)
@@ -146,7 +146,7 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessStick(const InputGamepad
         || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)
         || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
     {
-        class Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Value = stickValue};
+        Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Value = stickValue};
         return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
     }
     return InputResult{false};
@@ -176,7 +176,7 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessAxis(const InputGamepadA
         || axisValue >= 0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_POSITIVE
         || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
     {
-        class Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
+        Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
         return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
     }
     return InputResult{false};

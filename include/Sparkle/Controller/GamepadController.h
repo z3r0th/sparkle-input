@@ -42,14 +42,14 @@ namespace Sparkle
         Sparkle::Event<const std::weak_ptr<GamepadController>&> OnDisconnectedEvent;
         Sparkle::Event<const std::weak_ptr<GamepadController>&> OnConnectedEvent;
 
-        std::array<bool, (int)GamepadButtonType::Count> Buttons;
-        std::array<bool, (int)GamepadButtonType::Count> LastButtons;
+        std::array<bool, (int)GamepadButtonType::Count> ButtonsValue;
+        std::array<bool, (int)GamepadButtonType::Count> LastButtonsValue;
 
-        std::array<float, (int)GamepadAxisType::Count> Axis{};
-        std::array<float, (int)GamepadAxisType::Count> LastAxis{};
+        std::array<float, (int)GamepadAxisType::Count> AxisValue{};
+        std::array<float, (int)GamepadAxisType::Count> LastAxisValue{};
 
-        std::array<struct InputVector, (int)GamepadStickType::Count> Stick{};
-        std::array<struct InputVector, (int)GamepadStickType::Count> LastStick{};
+        std::array<InputVector, (int)GamepadStickType::Count> StickValue{};
+        std::array<InputVector, (int)GamepadStickType::Count> LastStickValue{};
 
         unsigned int GamepadIndex = -1;
         int DeviceIndex = -1;
@@ -103,7 +103,7 @@ namespace Sparkle
         /// \return true if button is currently pressed
         [[nodiscard]] inline bool IsButtonPressed(GamepadButtonType button)
         {
-            return Buttons[static_cast<unsigned int>(button)];
+            return ButtonsValue[static_cast<unsigned int>(button)];
         }
 
         /// Check if Gamepad button was just pressed
@@ -113,7 +113,7 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustPressed(GamepadButtonType button)
         {
             auto index = static_cast<unsigned int>(button);
-            return Buttons[index] && !LastButtons[index];
+            return ButtonsValue[index] && !LastButtonsValue[index];
         }
 
         /// Check if Gamepad button was just released
@@ -123,16 +123,16 @@ namespace Sparkle
         [[nodiscard]] inline bool IsButtonJustReleased(GamepadButtonType button)
         {
             auto index = static_cast<unsigned int>(button);
-            return !Buttons[index] && LastButtons[index];
+            return !ButtonsValue[index] && LastButtonsValue[index];
         }
 
         /// Get the first/any pressed button we can find
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline GamepadButtonType AnyPressedButton()
         {
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
+                if (ButtonsValue[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
             }
 
             return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
@@ -142,9 +142,9 @@ namespace Sparkle
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline GamepadButtonType AnyJustPressedButton()
         {
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
             }
 
             return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
@@ -155,9 +155,9 @@ namespace Sparkle
         inline std::vector<GamepadButtonType> PressedButtons()
         {
             std::vector<GamepadButtonType> pressedButtons;
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
+                if (ButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
             }
 
             return pressedButtons;
@@ -168,9 +168,9 @@ namespace Sparkle
         inline std::vector<GamepadButtonType> JustPressedButtons()
         {
             std::vector<GamepadButtonType> pressedButtons;
-            for(int i = 0 ; i < Buttons.size() ; ++i)
+            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (Buttons[i] && !LastButtons[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
+                if (ButtonsValue[i] && !LastButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
             }
 
             return pressedButtons;
@@ -182,15 +182,15 @@ namespace Sparkle
         /// \return axis or trigger value - Axis is ranged[0,1] and trigger [0,1]
         [[nodiscard]] inline const float& GetAxis(GamepadAxisType axis)
         {
-            return Axis[(int)axis];
+            return AxisValue[(int)axis];
         }
 
         /// Get the current Gamepad stick value
         /// \param stick which device stick is being checked
         /// \return stick value
-        [[nodiscard]] inline const struct InputVector& GetStick(GamepadStickType stick)
+        [[nodiscard]] inline const InputVector& GetStick(GamepadStickType stick)
         {
-            return Stick[(int)stick];
+            return StickValue[(int)stick];
         }
 
         /// Check if axis had a movement from last frame
@@ -200,7 +200,7 @@ namespace Sparkle
         [[nodiscard]] inline bool HasAxisMoved(GamepadAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
-            return abs(Axis[(int)axis] - LastAxis[(int)axis]) > epsilon;
+            return abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
         }
 
         /// Check if stick had a movement from last frame
@@ -211,8 +211,8 @@ namespace Sparkle
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
             int stickIndex = (int)stick;
-            struct InputVector currentStick = Stick[stickIndex];
-            struct InputVector lastStick = LastStick[stickIndex];
+            InputVector currentStick = StickValue[stickIndex];
+            InputVector lastStick = LastStickValue[stickIndex];
             return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
