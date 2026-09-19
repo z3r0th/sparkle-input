@@ -72,10 +72,10 @@ namespace Sparkle
         {
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i] && !LastButtonsValue[i]) return {KeyboardButtonType::KeyboardButtonEnum(i)};
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return {KeyboardButtonType(i)};
             }
 
-            return {KeyboardButtonType::KeyboardButtonEnum::KEY_NONE};
+            return {KeyboardButtonType::KEY_NONE};
         }
 
         /// Get the current Keyboard axis value

@@ -7,6 +7,7 @@
 #ifndef SPARKLE_SOLUTION_INPUT_EVENT_H
 #define SPARKLE_SOLUTION_INPUT_EVENT_H
 
+#include "Sparkle/Util/EnumTypeTemplate.h"
 #include <string>
 #include <cassert>
 #include <utility>
@@ -18,9 +19,6 @@ namespace Sparkle
 
 #pragma region Enum Input Types
 
-    /// MouseButton
-    class MouseButtonType
-    {
 #define MOUSE_BUTTON_LIST(E) \
 E(BUTTON_NONE) \
 E(BUTTON_LEFT) \
@@ -29,65 +27,9 @@ E(BUTTON_RIGHT) \
 E(BUTTON_X1) \
 E(BUTTON_X2) \
 E(Count)
-    public:
-        enum MouseButtonEnum
-        {
-#define MOUSE_BUTTON_DEF(name) name,
-            MOUSE_BUTTON_LIST(MOUSE_BUTTON_DEF)
-#undef MOUSE_BUTTON_DEF
-        };
+DEFINE_ENUM_TYPE(MouseButtonType, MOUSE_BUTTON_LIST)
+#undef MOUSE_BUTTON_LIST
 
-        MouseButtonType() = default;
-
-        constexpr MouseButtonType(MouseButtonEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator MouseButtonEnum() const
-        { return value; }
-
-#define MOUSE_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "MouseButton Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                MOUSE_BUTTON_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "MouseButton Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        MouseButtonEnum value;
-#undef GAMEPAD_BUTTON_LIST
-    };
-
-    /// MouseAxis
-    class MouseAxisType
-    {
 #define MOUSE_AXIS_LIST(E) \
 E(AXIS_X) \
 E(AXIS_Y) \
@@ -95,129 +37,17 @@ E(SCROLL_WHEEL_Y) \
 E(SCROLL_WHEEL_X) \
 E(Count) \
 E(AXIS_NONE)
-    public:
-        enum MouseAxisEnum
-        {
-#define MOUSE_AXIS_DEF(name) name,
-            MOUSE_AXIS_LIST(MOUSE_AXIS_DEF)
-#undef MOUSE_AXIS_DEF
-        };
-
-        MouseAxisType() = default;
-
-        constexpr MouseAxisType(MouseAxisEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator MouseAxisEnum() const
-        { return value; }
-
-#define MOUSE_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "MouseAxis Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                MOUSE_AXIS_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "GamepadAxis Unknown";
-            }
-        }
-
-#undef MOUSE_STRING_DEF
-
-    private:
-        MouseAxisEnum value;
+DEFINE_ENUM_TYPE(MouseAxisType, MOUSE_AXIS_LIST)
 #undef MOUSE_AXIS_LIST
-    };
 
-    /// MouseStick
-    class MouseStickType
-    {
 #define MOUSE_STICK_LIST(E) \
 E(MOUSE_MOVEMENT) \
 E(Count)
-    public:
-        enum MouseStickEnum
-        {
-#define MOUSE_STICK_DEF(name) name,
-            MOUSE_STICK_LIST(MOUSE_STICK_DEF)
-#undef MOUSE_STICK_DEF
-        };
+DEFINE_ENUM_TYPE(MouseStickType, MOUSE_STICK_LIST)
+#undef MOUSE_STICK_LIST
 
-        MouseStickType() = default;
+#pragma region Keyboard
 
-        constexpr MouseStickType(MouseStickEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator MouseStickEnum() const
-        { return value; }
-
-#define MOUSE_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "MouseStick Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                MOUSE_STICK_LIST(MOUSE_STRING_DEF)
-                default:
-                    return "MouseStick Unknown";
-            }
-        }
-
-#undef MOUSE_STRING_DEF
-
-    private:
-        MouseStickEnum value;
-#undef GAMEPAD_STICK_LIST
-    };
-
-    /// KeyboardButton
-    class KeyboardButtonType
-    {
-#pragma region Key List
-/// This key enum is based on SDL_SCANCODE
 #define KEYBOARD_BUTTON_LIST(E) \
 E(UNKNOWN)                      \
 E(KEY_RESERVED_1)               \
@@ -512,103 +342,49 @@ E(KEY_CALL)                     \
 E(KEY_ENDCALL)                  \
 E(Count)                        \
 E(KEY_NONE)
-#pragma endregion Key List
-    public:
-        enum KeyboardButtonEnum
-        {
-#define KEYBOARD_BUTTON_DEF(name) name,
-            KEYBOARD_BUTTON_LIST(KEYBOARD_BUTTON_DEF)
-#undef KEYBOARD_BUTTON_DEF
-        };
-
-        KeyboardButtonType() = default;
-
-        constexpr KeyboardButtonType(KeyboardButtonEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator KeyboardButtonEnum() const
-        { return value; }
-
-#define KEYBOARD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                KEYBOARD_BUTTON_LIST(KEYBOARD_STRING_DEF)
-                default:
-                    return "KeyboardButton Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                KEYBOARD_BUTTON_LIST(KEYBOARD_STRING_DEF)
-                default:
-                    return "KeyboardButton Unknown";
-            }
-        }
-
-#undef KEYBOARD_STRING_DEF
-
-    private:
-        KeyboardButtonEnum value;
+DEFINE_ENUM_TYPE(KeyboardButtonType, KEYBOARD_BUTTON_LIST)
 #undef KEYBOARD_BUTTON_LIST
-    };
 
-    /// KeyboardAxis
-    class KeyboardAxisType
+/// KeyboardAxis
+class KeyboardAxisType
+{
+public:
+    bool operator<(const KeyboardAxisType &rhs) const
     {
-    public:
-        bool operator<(const KeyboardAxisType &rhs) const
-        {
-            return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
-        }
+        return std::tie(Motion1, Motion2) < std::tie(rhs.Motion1, rhs.Motion2);
+    }
 
-        bool operator==(const KeyboardAxisType &rhs) const
-        {
-            return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
-        }
+    bool operator==(const KeyboardAxisType &rhs) const
+    {
+        return Motion1 == rhs.Motion1 && Motion2 == rhs.Motion2;
+    }
 
-        enum KeyboardAxisRange
-        {
-            POSITIVE,
-            NEGATIVE,
-            FULL
-        };
-
-        struct KeyboardPartAxis
-        {
-            bool operator<(const KeyboardPartAxis &rhs) const
-            {
-                return std::tie(Button, Range) < std::tie(rhs.Button, rhs.Range);
-            }
-
-            bool operator==(const KeyboardPartAxis &rhs) const
-            {
-                return Button == rhs.Button && Range == rhs.Range;
-            }
-
-            KeyboardButtonType Button;
-            KeyboardAxisRange Range;
-        } Motion1{}, Motion2{};
+    enum KeyboardAxisRange
+    {
+        POSITIVE,
+        NEGATIVE,
+        FULL
     };
 
-    /// KeyboardStick
-    class KeyboardStickType
+    struct KeyboardPartAxis
+    {
+        bool operator<(const KeyboardPartAxis &rhs) const
+        {
+            return std::tie(Button, Range) < std::tie(rhs.Button, rhs.Range);
+        }
+
+        bool operator==(const KeyboardPartAxis &rhs) const
+        {
+            return Button == rhs.Button && Range == rhs.Range;
+        }
+
+        KeyboardButtonType Button;
+        KeyboardAxisRange Range;
+    } Motion1{}, Motion2{};
+};
+
+/// KeyboardStick
+class KeyboardStickType
     {
     public:
         bool operator<(const KeyboardStickType &rhs) const
@@ -625,74 +401,16 @@ E(KEY_NONE)
         KeyboardAxisType Vertical;
     };
 
-    /// GamepadStick
-    class GamepadStickType
-    {
+#pragma endregion
+
 #define GAMEPAD_STICK_LIST(E) \
 E(STICK_LEFT) \
 E(STICK_RIGHT) \
 E(Count) \
 E(STICK_NONE)
-
-public:
-        enum GamepadStickEnum
-        {
-#define GAMEPAD_STICK_DEF(name) name,
-            GAMEPAD_STICK_LIST(GAMEPAD_STICK_DEF)
-#undef GAMEPAD_STICK_DEF
-        };
-
-        GamepadStickType() = default;
-
-        constexpr GamepadStickType(GamepadStickEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator GamepadStickEnum() const
-        { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                GAMEPAD_STICK_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadStick Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                GAMEPAD_STICK_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadStick Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        GamepadStickEnum value;
+DEFINE_ENUM_TYPE(GamepadStickType, GAMEPAD_STICK_LIST)
 #undef GAMEPAD_STICK_LIST
-    };
 
-    /// GamepadButton
-    class GamepadButtonType
-    {
 #define GAMEPAD_BUTTON_LIST(E) \
 E(BUTTON_A) \
 E(BUTTON_B) \
@@ -711,65 +429,9 @@ E(BUTTON_DPAD_LEFT) \
 E(BUTTON_DPAD_RIGHT) \
 E(Count) \
 E(BUTTON_NONE)
-    public:
-        enum GamepadButtonEnum
-        {
-#define GAMEPAD_BUTTON_DEF(name) name,
-            GAMEPAD_BUTTON_LIST(GAMEPAD_BUTTON_DEF)
-#undef GAMEPAD_BUTTON_DEF
-        };
-
-        GamepadButtonType() = default;
-
-        constexpr GamepadButtonType(GamepadButtonEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator GamepadButtonEnum() const
-        { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                GAMEPAD_BUTTON_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadButton Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                GAMEPAD_BUTTON_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadButton Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        GamepadButtonEnum value;
+DEFINE_ENUM_TYPE(GamepadButtonType, GAMEPAD_BUTTON_LIST)
 #undef GAMEPAD_BUTTON_LIST
-    };
 
-    /// GamepadAxis
-    class GamepadAxisType
-    {
 #define GAMEPAD_AXIS_LIST(E) \
 E(AXIS_LEFT_X)  \
 E(AXIS_LEFT_Y)  \
@@ -779,198 +441,28 @@ E(TRIGGER_LEFT) \
 E(TRIGGER_RIGHT)\
 E(Count)        \
 E(AXIS_NONE)
-    public:
-        enum GamepadAxisEnum
-        {
-#define GAMEPAD_AXIS_DEF(name) name,
-            GAMEPAD_AXIS_LIST(GAMEPAD_AXIS_DEF)
-#undef GAMEPAD_AXIS_DEF
-        };
-
-        GamepadAxisType() = default;
-
-        constexpr GamepadAxisType(GamepadAxisEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator GamepadAxisEnum() const
-        { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                GAMEPAD_AXIS_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadAxis Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                GAMEPAD_AXIS_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "GamepadAxis Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        GamepadAxisEnum value;
+DEFINE_ENUM_TYPE(GamepadAxisType, GAMEPAD_AXIS_LIST)
 #undef GAMEPAD_AXIS_LIST
-    };
 
 #pragma endregion Enum Input Types
 
 #pragma region Enum Event Trigger Types
 
-    /// InputAnalogEventTrigger. Used for triggers on analog range value [-1, 1]
-    class InputAnalogEventTrigger
-    {
 #define INPUT_STICK_EVENT_TRIGGER_LIST(E) \
 E(MOVEMENT) \
 E(FULL_POSITIVE) \
 E(FULL_NEGATIVE) \
 E(CONTINUOUS)
-
-    public:
-        enum InputAnalogEventTriggerEnum
-        {
-#define INPUT_STICK_EVENT_TRIGGER_DEF(name) name,
-            INPUT_STICK_EVENT_TRIGGER_LIST(INPUT_STICK_EVENT_TRIGGER_DEF)
-#undef INPUT_STICK_EVENT_TRIGGER_DEF
-        };
-
-        InputAnalogEventTrigger() = default;
-
-        [[maybe_unused]] constexpr InputAnalogEventTrigger(InputAnalogEventTriggerEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator InputAnalogEventTriggerEnum() const
-        { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                INPUT_STICK_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "InputAxisEventTrigger Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                INPUT_STICK_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "InputAxisEventTrigger Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        InputAnalogEventTriggerEnum value;
-
+DEFINE_ENUM_TYPE(InputAnalogEventTrigger, INPUT_STICK_EVENT_TRIGGER_LIST)
 #undef INPUT_STICK_EVENT_TRIGGER_LIST
-    };
 
-    /// InputButtonEventTrigger. Used for triggers on digital value (true, false)
-    class InputDigitalEventTrigger
-    {
 #define INPUT_BUTTON_EVENT_TRIGGER_LIST(E) \
 E(JUST_PRESSED) \
 E(JUST_RELEASED) \
 E(HOLDING_DOWN) \
 E(UP)
 // HOLD, LONG_PRESS, etc.
-
-    public:
-        enum InputButtonEventTriggerEnum
-        {
-#define INPUT_BUTTON_EVENT_TRIGGER_DEF(name) name,
-            INPUT_BUTTON_EVENT_TRIGGER_LIST(INPUT_BUTTON_EVENT_TRIGGER_DEF)
-#undef INPUT_BUTTON_EVENT_TRIGGER_DEF
-        };
-
-        InputDigitalEventTrigger() = default;
-
-        [[maybe_unused]] constexpr InputDigitalEventTrigger(InputButtonEventTriggerEnum enumValue) : value(enumValue)
-        {}
-
-        // prevent using as a pointer or boolean operator
-        void *operator new(std::size_t) = delete;
-
-        void *operator new[](std::size_t) = delete;
-
-        void operator delete(void *p) = delete;
-
-        explicit operator bool() const = delete;
-
-        // Allow switch and comparisons.
-        constexpr operator InputButtonEventTriggerEnum() const
-        { return value; }
-
-#define GAMEPAD_STRING_DEF(name) \
-        case name: return #name;
-
-        [[maybe_unused]] const char *c_str()
-        {
-            switch (value)
-            {
-                INPUT_BUTTON_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "InputButtonEventTrigger Unknown";
-            }
-        }
-
-        operator std::string()
-        {
-            switch (value)
-            {
-                INPUT_BUTTON_EVENT_TRIGGER_LIST(GAMEPAD_STRING_DEF)
-                default:
-                    return "InputButtonEventTrigger Unknown";
-            }
-        }
-
-#undef GAMEPAD_STRING_DEF
-
-    private:
-        InputButtonEventTriggerEnum value;
-
-#undef INPUT_BUTTON_EVENT_TRIGGER_LIST
-    };
+DEFINE_ENUM_TYPE(InputDigitalEventTrigger, INPUT_BUTTON_EVENT_TRIGGER_LIST)
 
 #pragma endregion Enum Event Trigger Types
 

@@ -73,7 +73,7 @@ void Sparkle::GamepadController::Update() {
             {GamepadStickType::STICK_RIGHT, {GamepadAxisType::AXIS_RIGHT_X, GamepadAxisType::AXIS_RIGHT_Y}}
         };
         LastStickValue[i] = StickValue[i];
-        GamepadStickType UpdateStick = static_cast<GamepadStickType::GamepadStickEnum>(i);
+        auto UpdateStick = GamepadStickType(i);
         InputVector stickValue = {.Horizontal = 0.0f, .Vertical = 0.0f};
         const std::vector<GamepadAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
         int axisIndex = 0;

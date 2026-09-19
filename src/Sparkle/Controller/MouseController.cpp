@@ -27,22 +27,23 @@ namespace Sparkle
         {
             LastAxisValue[i] = AxisValue[i];
             float axis = 0.0f;
-            switch (static_cast<MouseAxisType::MouseAxisEnum>(i))
+            auto MouseAxis = MouseAxisType(i);
+            switch (MouseAxis)
             {
-                case MouseAxisType::MouseAxisEnum::AXIS_X:
+                case MouseAxisType::AXIS_X:
                     axis = (float)x;
                     break;
-                case MouseAxisType::MouseAxisEnum::AXIS_Y:
+                case MouseAxisType::AXIS_Y:
                     axis = (float)y;
                     break;
-                case MouseAxisType::MouseAxisEnum::SCROLL_WHEEL_X:
+                case MouseAxisType::SCROLL_WHEEL_X:
                     axis = MouseWheelXValue;
                     break;
-                case MouseAxisType::MouseAxisEnum::SCROLL_WHEEL_Y:
+                case MouseAxisType::SCROLL_WHEEL_Y:
                     axis = MouseWheelYValue;
                     break;
-                case MouseAxisType::MouseAxisEnum::AXIS_NONE:
-                case MouseAxisType::MouseAxisEnum::Count:
+                case MouseAxisType::AXIS_NONE:
+                case MouseAxisType::Count:
                     break;
             }
             if (abs(axis) <= DEAD_ZONE)
@@ -59,7 +60,7 @@ namespace Sparkle
         for (unsigned int i = 0 ; i < static_cast<int>(MouseStickType::Count) ; ++i)
         {
             LastStickValue[i] = StickValue[i];
-            MouseStickType UpdateStick = static_cast<MouseStickType::MouseStickEnum>(i);
+            auto UpdateStick = MouseStickType(i);
             InputVector stickValue = {0, 0 };
             const std::vector<MouseAxisType>& axisAnalyses = StickAxis.at(UpdateStick);
             int axisIndex = 0;
@@ -105,7 +106,7 @@ namespace Sparkle
 
     InputResult MouseController::ProcessStick(const InputMouseStickEvent &event)
     {
-        InputVector stickValue = StickValue[event.Stick];
+        InputVector stickValue = StickValue[(int)event.Stick];
         bool hasStickMoved = HasStickMoved(event.Stick);
         if (hasStickMoved && event.StickTrigger == InputAnalogEventTrigger::MOVEMENT
             || (stickValue.Horizontal >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE || stickValue.Vertical >= 0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_POSITIVE)

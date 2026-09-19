@@ -82,10 +82,10 @@ namespace Sparkle
         {
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i] && !LastButtonsValue[i]) return {MouseButtonType::MouseButtonEnum(i)};
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return {MouseButtonType(i)};
             }
 
-            return {MouseButtonType::MouseButtonEnum::BUTTON_NONE};
+            return {MouseButtonType::BUTTON_NONE};
         }
 
         /// Get the current Mouse axis value
@@ -114,10 +114,10 @@ namespace Sparkle
         {
             for (int i = 0 ; i < (int)MouseAxisType::Count ; ++i)
             {
-                auto axis = MouseAxisType::MouseAxisEnum(i);
+                auto axis = MouseAxisType(i);
                 if (HasAxisMoved(axis)) return axis;
             }
-            return MouseAxisType::MouseAxisEnum::AXIS_NONE;
+            return MouseAxisType::AXIS_NONE;
         }
 
         /// Check if stick had a movement from last frame

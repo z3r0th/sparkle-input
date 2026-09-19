@@ -179,9 +179,9 @@ namespace Sparkle
         UpdateKeyboard();
         UpdateMouse();
 
-        for (int i = 0 ; i < MouseStickType::Count; ++i)
+        for (int i = 0 ; i < (int)MouseStickType::Count; ++i)
         {
-            auto mouseStick = MouseStickType::MouseStickEnum(i);
+            auto mouseStick = MouseStickType(i);
             if (MouseDeviceController->HasStickMoved(mouseStick))
             {
                 auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Value = MouseDeviceController->GetStick(mouseStick)};
@@ -195,9 +195,9 @@ namespace Sparkle
             auto GamepadController = GamepadControllerPair.second;
             if (GamepadController->IsActive())
             {
-                for (int i = 0 ; i < GamepadStickType::Count; ++i)
+                for (int i = 0 ; i < (int)GamepadStickType::Count; ++i)
                 {
-                    GamepadStickType stickType = GamepadStickType::GamepadStickEnum(i);
+                    auto stickType = GamepadStickType(i);
                     if (GamepadController->HasStickMoved(stickType))
                     {
                         auto stick = Stick {.StickType = {.GamepadStick = stickType}, .Value = GamepadController->GetStick(stickType)};

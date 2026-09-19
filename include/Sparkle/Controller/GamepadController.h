@@ -132,10 +132,10 @@ namespace Sparkle
         {
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
+                if (ButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
 
-            return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
+            return GamepadButtonType(GamepadButtonType::BUTTON_NONE);
         }
 
         /// Get the first/any pressed button we can find
@@ -144,10 +144,10 @@ namespace Sparkle
         {
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i] && !LastButtonsValue[i]) return GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i));
+                if (ButtonsValue[i] && !LastButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
 
-            return GamepadButtonType(GamepadButtonType::GamepadButtonEnum::BUTTON_NONE);
+            return GamepadButtonType(GamepadButtonType::BUTTON_NONE);
         }
 
         /// Get all pressed buttons
@@ -157,7 +157,7 @@ namespace Sparkle
             std::vector<GamepadButtonType> pressedButtons;
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
+                if (ButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType(i)));
             }
 
             return pressedButtons;
@@ -170,7 +170,7 @@ namespace Sparkle
             std::vector<GamepadButtonType> pressedButtons;
             for(int i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i] && !LastButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType::GamepadButtonEnum(i)));
+                if (ButtonsValue[i] && !LastButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType(i)));
             }
 
             return pressedButtons;
@@ -224,10 +224,10 @@ namespace Sparkle
         {
             for (int i = 0 ; i < (int)GamepadAxisType::Count ; ++i)
             {
-                auto axis = GamepadAxisType::GamepadAxisEnum(i);
+                auto axis = GamepadAxisType(i);
                 if (HasAxisMoved(axis)) return axis;
             }
-            return GamepadAxisType::GamepadAxisEnum::AXIS_NONE;
+            return GamepadAxisType::AXIS_NONE;
         }
 
         /// Check if any stick had a movement from last frame
@@ -238,10 +238,10 @@ namespace Sparkle
         {
             for (int i = 0 ; i < (int)GamepadStickType::Count ; ++i)
             {
-                auto stick = GamepadStickType::GamepadStickEnum(i);
+                auto stick = GamepadStickType(i);
                 if (HasStickMoved(stick)) return stick;
             }
-            return GamepadStickType::GamepadStickEnum::STICK_NONE;
+            return GamepadStickType::STICK_NONE;
         }
     };
 }
