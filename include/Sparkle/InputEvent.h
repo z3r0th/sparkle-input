@@ -11,6 +11,7 @@
 #include <string>
 #include <cassert>
 #include <utility>
+#include <variant>
 
 namespace Sparkle
 {
@@ -468,59 +469,57 @@ DEFINE_ENUM_TYPE(InputDigitalEventTrigger, INPUT_BUTTON_EVENT_TRIGGER_LIST)
 
 #pragma region Struct Event Pair (Trigger/Input)
 
-    struct InputMouseButtonEvent
-    {
-        InputDigitalEventTrigger ButtonTrigger{};
-        MouseButtonType Button{};
-    };
+#define InputButtonEvent(ClassName, ButtonType)                                             \
+struct ClassName                                                                            \
+{                                                                                           \
+    InputDigitalEventTrigger ButtonTrigger{};                                               \
+    ButtonType Button{};                                                                    \
+                                                                                            \
+    bool operator<(const ClassName& rhs) const                                              \
+    { return std::tie(ButtonTrigger, Button) < std::tie(rhs.ButtonTrigger, rhs.Button); }   \
+    bool operator==(const ClassName& rhs) const = default;                                  \
+};                                                                                          \
+                                                                                            \
 
-    struct InputMouseAxisEvent
-    {
-        InputAnalogEventTrigger AxisTrigger{};
-        MouseAxisType Axis{};
-    };
+#define InputAxisEvent(ClassName, AxisType)                                                 \
+struct ClassName                                                                            \
+{                                                                                           \
+    InputAnalogEventTrigger AxisTrigger{};                                                  \
+    AxisType Axis{};                                                                        \
+                                                                                            \
+    bool operator<(const ClassName& rhs) const                                              \
+    { return std::tie(AxisTrigger, Axis) < std::tie(rhs.AxisTrigger, rhs.Axis); }           \
+    bool operator==(const ClassName& rhs) const = default;                                  \
+};                                                                                          \
+                                                                                            \
 
-    struct InputMouseStickEvent
-    {
-        InputAnalogEventTrigger StickTrigger{};
-        MouseStickType Stick{};
-    };
+#define InputStickEvent(ClassName, StickType)                                                \
+struct ClassName                                                                            \
+{                                                                                           \
+    InputAnalogEventTrigger StickTrigger{};                                                 \
+    StickType Stick{};                                                                      \
+                                                                                            \
+    bool operator<(const ClassName& rhs) const                                              \
+    { return std::tie(StickTrigger, Stick) < std::tie(rhs.StickTrigger, rhs.Stick); }       \
+    bool operator==(const ClassName& rhs) const = default;                                  \
+};                                                                                          \
+                                                                                            \
 
-    struct InputKeyboardButtonEvent
-    {
-        InputDigitalEventTrigger ButtonTrigger{};
-        KeyboardButtonType Button{};
-    };
+    InputButtonEvent(InputMouseButtonEvent, MouseButtonType);
+    InputButtonEvent(InputKeyboardButtonEvent, KeyboardButtonType);
+    InputButtonEvent(InputGamepadButtonEvent, GamepadButtonType);
 
-    struct InputKeyboardAxisEvent
-    {
-        InputAnalogEventTrigger AxisTrigger{};
-        KeyboardAxisType Axis{};
-    };
+    InputAxisEvent(InputMouseAxisEvent, MouseAxisType);
+    InputAxisEvent(InputKeyboardAxisEvent, KeyboardAxisType);
+    InputAxisEvent(InputGamepadAxisEvent, GamepadAxisType);
 
-    struct InputKeyboardStickEvent
-    {
-        InputAnalogEventTrigger StickTrigger{};
-        KeyboardStickType Stick{};
-    };
+    InputStickEvent(InputMouseStickEvent, MouseStickType);
+    InputStickEvent(InputKeyboardStickEvent, KeyboardStickType);
+    InputStickEvent(InputGamepadStickEvent, GamepadStickType);
 
-    struct InputGamepadButtonEvent
-    {
-        InputDigitalEventTrigger ButtonTrigger{};
-        GamepadButtonType Button{};
-    };
-
-    struct InputGamepadAxisEvent
-    {
-        InputAnalogEventTrigger AxisTrigger{};
-        GamepadAxisType Axis{};
-    };
-
-    struct InputGamepadStickEvent
-    {
-        InputAnalogEventTrigger StickTrigger{};
-        GamepadStickType Stick{};
-    };
+#undef InputButtonEvent
+#undef InputAxisEvent
+#undef InputStickEvent
 
 #pragma endregion Struct Event Pair (Trigger/Input)
 
@@ -540,18 +539,17 @@ DEFINE_ENUM_TYPE(InputDigitalEventTrigger, INPUT_BUTTON_EVENT_TRIGGER_LIST)
     };
 
     /// Active Event type used
-    union SpecificInputEvent
-    {
-        InputKeyboardButtonEvent KeyboardButtonEvent;
-        InputKeyboardStickEvent KeyboardStickEvent;
-        InputKeyboardAxisEvent KeyboardAxisEvent;
-        InputGamepadButtonEvent GamepadButtonEvent;
-        InputGamepadStickEvent GamepadStickEvent;
-        InputGamepadAxisEvent GamepadAxisEvent;
-        InputMouseButtonEvent MouseButtonEvent;
-        InputMouseStickEvent MouseStickEvent;
-        InputMouseAxisEvent MouseAxisEvent;
-    };
+    using SpecificInputEvent = std::variant<
+        InputKeyboardButtonEvent,
+        InputKeyboardStickEvent,
+        InputKeyboardAxisEvent,
+        InputGamepadButtonEvent,
+        InputGamepadStickEvent,
+        InputGamepadAxisEvent,
+        InputMouseButtonEvent,
+        InputMouseStickEvent,
+        InputMouseAxisEvent
+    >;
 
     /// Axis Type
     /// Represents an axis on a controller (Gamepad, Mouse, Keyboard)
@@ -699,235 +697,128 @@ DEFINE_ENUM_TYPE(InputDigitalEventTrigger, INPUT_BUTTON_EVENT_TRIGGER_LIST)
 
         bool operator <(const InputTrigger& rhs) const
         {
-            switch (EventType) {
-                case InputEventType::GamepadButtonEventType:
-                    return std::tie(EventType,
-                             Event.GamepadButtonEvent.Button,
-                             Event.GamepadButtonEvent.ButtonTrigger) <
-                           std::tie(rhs.EventType,
-                             rhs.Event.GamepadButtonEvent.Button,
-                             rhs.Event.GamepadButtonEvent.ButtonTrigger);
-                case InputEventType::GamepadAxisEventType:
-                    return std::tie(EventType,
-                                    Event.GamepadAxisEvent.AxisTrigger,
-                                    Event.GamepadAxisEvent.Axis) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
-                                    rhs.Event.GamepadAxisEvent.Axis);
-                case InputEventType::GamepadStickEventType:
-                    return std::tie(EventType,
-                                    Event.GamepadStickEvent.StickTrigger,
-                                    Event.GamepadStickEvent.Stick) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.GamepadStickEvent.StickTrigger,
-                                    rhs.Event.GamepadStickEvent.Stick);
-                case InputEventType::KeyboardButtonEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardButtonEvent.ButtonTrigger,
-                                    Event.KeyboardButtonEvent.Button) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardButtonEvent.ButtonTrigger,
-                                    rhs.Event.KeyboardButtonEvent.Button);
-                case InputEventType::KeyboardAxisEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardAxisEvent.AxisTrigger,
-                                    Event.KeyboardAxisEvent.Axis) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardAxisEvent.AxisTrigger,
-                                    rhs.Event.KeyboardAxisEvent.Axis);
-                case InputEventType::KeyboardStickEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardStickEvent.StickTrigger,
-                                    Event.KeyboardStickEvent.Stick) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardStickEvent.StickTrigger,
-                                    rhs.Event.KeyboardStickEvent.Stick);
-                case InputEventType::MouseButtonEventType:
-                    return std::tie(EventType,
-                                    Event.MouseButtonEvent.ButtonTrigger,
-                                    Event.MouseButtonEvent.Button) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
-                                    rhs.Event.MouseButtonEvent.Button);
-                case InputEventType::MouseAxisEventType:
-                    return std::tie(EventType,
-                                    Event.MouseAxisEvent.AxisTrigger,
-                                    Event.MouseAxisEvent.Axis) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseAxisEvent.AxisTrigger,
-                                    rhs.Event.MouseAxisEvent.Axis);
-                case InputEventType::MouseStickEventType:
-                    return std::tie(EventType,
-                                    Event.MouseStickEvent.StickTrigger,
-                                    Event.MouseStickEvent.Stick) <
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseStickEvent.StickTrigger,
-                                    rhs.Event.MouseStickEvent.Stick);
-            }
-            return false;
+            return Event < rhs.Event;
         }
         bool operator ==(const InputTrigger& rhs) const
         {
-            switch (EventType) {
-                case InputEventType::GamepadButtonEventType:
-                    return std::tie(EventType,
-                                    Event.GamepadButtonEvent.Button,
-                                    Event.GamepadButtonEvent.ButtonTrigger) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.GamepadButtonEvent.Button,
-                                    rhs.Event.GamepadButtonEvent.ButtonTrigger);
-                case InputEventType::GamepadAxisEventType:
-                    return std::tie(EventType,
-                                    Event.GamepadAxisEvent.AxisTrigger,
-                                    Event.GamepadAxisEvent.Axis) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.GamepadAxisEvent.AxisTrigger,
-                                    rhs.Event.GamepadAxisEvent.Axis);
-                case InputEventType::GamepadStickEventType:
-                    return std::tie(EventType,
-                                    Event.GamepadStickEvent.StickTrigger,
-                                    Event.GamepadStickEvent.Stick) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.GamepadStickEvent.StickTrigger,
-                                    rhs.Event.GamepadStickEvent.Stick);
-                case InputEventType::KeyboardButtonEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardButtonEvent.ButtonTrigger,
-                                    Event.KeyboardButtonEvent.Button) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardButtonEvent.ButtonTrigger,
-                                    rhs.Event.KeyboardButtonEvent.Button);
-                case InputEventType::KeyboardAxisEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardAxisEvent.AxisTrigger,
-                                    Event.KeyboardAxisEvent.Axis) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardAxisEvent.AxisTrigger,
-                                    rhs.Event.KeyboardAxisEvent.Axis);
-                case InputEventType::KeyboardStickEventType:
-                    return std::tie(EventType,
-                                    Event.KeyboardStickEvent.StickTrigger,
-                                    Event.KeyboardStickEvent.Stick) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.KeyboardStickEvent.StickTrigger,
-                                    rhs.Event.KeyboardStickEvent.Stick);
-                case InputEventType::MouseButtonEventType:
-                    return std::tie(EventType,
-                                    Event.MouseButtonEvent.ButtonTrigger,
-                                    Event.MouseButtonEvent.Button) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseButtonEvent.ButtonTrigger,
-                                    rhs.Event.MouseButtonEvent.Button);
-                case InputEventType::MouseAxisEventType:
-                    return std::tie(EventType,
-                                    Event.MouseAxisEvent.AxisTrigger,
-                                    Event.MouseAxisEvent.Axis) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseAxisEvent.AxisTrigger,
-                                    rhs.Event.MouseAxisEvent.Axis);
-                case InputEventType::MouseStickEventType:
-                    return std::tie(EventType,
-                                    Event.MouseStickEvent.StickTrigger,
-                                    Event.MouseStickEvent.Stick) ==
-                           std::tie(rhs.EventType,
-                                    rhs.Event.MouseStickEvent.StickTrigger,
-                                    rhs.Event.MouseStickEvent.Stick);
-            }
-            return false;
+            return Event == rhs.Event;
         }
     };
 }
 
+#pragma region Input Event Hash
+
 // To compute HASH for InputTrigger, so it can be used in unordered_map (if needed).
 // use the Action name as HASH
-template <>
-struct std::hash<Sparkle::InputTrigger>
+// using hash trick to emulate a fold expression (available in C++17) in C++11
+// answer on https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x by Henri Mencke
+namespace Sparkle
 {
-    template <typename T, typename... Rest>
-    inline void HashCombine(std::size_t &seed, T const &v, Rest &&... rest) const
+    template<typename T, typename... Rest>
+    inline void HashCombine(std::size_t &seed, T const &v, Rest &&... rest)
     {
         std::hash<T> hasher;
         seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        // trick to emulate a fold expression (available in C++17) in C++11
-        // answer on https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x by Henri Mencke
         int i[] = {0, (HashCombine(seed, std::forward<Rest>(rest)), 0)...};
-        (void)(i);
+        (void) (i);
     }
+}
 
-    std::size_t operator()(const Sparkle::InputTrigger& k) const
+#define DefineButtonEventHashTemplate(ClassName) \
+template<> \
+struct std::hash<ClassName> \
+{ \
+    std::size_t operator()(const ClassName& e) const \
+    { \
+        std::size_t h = 0; \
+        Sparkle::HashCombine(h, (int)e.Button, (int)e.ButtonTrigger); \
+        return h; \
+    } \
+};
+
+DefineButtonEventHashTemplate(Sparkle::InputGamepadButtonEvent)
+DefineButtonEventHashTemplate(Sparkle::InputMouseButtonEvent)
+DefineButtonEventHashTemplate(Sparkle::InputKeyboardButtonEvent)
+
+#undef DefineButtonEventHashTemplate
+
+#define DefineAxisEventHashTemplate(ClassName) \
+template<> \
+struct std::hash<ClassName> \
+{ \
+    std::size_t operator()(const ClassName& e) const \
+    { \
+        std::size_t h = 0; \
+        Sparkle::HashCombine(h, (int)e.Axis, (int)e.AxisTrigger); \
+        return h; \
+    } \
+};
+
+DefineAxisEventHashTemplate(Sparkle::InputGamepadAxisEvent)
+DefineAxisEventHashTemplate(Sparkle::InputMouseAxisEvent)
+
+#undef DefineStickEventHashTemplate
+
+#define DefineStickEventHashTemplate(ClassName) \
+template<> \
+struct std::hash<ClassName> \
+{ \
+    std::size_t operator()(const ClassName& e) const \
+    { \
+        std::size_t h = 0; \
+        Sparkle::HashCombine(h, (int)e.Stick, (int)e.StickTrigger); \
+        return h; \
+    } \
+};
+
+DefineStickEventHashTemplate(Sparkle::InputGamepadStickEvent)
+DefineStickEventHashTemplate(Sparkle::InputMouseStickEvent)
+
+#undef DefineStickEventHashTemplate
+
+template<>
+struct std::hash<Sparkle::InputKeyboardAxisEvent>
+{
+    std::size_t operator()(const Sparkle::InputKeyboardAxisEvent& e) const
     {
-        using std::size_t;
-        using std::hash;
-        using std::string;
         std::size_t h = 0;
-        switch (k.EventType) {
-            case Sparkle::InputEventType::GamepadButtonEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.GamepadButtonEvent.Button,
-                            (int)k.Event.GamepadButtonEvent.ButtonTrigger);
-                return h;
-            case Sparkle::InputEventType::GamepadAxisEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.GamepadAxisEvent.Axis,
-                            (int)k.Event.GamepadAxisEvent.AxisTrigger);
-                return h;
-            case Sparkle::InputEventType::GamepadStickEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.GamepadStickEvent.Stick,
-                            (int)k.Event.GamepadStickEvent.StickTrigger);
-                return h;
-            case Sparkle::InputEventType::KeyboardButtonEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.KeyboardButtonEvent.Button,
-                            (int)k.Event.KeyboardButtonEvent.ButtonTrigger);
-                return h;
-            case Sparkle::InputEventType::KeyboardAxisEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.KeyboardAxisEvent.AxisTrigger,
-                            (int)k.Event.KeyboardAxisEvent.Axis.Motion1.Range,
-                            (int)k.Event.KeyboardAxisEvent.Axis.Motion1.Button,
-                            (int)k.Event.KeyboardAxisEvent.Axis.Motion2.Range,
-                            (int)k.Event.KeyboardAxisEvent.Axis.Motion2.Button);
-                return h;
-            case Sparkle::InputEventType::KeyboardStickEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.KeyboardStickEvent.StickTrigger,
-                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion1.Range,
-                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion1.Button,
-                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion2.Range,
-                            (int)k.Event.KeyboardStickEvent.Stick.Vertical.Motion2.Button,
-                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Range,
-                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion1.Button,
-                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Range,
-                            (int)k.Event.KeyboardStickEvent.Stick.Horizontal.Motion2.Button);
-                return h;
-            case Sparkle::InputEventType::MouseButtonEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.MouseButtonEvent.Button,
-                            (int)k.Event.MouseButtonEvent.ButtonTrigger);
-                return h;
-            case Sparkle::InputEventType::MouseAxisEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.GamepadAxisEvent.AxisTrigger,
-                            (int)k.Event.GamepadAxisEvent.Axis);
-                return h;
-            case Sparkle::InputEventType::MouseStickEventType:
-                HashCombine(h,
-                            (int)k.EventType,
-                            (int)k.Event.GamepadStickEvent.StickTrigger,
-                            (int)k.Event.GamepadStickEvent.Stick);
-                return h;
-        }
+        Sparkle::HashCombine(h,
+                             (int)e.AxisTrigger,
+                             (int)e.Axis.Motion1.Range, (int)e.Axis.Motion1.Button,
+                             (int)e.Axis.Motion2.Range, (int)e.Axis.Motion2.Button);
+        return h;
     }
 };
+
+template <> struct std::hash<Sparkle::InputKeyboardStickEvent>
+{
+    std::size_t operator()(const Sparkle::InputKeyboardStickEvent& e) const
+    {
+        std::size_t h = 0;
+        Sparkle::HashCombine(h,
+                             (int)e.StickTrigger,
+                             (int)e.Stick.Vertical.Motion1.Range,   (int)e.Stick.Vertical.Motion1.Button,
+                             (int)e.Stick.Vertical.Motion2.Range,   (int)e.Stick.Vertical.Motion2.Button,
+                             (int)e.Stick.Horizontal.Motion1.Range, (int)e.Stick.Horizontal.Motion1.Button,
+                             (int)e.Stick.Horizontal.Motion2.Range, (int)e.Stick.Horizontal.Motion2.Button);
+        return h;
+    }
+};
+
+template <>
+struct std::hash<Sparkle::InputTrigger>
+{
+    std::size_t operator()(const Sparkle::InputTrigger& t) const
+    {
+        return std::visit([&t](auto&& event) {
+            std::size_t h = std::hash<std::size_t>{}(t.Event.index());
+            Sparkle::HashCombine(h, std::hash<std::decay_t<decltype(event)>>{}(event));
+            return h;
+        }, t.Event);
+    }
+};
+
+#pragma endregion
 
 #endif //SPARKLE_SOLUTION_INPUT_EVENT_H
 

@@ -119,22 +119,21 @@ namespace Sparkle
         return InputResult{false};
     }
 
-    InputResult MouseController::ProcessEvent(const InputTrigger &event)
+    InputResult MouseController::ProcessEvent(const InputTrigger &trigger)
     {
-        switch (event.EventType)
+        return std::visit([this](auto&& event) -> InputResult
         {
-            case InputEventType::MouseButtonEventType:
-                return ProcessButton(event.Event.MouseButtonEvent);
+          using EventT = std::decay_t<decltype(event)>;
 
-            case InputEventType::MouseAxisEventType:
-                return ProcessAxis(event.Event.MouseAxisEvent);
-
-            case InputEventType::MouseStickEventType:
-                return ProcessStick(event.Event.MouseStickEvent);
-
-            default:
-                return Sparkle::InputResult{false};
-        }
+          if constexpr (std::is_same_v<EventT, InputMouseButtonEvent>)
+              return ProcessButton(event);
+          else if constexpr (std::is_same_v<EventT, InputMouseAxisEvent>)
+              return ProcessAxis(event);
+          else if constexpr (std::is_same_v<EventT, InputMouseStickEvent>)
+              return ProcessStick(event);
+          else
+              return InputResult{false};
+        }, trigger.Event);
     }
 
     Sparkle::MouseController::MouseController() : ButtonsValue(), LastButtonsValue()

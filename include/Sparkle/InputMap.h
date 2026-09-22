@@ -58,8 +58,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::MouseButtonEventType;
-            event.Event.MouseButtonEvent.Button = button;
-            event.Event.MouseButtonEvent.ButtonTrigger = trigger;
+            event.Event = InputMouseButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
 
@@ -71,8 +70,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::MouseAxisEventType;
-            event.Event.MouseAxisEvent.AxisTrigger = trigger;
-            event.Event.MouseAxisEvent.Axis = axis;
+            event.Event = InputMouseAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
 
@@ -84,8 +82,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::MouseStickEventType;
-            event.Event.MouseStickEvent.StickTrigger = trigger;
-            event.Event.MouseStickEvent.Stick = stick;
+            event.Event = InputMouseStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
 
@@ -97,8 +94,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::KeyboardButtonEventType;
-            event.Event.KeyboardButtonEvent.Button = button;
-            event.Event.KeyboardButtonEvent.ButtonTrigger = trigger;
+            event.Event = InputKeyboardButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
 
@@ -110,8 +106,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::KeyboardAxisEventType;
-            event.Event.KeyboardAxisEvent.AxisTrigger = trigger;
-            event.Event.KeyboardAxisEvent.Axis = axis;
+            event.Event = InputKeyboardAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
 
@@ -123,8 +118,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::KeyboardStickEventType;
-            event.Event.KeyboardStickEvent.StickTrigger = trigger;
-            event.Event.KeyboardStickEvent.Stick = stick;
+            event.Event = InputKeyboardStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
 
@@ -141,8 +135,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::GamepadButtonEventType;
-            event.Event.GamepadButtonEvent.Button = button;
-            event.Event.GamepadButtonEvent.ButtonTrigger = trigger;
+            event.Event = InputGamepadButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
 
@@ -158,8 +151,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::GamepadStickEventType;
-            event.Event.GamepadStickEvent.Stick = stick;
-            event.Event.GamepadStickEvent.StickTrigger = trigger;
+            event.Event = InputGamepadStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
 
@@ -175,8 +167,7 @@ namespace Sparkle
         {
             InputTrigger event = InputTrigger();
             event.EventType = InputEventType::GamepadAxisEventType;
-            event.Event.GamepadAxisEvent.Axis = axis;
-            event.Event.GamepadAxisEvent.AxisTrigger = trigger;
+            event.Event = InputGamepadAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
 

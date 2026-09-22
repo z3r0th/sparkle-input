@@ -119,22 +119,21 @@ Sparkle::GamepadController::GamepadController():
     std::fill(LastStickValue.begin(), LastStickValue.end(), emptyStick);
 }
 
-Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &event)
+Sparkle::InputResult Sparkle::GamepadController::ProcessEvent(const Sparkle::InputTrigger &trigger)
 {
-    switch (event.EventType)
+    return std::visit([this](auto&& event) -> InputResult
     {
-        case InputEventType::GamepadButtonEventType:
-            return ProcessButton(event.Event.GamepadButtonEvent);
+      using EventT = std::decay_t<decltype(event)>;
 
-        case InputEventType::GamepadAxisEventType:
-            return ProcessAxis(event.Event.GamepadAxisEvent);
-
-        case InputEventType::GamepadStickEventType:
-            return ProcessStick(event.Event.GamepadStickEvent);
-
-        default:
-            return Sparkle::InputResult{false};
-    }
+      if constexpr (std::is_same_v<EventT, InputGamepadButtonEvent>)
+          return ProcessButton(event);
+      else if constexpr (std::is_same_v<EventT, InputGamepadAxisEvent>)
+          return ProcessAxis(event);
+      else if constexpr (std::is_same_v<EventT, InputGamepadStickEvent>)
+          return ProcessStick(event);
+      else
+          return InputResult{false};
+    }, trigger.Event);
 }
 
 Sparkle::InputResult Sparkle::GamepadController::ProcessStick(const InputGamepadStickEvent &event)

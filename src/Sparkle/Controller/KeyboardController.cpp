@@ -50,22 +50,21 @@ Sparkle::KeyboardController::KeyboardController() : ButtonsValue(), LastButtonsV
     std::fill(ButtonsValue.begin(), ButtonsValue.end(), false);
 }
 
-Sparkle::InputResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputTrigger &event)
+Sparkle::InputResult Sparkle::KeyboardController::ProcessEvent(const Sparkle::InputTrigger &trigger)
 {
-    switch (event.EventType)
+    return std::visit([this](auto&& event) -> InputResult
     {
-        case InputEventType::KeyboardButtonEventType:
-            return ProcessButton(event.Event.KeyboardButtonEvent);
+      using EventT = std::decay_t<decltype(event)>;
 
-        case InputEventType::KeyboardAxisEventType:
-            return ProcessAxis(event.Event.KeyboardAxisEvent);
-
-        case InputEventType::KeyboardStickEventType:
-            return ProcessStick(event.Event.KeyboardStickEvent);
-
-        default:
-            return Sparkle::InputResult{false};
-    }
+      if constexpr (std::is_same_v<EventT, InputKeyboardButtonEvent>)
+          return ProcessButton(event);
+      else if constexpr (std::is_same_v<EventT, InputKeyboardAxisEvent>)
+          return ProcessAxis(event);
+      else if constexpr (std::is_same_v<EventT, InputKeyboardStickEvent>)
+          return ProcessStick(event);
+      else
+          return InputResult{false};
+    }, trigger.Event);
 }
 
 Sparkle::InputResult Sparkle::KeyboardController::ProcessButton(const Sparkle::InputKeyboardButtonEvent &keyboardEvent)
