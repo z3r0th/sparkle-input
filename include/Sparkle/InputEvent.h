@@ -523,21 +523,6 @@ struct ClassName                                                                
 
 #pragma endregion Struct Event Pair (Trigger/Input)
 
-    /// Possible event types supported
-    /// Current support is Gamepad, Keyboard, and Mouse
-    enum class InputEventType
-    {
-        GamepadButtonEventType,
-        GamepadAxisEventType,
-        GamepadStickEventType,
-        KeyboardButtonEventType,
-        KeyboardAxisEventType,
-        KeyboardStickEventType,
-        MouseButtonEventType,
-        MouseAxisEventType,
-        MouseStickEventType,
-    };
-
     /// Active Event type used
     using SpecificInputEvent = std::variant<
         InputKeyboardButtonEvent,
@@ -693,7 +678,6 @@ struct ClassName                                                                
     struct InputTrigger
     {
         SpecificInputEvent Event{};
-        InputEventType EventType{};
 
         bool operator <(const InputTrigger& rhs) const
         {

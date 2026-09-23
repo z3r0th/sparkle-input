@@ -57,7 +57,6 @@ namespace Sparkle
         void Bind(const MouseButtonType& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::MouseButtonEventType;
             event.Event = InputMouseButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
@@ -69,7 +68,6 @@ namespace Sparkle
         void Bind(const MouseAxisType& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::MouseAxisEventType;
             event.Event = InputMouseAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
@@ -81,7 +79,6 @@ namespace Sparkle
         void Bind(const MouseStickType& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::MouseStickEventType;
             event.Event = InputMouseStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
@@ -93,7 +90,6 @@ namespace Sparkle
         void Bind(const KeyboardButtonType& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::KeyboardButtonEventType;
             event.Event = InputKeyboardButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
@@ -105,7 +101,6 @@ namespace Sparkle
         void Bind(const KeyboardAxisType& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::KeyboardAxisEventType;
             event.Event = InputKeyboardAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
@@ -117,7 +112,6 @@ namespace Sparkle
         void Bind(const KeyboardStickType& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::KeyboardStickEventType;
             event.Event = InputKeyboardStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
@@ -134,7 +128,6 @@ namespace Sparkle
         void Bind(const GamepadButtonType& button, const InputDigitalEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::GamepadButtonEventType;
             event.Event = InputGamepadButtonEvent{trigger, button};
             ActionTrigger[event] = action;
         }
@@ -150,7 +143,6 @@ namespace Sparkle
         void Bind(const GamepadStickType& stick, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::GamepadStickEventType;
             event.Event = InputGamepadStickEvent{trigger, stick};
             ActionTrigger[event] = action;
         }
@@ -166,7 +158,6 @@ namespace Sparkle
         void Bind(const GamepadAxisType& axis, const InputAnalogEventTrigger& trigger, const InputAction& action)
         {
             InputTrigger event = InputTrigger();
-            event.EventType = InputEventType::GamepadAxisEventType;
             event.Event = InputGamepadAxisEvent{trigger, axis};
             ActionTrigger[event] = action;
         }
