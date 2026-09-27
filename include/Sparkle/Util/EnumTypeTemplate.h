@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <string>
+#include <cassert>
 
 namespace Sparkle
 {
@@ -21,8 +22,14 @@ namespace Sparkle
     public:
         constexpr EnumType() = default;
         constexpr EnumType(Enum value) : Value(value) { }
-        constexpr explicit EnumType(int value) : Value(static_cast<Enum>(value)) {}
-        constexpr explicit EnumType(unsigned int value) : Value(static_cast<Enum>(value)) {}
+        constexpr explicit EnumType(int value) : Value(static_cast<Enum>(value))
+        {
+            assert(value >= 0 && value < static_cast<int>(Enum::Count) && "EnumType Template >> out-of-range index");
+        }
+        constexpr explicit EnumType(unsigned int value) : Value(static_cast<Enum>(value))
+        {
+            assert(value < static_cast<unsigned int>(Enum::Count) && "EnumType Template >> out-of-range index");
+        }
 
         void* operator new(std::size_t) = delete;
         void* operator new[](std::size_t) = delete;
