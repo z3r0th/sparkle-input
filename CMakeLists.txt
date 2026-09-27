@@ -34,7 +34,7 @@ target_include_directories(SparkleInput PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include> )
 
-target_compile_features(SparkleInput PUBLIC cxx_std_17)
+target_compile_features(SparkleInput PUBLIC cxx_std_20)
 install(TARGETS SparkleInput EXPORT SparkleInputTargets)
 install(DIRECTORY include/ DESTINATION include)
 install(EXPORT SparkleInputTargets FILE SparkleInputTargets.cmake NAMESPACE Sparkle:: DESTINATION lib/cmake/SparkleInput )
