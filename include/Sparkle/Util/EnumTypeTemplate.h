@@ -40,6 +40,8 @@ namespace Sparkle
         friend constexpr bool operator==(EnumType a, Enum b) { return a.Value == b; }
         friend constexpr bool operator==(Enum a, EnumType b) { return b.Value == a; }
         friend constexpr bool operator==(EnumType a, EnumType b) { return a.Value == b.Value; }
+        friend constexpr bool operator<(EnumType a, Enum b)  { return a.Value < b;  }
+        friend constexpr bool operator<(Enum a, EnumType b)  { return a < b.Value;  }
         friend constexpr bool operator<(EnumType a, EnumType b)  { return a.Value < b.Value;  }
 
     };
