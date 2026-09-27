@@ -131,7 +131,7 @@ namespace Sparkle
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline GamepadButtonType AnyPressedButton()
         {
-            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
+            for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
                 if (ButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
@@ -143,7 +143,7 @@ namespace Sparkle
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline GamepadButtonType AnyJustPressedButton()
         {
-            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
+            for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
                 if (ButtonsValue[i] && !LastButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
@@ -156,7 +156,7 @@ namespace Sparkle
         inline std::vector<GamepadButtonType> PressedButtons()
         {
             std::vector<GamepadButtonType> pressedButtons;
-            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
+            for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
                 if (ButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType(i)));
             }
@@ -169,7 +169,7 @@ namespace Sparkle
         inline std::vector<GamepadButtonType> JustPressedButtons()
         {
             std::vector<GamepadButtonType> pressedButtons;
-            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
+            for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
                 if (ButtonsValue[i] && !LastButtonsValue[i]) pressedButtons.push_back(GamepadButtonType(GamepadButtonType(i)));
             }

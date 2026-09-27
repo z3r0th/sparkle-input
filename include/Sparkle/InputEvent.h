@@ -580,7 +580,7 @@ struct ClassName                                                                
     /// You must know the Controller type to consult the AxisType
     struct Axis
     {
-        AxisType AxisType;
+        AxisType Type;
         float Value;
 
         operator float() const
@@ -592,7 +592,7 @@ struct ClassName                                                                
     /// You must know the Controller type to consult the StickType
     struct Stick
     {
-        StickType StickType;
+        StickType Type;
         InputVector Value;
 
         operator InputVector() const
@@ -604,7 +604,7 @@ struct ClassName                                                                
     /// You must know the Controller type to consult the ButtonType
     struct Button
     {
-        ButtonType ButtonType {};
+        ButtonType Type {};
         bool Pressed {};
 
         operator bool() const

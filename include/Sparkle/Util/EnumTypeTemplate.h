@@ -30,6 +30,10 @@ namespace Sparkle
         {
             assert(value < static_cast<unsigned int>(Enum::Count) && "EnumType Template >> out-of-range index");
         }
+        constexpr explicit EnumType(std::size_t value) : Value(static_cast<Enum>(value))
+        {
+            assert(value < static_cast<size_t>(Enum::Count) && "EnumType Template >> out-of-range index");
+        }
 
         void* operator new(std::size_t) = delete;
         void* operator new[](std::size_t) = delete;
@@ -54,12 +58,13 @@ namespace Sparkle
     };
 }
 
-#define SPARKLE_DEFINE_ENUM_TYPE(ClassName, LIST)                                           \
-enum class ClassName##Enum { LIST(SPARKLE_DETAIL_ENUMERATOR) };                             \
+#define SPARKLE_DEFINE_ENUM_TYPE(ClassName, LIST)                                   \
+enum class ClassName##Enum { LIST(SPARKLE_DETAIL_ENUMERATOR) };                     \
 struct ClassName##Traits {                                                          \
-    static constexpr const char * Names[] = { LIST(SPARKLE_DETAIL_NAME) };                  \
+    static constexpr const char * Names[] = { LIST(SPARKLE_DETAIL_NAME) };          \
     static constexpr const char * Name(ClassName##Enum value) {                     \
         auto index = static_cast<std::size_t>(value);                               \
+        if (index >= std::size(Names)) { return "Unknown " #ClassName; }            \
         return Names[index];                                                        \
     }                                                                               \
 };                                                                                  \

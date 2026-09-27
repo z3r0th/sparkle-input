@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
         });
 
     input.OnKeyboardJustPressed()
-        .Bind([](const std::weak_ptr<class Sparkle::KeyboardController>&, const Sparkle::InputState&)
+        .Bind([](const std::weak_ptr<Sparkle::KeyboardController>&, const Sparkle::InputState&)
         {
            SDL_Log(">> KEYBOARD BUTTON PRESSED");
         });

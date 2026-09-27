@@ -70,7 +70,7 @@ namespace Sparkle
         /// \return the first pressed button or BUTTON_NONE if none is pressed
         inline KeyboardButtonType AnyJustPressedButton()
         {
-            for(int i = 0 ; i < ButtonsValue.size() ; ++i)
+            for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
                 if (ButtonsValue[i] && !LastButtonsValue[i]) return {KeyboardButtonType(i)};
             }
