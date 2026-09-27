@@ -23,6 +23,7 @@ add_library(SparkleInput
         include/Sparkle/Controller/MouseController.h
         src/Sparkle/Controller/MouseController.cpp
         include/Sparkle/Util/EnumTypeTemplate.h
+        include/Sparkle/InputType.h
 )
 add_library(Sparkle::SparkleInput ALIAS SparkleInput)
 

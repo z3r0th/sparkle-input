@@ -18,7 +18,7 @@ namespace Sparkle
     // Input related ENUMS transformed into CLASSES for convenient methods like c_str() and implicit string conversion
     // They should be used (and enforced to be used) as ENUMS
 
-#pragma region Enum Input Types
+#pragma region Enum Input Definition Types
 
 #define MOUSE_BUTTON_LIST(E) \
 E(BUTTON_NONE) \
@@ -447,7 +447,7 @@ DEFINE_ENUM_TYPE(GamepadAxisType, GAMEPAD_AXIS_LIST)
 
 #pragma endregion Enum Input Types
 
-#pragma region Enum Event Trigger Types
+#pragma region Enum Event Trigger Types (Analog/Digital)
 
 #define INPUT_STICK_EVENT_TRIGGER_LIST(E) \
 E(MOVEMENT) \
@@ -523,6 +523,8 @@ struct ClassName                                                                
 
 #pragma endregion Struct Event Pair (Trigger/Input)
 
+#pragma region Input Types
+
     /// Active Event type used
     using SpecificInputEvent = std::variant<
         InputKeyboardButtonEvent,
@@ -535,6 +537,22 @@ struct ClassName                                                                
         InputMouseStickEvent,
         InputMouseAxisEvent
     >;
+
+    /// The Input Trigger description
+    /// This is used to map what the Input Event should look like to trigger a specific action
+    struct InputTrigger
+    {
+        SpecificInputEvent Event{};
+
+        bool operator <(const InputTrigger& rhs) const
+        {
+            return Event < rhs.Event;
+        }
+        bool operator ==(const InputTrigger& rhs) const
+        {
+            return Event == rhs.Event;
+        }
+    };
 
     /// Axis Type
     /// Represents an axis on a controller (Gamepad, Keyboard, Mouse)
@@ -614,6 +632,8 @@ struct ClassName                                                                
         GAMEPAD
     };
 
+#pragma endregion
+
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
     /// To proper use it, check the InputType and get the appropriate InputStateValue (If Type is Button, read the Input Value for Button, and so on)
@@ -651,22 +671,6 @@ struct ClassName                                                                
     {
         bool IsActive {};
         InputState InputState {};
-    };
-
-    /// The Input Trigger description
-    /// This is used to map what the Input Event should look like to trigger a specific action
-    struct InputTrigger
-    {
-        SpecificInputEvent Event{};
-
-        bool operator <(const InputTrigger& rhs) const
-        {
-            return Event < rhs.Event;
-        }
-        bool operator ==(const InputTrigger& rhs) const
-        {
-            return Event == rhs.Event;
-        }
     };
 }
 
