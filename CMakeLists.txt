@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.30)
 project(SparkleInput VERSION 0.9.0 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
