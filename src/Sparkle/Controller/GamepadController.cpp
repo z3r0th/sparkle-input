@@ -48,13 +48,13 @@ void Sparkle::GamepadController::Update() {
         return;
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadButtonType::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<unsigned int>(GamepadButtonType::Count) ; ++i)
     {
         LastButtonsValue[i] = ButtonsValue[i];
         ButtonsValue[i] = SDL_GameControllerGetButton(InternalGameController, static_cast<SDL_GameControllerButton>(i));
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadAxisType::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<unsigned int>(GamepadAxisType::Count) ; ++i)
     {
         LastAxisValue[i] = AxisValue[i];
         float axis = (float)(SDL_GameControllerGetAxis(InternalGameController, static_cast<SDL_GameControllerAxis>(i))) / (float)(SDL_MAX_SINT16);
@@ -65,7 +65,7 @@ void Sparkle::GamepadController::Update() {
         AxisValue[i] = axis;
     }
 
-    for (unsigned int i = 0 ; i < static_cast<int>(GamepadStickType::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<unsigned int>(GamepadStickType::Count) ; ++i)
     {
         static const std::map<GamepadStickType, const std::vector<GamepadAxisType>> StickAxis =
         {

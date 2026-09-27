@@ -17,13 +17,13 @@ namespace Sparkle
         Uint32 buttons = SDL_GetMouseState(&x, &y);
         constexpr const float DEAD_ZONE = std::numeric_limits<float>::epsilon();
 
-        for (unsigned int i = 0 ; i < static_cast<int>(MouseButtonType::Count) ; ++i)
+        for (unsigned int i = 0 ; i < static_cast<unsigned int>(MouseButtonType::Count) ; ++i)
         {
             LastButtonsValue[i] = ButtonsValue[i];
             ButtonsValue[i] = buttons & SDL_BUTTON(static_cast<int>(i));
         }
 
-        for (unsigned int i = 0 ; i < static_cast<int>(MouseAxisType::Count) ; ++i)
+        for (unsigned int i = 0 ; i < static_cast<unsigned int>(MouseAxisType::Count) ; ++i)
         {
             LastAxisValue[i] = AxisValue[i];
             float axis = 0.0f;
@@ -57,7 +57,7 @@ namespace Sparkle
         {
             {MouseStickType::MOUSE_MOVEMENT, {MouseAxisType::AXIS_X, MouseAxisType::AXIS_Y}},
         };
-        for (unsigned int i = 0 ; i < static_cast<int>(MouseStickType::Count) ; ++i)
+        for (unsigned int i = 0 ; i < static_cast<unsigned int>(MouseStickType::Count) ; ++i)
         {
             LastStickValue[i] = StickValue[i];
             auto UpdateStick = MouseStickType(i);

@@ -47,10 +47,10 @@ namespace Sparkle
     };
 }
 
-#define DEFINE_ENUM_TYPE(ClassName, LIST)                                           \
-enum class ClassName##Enum { LIST(DETAIL_ENUMERATOR) };                             \
+#define SPARKLE_DEFINE_ENUM_TYPE(ClassName, LIST)                                           \
+enum class ClassName##Enum { LIST(SPARKLE_DETAIL_ENUMERATOR) };                             \
 struct ClassName##Traits {                                                          \
-    static constexpr const char * Names[] = { LIST(DETAIL_NAME) };                  \
+    static constexpr const char * Names[] = { LIST(SPARKLE_DETAIL_NAME) };                  \
     static constexpr const char * Name(ClassName##Enum value) {                     \
         auto index = static_cast<std::size_t>(value);                               \
         return Names[index];                                                        \
@@ -63,8 +63,8 @@ public:                                                                         
     using enum ClassName##Enum;                                                     \
 };
 
-#define DETAIL_ENUMERATOR(name) name,
-#define DETAIL_NAME(name) #name,
+#define SPARKLE_DETAIL_ENUMERATOR(name) name,
+#define SPARKLE_DETAIL_NAME(name) #name,
 
 
 #endif //SPARKLEINPUT_ENUMTYPETEMPLATE_H

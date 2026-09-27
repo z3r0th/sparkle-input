@@ -14,7 +14,7 @@ namespace Sparkle
 
     std::shared_ptr<GamepadController> Input::GetInactiveOrNewGamepadController(int device)
     {
-        for (unsigned int i = 0 ; i < SDL_NumJoysticks() ; ++i)
+        for (int i = 0 ; i < SDL_NumJoysticks() ; ++i)
         {
             // reach an index that does not have a Gamepad controller,
             // this means that we already check any other index
@@ -65,7 +65,7 @@ namespace Sparkle
 
     unsigned int Input::GetNextPlayerIndex()
     {
-        for (unsigned int i = 0 ; i < MAX_LOCAL_PLAYER_CONTROLLERS ; ++i)
+        for (int i = 0 ; i < MAX_LOCAL_PLAYER_CONTROLLERS ; ++i)
         {
             if (PlayerInputControllers.count(i) == 0)
             {
@@ -382,8 +382,6 @@ namespace Sparkle
                 }
                 OnGamepadJustPressedEvent(gamepad, inputState);
             }
-            if (gamepad->AnyAxisMoved() != GamepadAxisType::AXIS_NONE)
-            {}
         }
     }
 
@@ -402,8 +400,6 @@ namespace Sparkle
             }
             OnMouseJustPressedEvent(MouseDeviceController, inputState);
         }
-        if (MouseDeviceController->AnyAxisMoved() != MouseAxisType::AXIS_NONE)
-        {}
     }
 
     void Input::UpdateKeyboard()

@@ -37,7 +37,7 @@ float GetValueFromAxis(Sparkle::KeyboardController* controller, Sparkle::Keyboar
 void Sparkle::KeyboardController::Update()
 {
     const Uint8* keyState = SDL_GetKeyboardState(nullptr);
-    for (unsigned int i = 0 ; i < static_cast<int>(KeyboardButtonType::Count) ; ++i)
+    for (unsigned int i = 0 ; i < static_cast<unsigned int>(KeyboardButtonType::Count) ; ++i)
     {
         LastButtonsValue[i] = ButtonsValue[i];
         ButtonsValue[i] = keyState[static_cast<SDL_Scancode>(i)];
