@@ -84,7 +84,7 @@ namespace Sparkle
             || !IsButtonPressed(mouseEvent.Button) && mouseEvent.ButtonTrigger == InputDigitalEventTrigger::UP)
         {
             Button button = {.ButtonType = {.MouseButton = mouseEvent.Button}, .Pressed = IsButtonPressed(mouseEvent.Button)};
-            return Sparkle::InputResult{true, {.Type = InputType::BUTTON, .Input = {.Button = button}}};
+            return Sparkle::InputResult{true, InputState(button, InputControllerType::MOUSE)};
         }
         return Sparkle::InputResult{false};
     }
@@ -99,7 +99,7 @@ namespace Sparkle
             || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
         {
             Axis axis = {.AxisType = {.MouseAxis = event.Axis}, .Value = axisValue};
-            return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
+            return InputResult{true, InputState(axis, InputControllerType::MOUSE)};
         }
         return InputResult{false};
     }
@@ -114,7 +114,7 @@ namespace Sparkle
 
         {
             Stick stick = {.StickType = {.MouseStick = event.Stick}, .Value = stickValue};
-            return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
+            return InputResult{true, InputState(stick, InputControllerType::MOUSE)};
         }
         return InputResult{false};
     }

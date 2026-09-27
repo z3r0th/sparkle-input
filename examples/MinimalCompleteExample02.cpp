@@ -197,16 +197,16 @@ void OnAnyPlayerAction(const std::weak_ptr<Sparkle::PlayerInputController>& play
     // avoid spamming the log
     if (action == lastAction) return;
     lastAction = action;
-    switch (state.Type)
+    switch (state.GetInputType())
     {
         case Sparkle::InputType::BUTTON:
-            SDL_Log(">> ANY ACTION Player: %i => [%s] BUTTON %s", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.Input.Button ? "PRESSED" : "RELEASED");
+            SDL_Log(">> ANY ACTION Player: %i => [%s] BUTTON %s", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.GetButton().Pressed ? "PRESSED" : "RELEASED");
             break;
         case Sparkle::InputType::AXIS:
-            SDL_Log(">> ANY ACTION Player: %i => [%s] AXIS %f (More messages are suppressed to avoid spamming the log)", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.Input.Axis.Value);
+            SDL_Log(">> ANY ACTION Player: %i => [%s] AXIS %f (More messages are suppressed to avoid spamming the log)", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.GetAxis().Value);
             break;
         case Sparkle::InputType::STICK:
-            SDL_Log(">> ANY ACTION Player: %i => [%s] STICK [%f,%f] (More messages are suppressed to avoid spamming the log)", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.Input.Stick.Value.Horizontal, state.Input.Stick.Value.Vertical);
+            SDL_Log(">> ANY ACTION Player: %i => [%s] STICK [%f,%f] (More messages are suppressed to avoid spamming the log)", player.lock()->GetPlayerInputIndex(), action.GetName().c_str(), state.GetStick().Value.Horizontal, state.GetStick().Value.Vertical);
             break;
     }
 }
@@ -214,7 +214,7 @@ void OnAnyPlayerAction(const std::weak_ptr<Sparkle::PlayerInputController>& play
 void OnAnyKeyPressed(const std::weak_ptr<Sparkle::PlayerInputController>& player, const Sparkle::InputState& input)
 {
     std::string controller;
-    switch (input.ControllerType)
+    switch (input.GetControllerType())
     {
         case Sparkle::InputControllerType::KEYBOARD:
             controller = "Keyboard";
@@ -231,7 +231,7 @@ void OnAnyKeyPressed(const std::weak_ptr<Sparkle::PlayerInputController>& player
 
 void OnGamePaused(const std::weak_ptr<Sparkle::PlayerInputController>& player, const Sparkle::InputAction& action, const Sparkle::InputState& buttonState)
 {
-    if (buttonState.Type != Sparkle::InputType::BUTTON) return;
+    if (buttonState.GetInputType() != Sparkle::InputType::BUTTON) return;
     firstPlayer->SetInputMap(Sparkle::InputMap());
     secondPlayer->SetInputMap(Sparkle::InputMap());
     player.lock()->SetInputMap(InPauseMenuInputMap);
@@ -240,7 +240,7 @@ void OnGamePaused(const std::weak_ptr<Sparkle::PlayerInputController>& player, c
 
 void OnGameResumed(const std::weak_ptr<Sparkle::PlayerInputController>& player, const Sparkle::InputAction& action, const Sparkle::InputState& buttonState)
 {
-    if (buttonState.Type != Sparkle::InputType::BUTTON) return;
+    if (buttonState.GetInputType() != Sparkle::InputType::BUTTON) return;
     firstPlayer->SetInputMap(InGameInputMap);
     secondPlayer->SetInputMap(SecondPlayerInputMap);
     SDL_Log(">> Player: %i => RESUMED", player.lock()->GetPlayerInputIndex());
@@ -253,16 +253,16 @@ void OnFire(const std::weak_ptr<Sparkle::PlayerInputController>& player, const S
 
 void OnInput(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, const Sparkle::InputState& buttonState)
 {
-    switch (buttonState.Type)
+    switch (buttonState.GetInputType())
     {
         case Sparkle::InputType::BUTTON:
-            SDL_Log(">> On Input Action[%s] BUTTON %s", action.GetName().c_str(), buttonState.Input.Button ? "PRESSED" : "RELEASED");
+            SDL_Log(">> On Input Action[%s] BUTTON %s", action.GetName().c_str(), buttonState.GetButton() ? "PRESSED" : "RELEASED");
             break;
         case Sparkle::InputType::AXIS:
-            SDL_Log(">> On Input Action[%s] AXIS %f", action.GetName().c_str(), buttonState.Input.Axis.Value);
+            SDL_Log(">> On Input Action[%s] AXIS %f", action.GetName().c_str(), buttonState.GetAxis().Value);
             break;
         case Sparkle::InputType::STICK:
-            SDL_Log(">> On Input Action[%s] STICK [%f,%f]", action.GetName().c_str(), buttonState.Input.Stick.Value.Horizontal, buttonState.Input.Stick.Value.Vertical);
+            SDL_Log(">> On Input Action[%s] STICK [%f,%f]", action.GetName().c_str(), buttonState.GetStick().Value.Horizontal, buttonState.GetStick().Value.Vertical);
             break;
     }
 }

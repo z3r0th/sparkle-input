@@ -613,8 +613,8 @@ struct ClassName                                                                
     /// You must know the Controller type to consult the ButtonType
     struct Button
     {
-        ButtonType ButtonType;
-        bool Pressed;
+        ButtonType ButtonType {};
+        bool Pressed {};
 
         operator bool() const
         { return Pressed; }
@@ -641,27 +641,34 @@ struct ClassName                                                                
         GAMEPAD
     };
 
-    /// Input State Value
-    /// This represents the current value for an Input. It can be a Button, Axis or Stick (the three possible supported inputs).
-    union InputStateValue
-    {
-        Button Button {};
-        Stick Stick;
-        Axis Axis;
-
-        operator struct Button() const { return Button; }
-        operator struct Stick() const { return Stick; }
-        operator struct Axis() const { return Axis; }
-    };
-
     /// The input state for the action performed (Button, Stick or Axis)
     /// This is the result of an EventTrigger process
     /// To proper use it, check the InputType and get the appropriate InputStateValue (If Type is Button, read the Input Value for Button, and so on)
-    struct InputState
+    class InputState
     {
-        InputType Type {};
-        InputStateValue Input {};
+    public:
+        InputState() = default;
+        InputState(const Button& button , InputControllerType controllerType) : Value(button), ControllerType(controllerType) {}
+        InputState(const Stick& stick , InputControllerType controllerType) : Value(stick), ControllerType(controllerType) {}
+        InputState(const Axis& axis , InputControllerType controllerType) : Value(axis), ControllerType(controllerType) {}
+
+        /// Get the Input Type (Button, Stick or Axis)
+        [[nodiscard]] InputType GetInputType() const { return static_cast<InputType>(Value.index()); }
+
+        /// Get the Input Controller Type (Keyboard, Mouse or Gamepad)
+        [[nodiscard]] InputControllerType GetControllerType() const { return ControllerType; }
+
+        [[nodiscard]] const Button& GetButton() const { return std::get<Button>(Value); }
+        [[nodiscard]] const Stick&  GetStick()  const { return std::get<Stick>(Value); }
+        [[nodiscard]] const Axis&   GetAxis()   const { return std::get<Axis>(Value); }
+
+        [[nodiscard]] float GetStickValue(int axisIndex) const { return axisIndex == 0 ? GetStick().Value.Horizontal : GetStick().Value.Vertical; }
+        [[nodiscard]] bool GetButtonValue() const { return GetButton().Pressed; }
+        [[nodiscard]] float GetAxisValue() const { return GetAxis().Value; }
+
+    private:
         InputControllerType ControllerType {};
+        std::variant<Button, Axis, Stick> Value {};
     };
 
     /// The result of an Event Trigger processed

@@ -146,7 +146,7 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessStick(const InputGamepad
         || (stickValue.Vertical <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE) || (stickValue.Horizontal <= -0.95 && event.StickTrigger == InputAnalogEventTrigger::FULL_NEGATIVE))
     {
         Stick stick = {.StickType = {.GamepadStick = event.Stick}, .Value = stickValue};
-        return InputResult{true, InputState{.Type=InputType::STICK, .Input={.Stick = stick}}};
+        return InputResult{true, InputState(stick, InputControllerType::GAMEPAD)};
     }
     return InputResult{false};
 }
@@ -161,7 +161,7 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessButton(const InputGamepa
         || !IsButtonPressed(event.Button) && event.ButtonTrigger == InputDigitalEventTrigger::UP)
     {
         Button button = {.ButtonType = {.GamepadButton = event.Button}, .Pressed = IsButtonPressed(event.Button)};
-        return InputResult{true, InputState{.Type=InputType::BUTTON, .Input={.Button = button}}};
+        return InputResult{true, InputState(button, InputControllerType::GAMEPAD)};
     }
     return InputResult{false};
 }
@@ -176,7 +176,7 @@ Sparkle::InputResult Sparkle::GamepadController::ProcessAxis(const InputGamepadA
         || axisValue <= -0.95 && event.AxisTrigger == InputAnalogEventTrigger::FULL_NEGATIVE)
     {
         Axis axis = {.AxisType = {.GamepadAxis = event.Axis}, .Value = axisValue};
-        return InputResult{true, InputState{.Type=InputType::AXIS, .Input={.Axis = axis}}};
+        return InputResult{true, InputState(axis, InputControllerType::GAMEPAD)};
     }
     return InputResult{false};
 }
