@@ -184,7 +184,7 @@ namespace Sparkle
             auto mouseStick = MouseStickType(i);
             if (MouseDeviceController->HasStickMoved(mouseStick))
             {
-                auto stick = Stick {.StickType = {.MouseStick = mouseStick}, .Value = MouseDeviceController->GetStick(mouseStick)};
+                auto stick = Stick {.StickType = mouseStick, .Value = MouseDeviceController->GetStick(mouseStick)};
                 auto state = InputState (stick, InputControllerType::MOUSE);
                 OnAnyMouseStickMovedEvent(MouseDeviceController, state);
             }
@@ -200,7 +200,7 @@ namespace Sparkle
                     auto stickType = GamepadStickType(i);
                     if (GamepadController->HasStickMoved(stickType))
                     {
-                        auto stick = Stick {.StickType = {.GamepadStick = stickType}, .Value = GamepadController->GetStick(stickType)};
+                        auto stick = Stick {.StickType = stickType, .Value = GamepadController->GetStick(stickType)};
                         auto state = InputState(stick, InputControllerType::GAMEPAD);
                         OnAnyGamepadStickMovedEvent(GamepadController, state);
                     }
@@ -369,7 +369,7 @@ namespace Sparkle
             auto pressedButton = gamepad->AnyJustPressedButton();
             if (pressedButton != GamepadButtonType::BUTTON_NONE)
             {
-                Button button = {.ButtonType = {.GamepadButton = pressedButton}, .Pressed = true};
+                Button button = {.ButtonType = pressedButton, .Pressed = true};
                 auto inputState = InputState(button, InputControllerType::GAMEPAD);
                 if (auto player = GetAssignedPlayerInputController(gamepad); !player.expired())
                 {
@@ -388,7 +388,7 @@ namespace Sparkle
         auto pressedButton = MouseDeviceController->AnyJustPressedButton();
         if (pressedButton != MouseButtonType::BUTTON_NONE)
         {
-            Button button = {.ButtonType = {.MouseButton = pressedButton}, .Pressed = true};
+            Button button = {.ButtonType = pressedButton, .Pressed = true};
             auto inputState = InputState(button, InputControllerType::MOUSE);
             auto players = GetAssignedMousePlayerInputControllers();
             for (auto & player : players)
@@ -407,7 +407,7 @@ namespace Sparkle
         auto pressedButton = KeyboardDeviceController->AnyJustPressedButton();
         if (pressedButton != KeyboardButtonType::KEY_NONE)
         {
-            Button button = {.ButtonType = {.KeyboardButton = pressedButton}, .Pressed = true};
+            Button button = {.ButtonType = pressedButton, .Pressed = true};
             auto inputState = InputState(button, InputControllerType::KEYBOARD);
             auto players = GetAssignedKeyboardPlayerInputControllers();
             for (auto & player : players)

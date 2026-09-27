@@ -537,43 +537,16 @@ struct ClassName                                                                
     >;
 
     /// Axis Type
-    /// Represents an axis on a controller (Gamepad, Mouse, Keyboard)
-    union AxisType
-    {
-        GamepadAxisType GamepadAxis;
-        KeyboardAxisType KeyboardAxis;
-        MouseAxisType MouseAxis;
-
-        operator GamepadAxisType() const { return GamepadAxis; }
-        operator KeyboardAxisType() const { return KeyboardAxis; }
-        operator MouseAxisType() const { return MouseAxis; }
-    };
+    /// Represents an axis on a controller (Gamepad, Keyboard, Mouse)
+    using AxisType = std::variant<GamepadAxisType, KeyboardAxisType, MouseAxisType>;
 
     /// Stick Type
-    /// Represents a stick on a controller (Gamepad, Mouse, Keyboard)
-    union StickType
-    {
-        class MouseStickType MouseStick;
-        class KeyboardStickType KeyboardStick;
-        class GamepadStickType GamepadStick;
-
-        operator MouseStickType() const { return MouseStick; }
-        operator KeyboardStickType() const { return KeyboardStick; }
-        operator GamepadStickType() const { return GamepadStick; }
-    };
+    /// Represents a stick on a controller (Gamepad, Keyboard, Mouse)
+    using StickType = std::variant<GamepadStickType, KeyboardStickType, MouseStickType>;
 
     /// Button Type
     /// Represents a button on a controller (Gamepad, Mouse, Keyboard)
-    union ButtonType
-    {
-        class MouseButtonType MouseButton;
-        class GamepadButtonType GamepadButton;
-        class KeyboardButtonType KeyboardButton;
-
-        operator MouseButtonType() const { return MouseButton; }
-        operator GamepadButtonType() const { return GamepadButton; }
-        operator KeyboardButtonType() const { return KeyboardButton; }
-    };
+    using ButtonType = std::variant<GamepadButtonType, KeyboardButtonType, MouseButtonType>;
 
     /// Input Vector
     /// Represents a pair of Axis.
