@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <limits>
 #include <array>
+#include <cmath>
 
 #include "Sparkle/InputController.h"
 #include "Sparkle/InputEvent.h"
@@ -103,7 +104,7 @@ namespace Sparkle
         [[nodiscard]] inline bool HasAxisMoved(MouseAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
-            return abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
+            return std::abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
         }
 
         /// Check if axis had a movement from last frame
@@ -130,7 +131,7 @@ namespace Sparkle
             int stickIndex = (int)stick;
             auto currentStick = StickValue[stickIndex];
             auto lastStick = LastStickValue[stickIndex];
-            return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
+            return std::abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || std::abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
         /// Get the current Mouse stick value

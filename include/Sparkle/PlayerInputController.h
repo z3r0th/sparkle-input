@@ -156,7 +156,7 @@ namespace Sparkle
 
         /// Is this PlayerInputController's Gamepad assigned active and connected
         /// \return
-        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && GamepadDeviceController.lock()->IsActive(); }
+        [[maybe_unused]] [[nodiscard]] bool IsGamepadConnected() { return IsGamepadAssigned() && !GamepadDeviceController.expired() && GamepadDeviceController.lock()->IsActive(); }
 
         /// Does this PlayerInputController has a gamepad assigned
         /// \return

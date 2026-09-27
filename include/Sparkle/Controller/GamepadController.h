@@ -9,6 +9,7 @@
 #include <memory>
 #include <limits>
 #include <array>
+#include <cmath>
 #include <SDL.h>
 
 #include "Sparkle/InputController.h"
@@ -135,7 +136,7 @@ namespace Sparkle
                 if (ButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
 
-            return GamepadButtonType(GamepadButtonType::BUTTON_NONE);
+            return {GamepadButtonType::BUTTON_NONE};
         }
 
         /// Get the first/any pressed button we can find
@@ -147,7 +148,7 @@ namespace Sparkle
                 if (ButtonsValue[i] && !LastButtonsValue[i]) return GamepadButtonType(GamepadButtonType(i));
             }
 
-            return GamepadButtonType(GamepadButtonType::BUTTON_NONE);
+            return {GamepadButtonType::BUTTON_NONE};
         }
 
         /// Get all pressed buttons
@@ -200,7 +201,7 @@ namespace Sparkle
         [[nodiscard]] inline bool HasAxisMoved(GamepadAxisType axis)
         {
             constexpr const float epsilon = std::numeric_limits<float>::epsilon();
-            return abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
+            return std::abs(AxisValue[(int)axis] - LastAxisValue[(int)axis]) > epsilon;
         }
 
         /// Check if stick had a movement from last frame
@@ -213,7 +214,7 @@ namespace Sparkle
             int stickIndex = (int)stick;
             InputVector currentStick = StickValue[stickIndex];
             InputVector lastStick = LastStickValue[stickIndex];
-            return abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
+            return std::abs(currentStick.Horizontal - lastStick.Horizontal) > epsilon || std::abs(currentStick.Vertical - lastStick.Vertical) > epsilon;
         }
 
         /// Check if axis had a movement from last frame

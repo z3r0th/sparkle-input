@@ -58,7 +58,7 @@ void Sparkle::GamepadController::Update() {
     {
         LastAxisValue[i] = AxisValue[i];
         float axis = (float)(SDL_GameControllerGetAxis(InternalGameController, static_cast<SDL_GameControllerAxis>(i))) / (float)(SDL_MAX_SINT16);
-        if (abs(axis) <= DEAD_ZONE)
+        if (std::abs(axis) <= DEAD_ZONE)
         {
             axis = 0.0;
         }

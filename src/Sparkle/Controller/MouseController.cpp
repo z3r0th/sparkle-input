@@ -46,7 +46,7 @@ namespace Sparkle
                 case MouseAxisType::Count:
                     break;
             }
-            if (abs(axis) <= DEAD_ZONE)
+            if (std::abs(axis) <= DEAD_ZONE)
             {
                 axis = 0.0;
             }

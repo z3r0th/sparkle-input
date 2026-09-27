@@ -101,6 +101,11 @@ namespace Sparkle
         }
         SDL_Log("Connecting Device {%u}", device);
         auto gamepad = GetInactiveOrNewGamepadController(device);
+        if (gamepad == nullptr)
+        {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not connect to device {%u} - gamepad is null", device);
+            return;
+        }
         if (gamepad->IsActive())
         {
             // it can be the case when a controller is reconnected too quickly that it doesn't get disconnected.
@@ -193,7 +198,7 @@ namespace Sparkle
         for (auto & GamepadControllerPair : GamepadDeviceControllers)
         {
             auto GamepadController = GamepadControllerPair.second;
-            if (GamepadController->IsActive())
+            if (GamepadController != nullptr && GamepadController->IsActive())
             {
                 for (int i = 0 ; i < (int)GamepadStickType::Count; ++i)
                 {
