@@ -3,7 +3,7 @@
 
 void PrintAction(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
-    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.Input.ButtonPressed ? "PRESSED" : "RELEASED");
+    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.GetButton() ? "PRESSED" : "RELEASED");
 }
 
 int main(int argc, char* argv[])

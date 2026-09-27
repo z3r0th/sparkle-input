@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 
     playerInputController->OnAction(pressedButtonA).Bind([](const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
     {
-        SDL_Log(">> Action[%s] KEY PRESSED %s", action.GetName().c_str(), buttonState.Input.ButtonPressed ? "PRESSED" : "RELEASED");
+        SDL_Log(">> Action[%s] KEY PRESSED %s", action.GetName().c_str(), buttonState.GetButton() ? "PRESSED" : "RELEASED");
     });
 
     return InitializeSDLAndRunInput(input);
