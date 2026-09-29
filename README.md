@@ -35,14 +35,16 @@ The project is currently private.
 | **Digital Trigger** | A trigger that fires on press/release — used with buttons. |
 | **Analog Trigger** | A trigger that fires based on a floating value — used with axes/sticks. |
 
+# Overview
 
-# Features
+How to use Sparkle Input:
 
-- Abstraction: Input handled through abstractions.
-- Action mapping: Map actions to physical inputs through triggers.
-- Event-driven: Respond to input events with event callbacks.
-- Player-centric controllers: per-player input routing.
-- SDL2 backend: cross-platform input foundation.
+1. Initialize SDL2 in your app (video/events subsystem)
+2. Run the input loop. Call `UpdateEvent` when Polling SDL events and `Update` once per frame.
+3. Create a PlayerInputController for each player and assign devices to it.
+4. Define Game Actions.
+5. Create an InputMap and bind Actions to Device Input through Triggers.
+6. Bind callbacks to actions on the PlayerInputController.
 
 # Installation
 
@@ -55,7 +57,7 @@ The project is currently private.
 ## FetchContent
 ``` cmake
 # CMakeLists.txt
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.30)
 
 project(MyApp LANGUAGES CXX)
 
@@ -74,8 +76,8 @@ add_executable(MyApp src/main.cpp)
 target_link_libraries(MyApp PRIVATE Sparkle::SparkleInput)
 ```
 
-SDL2 and Sparkle Events are fetched automatically as part of the build 
-(FetchContent, falling back to find_package if either is already installed on the system) 
+SDL2 and Sparkle Events are fetched automatically as part of the build
+(FetchContent, falling back to find_package if either is already installed on the system)
 — no manual setup required.
 
 ### Building the examples/tests standalone
@@ -86,17 +88,6 @@ cd sparkle-input
 cmake -B build -DSPARKLE_INPUT_BUILD_EXAMPLES=ON
 cmake --build build
 ```
-
-# Overview
-
-How to use Sparkle Input:
-
-1. Initialize SDL2 in your app (video/events subsystem)
-2. Run the input loop. Call `UpdateEvent` when Polling SDL events and `Update` once per frame.
-3. Create a PlayerInputController for each player and assign devices to it.
-4. Define Game Actions.
-5. Create an InputMap and bind Actions to Device Input through Triggers.
-6. Bind callbacks to actions on the PlayerInputController.
 
 # Examples
 
@@ -229,11 +220,8 @@ int main(int argc, char* argv[])
 - Runtime device/PlayerInputController reassignment
 - Rumble/Vibration support
 - Battery level support/notification
-- Per-action configurable dead zone
-- Unit test suite
-- Fuller API documentation
+- Configurable dead zone
 - SDL3 migration
-- Device/PlayerInputController Reassignment
 - Tests
 
 # Changelog
