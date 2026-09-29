@@ -2,7 +2,7 @@
 
 Sparkle Input is an input module built on top of SDL2 that converts raw keyboard and 
 controller events into meaningful in-game actions. Instead of wiring gameplay to 
-device-specific codes, you define actions like Jump, Pause, or Reload, etc. and map them to the input. 
+device-specific codes, you define actions like `Jump`, `Pause`, or `Reload`, etc. and map them to the physical input. 
 This keeps game logic clean, reduces duplication, and makes it easy to support new devices or 
 adjust controls mid-development and realtime. With per-player support and an event-driven design, 
 Sparkle Input helps keep input handling organized, portable, and straightforward.
@@ -12,31 +12,29 @@ Sparkle Input helps keep input handling organized, portable, and straightforward
 [Sparkle Project](https://gitlab.com/sparkle-game-engine/) is a small personal project to learn to design and build a UI engine.
 The project is currently private.
 
-# Summary
+# Features
+- Abstraction — input handled through clean device abstractions (Gamepad, Keyboard, Mouse).
+- Action mapping — map logical actions to physical inputs through triggers.
+- Event-driven — respond to input with event callbacks, no manual polling required.
+- Player-centric controllers — per-player input routing, ready for local multiplayer.
+- SDL2 backend — cross-platform input foundation.
 
-### Controller
-Controller is the physical input device used to control the game (gamepad, keyboard, mouse, etc.)
-### GAMEPAD
-GAMEPAD is a game input controller (like xbox or playstation controller) 
-### KEYBOARD
-KEYBOARD is the computer keyboard
-### MOUSE
-MOUSE is the computer mouse
-### Map
-Map is how we bind a *Controller* and *Action* to a *Trigger*
-### Trigger
-Trigger is how we trigger a physical input. Like a button pressed, released, holding, etc.
-### Action
-Action is the logical action that the game can take (jump, pause, reload, etc.). We bind the action to 
-a physical input through a *Trigger*
-### AXIS
-AXIS is a one-dimensional floating input. Like Horizontal *AXIS* for a GAMEPAD *STICK* or GAMEPAD *Trigger*.
-### STICK
-STICK is a two-dimensional floating input. Like Horizontal and Vertical AXIS for a GAMEPAD *STICK*.
-### Digital Trigger
-Digital Trigger is a trigger that can be pressed or released. Like a BUTTON.
-### Analog Trigger
-Analog Trigger is a trigger that represents a floating value. Like an AXIS.
+# Concepts
+
+| Term | Meaning |
+|---|---|
+| **Controller** | The physical input device used to control the game (gamepad, keyboard, mouse). |
+| **Gamepad** | A game input controller, such as an Xbox or PlayStation controller. |
+| **Keyboard** | The computer keyboard. |
+| **Mouse** | The computer mouse. |
+| **Map** | How a *Controller* input and an *Action* are bound together, through a *Trigger*. |
+| **Trigger** | How a physical input fires — a button press/release/hold, or a moving axis. |
+| **Action** | The logical action the game reacts to (jump, pause, reload), independent of device. |
+| **Axis** | A one-dimensional floating-point input, e.g. a gamepad trigger or one axis of a stick. |
+| **Stick** | A two-dimensional floating-point input — the Horizontal + Vertical axes of a stick. |
+| **Digital Trigger** | A trigger that fires on press/release — used with buttons. |
+| **Analog Trigger** | A trigger that fires based on a floating value — used with axes/sticks. |
+
 
 # Features
 
@@ -50,8 +48,9 @@ Analog Trigger is a trigger that represents a floating value. Like an AXIS.
 
 ## Requirements
 
-- CMake 4.0 or newer
+- CMake 3.30 or newer
 - A C++20-capable compiler
+- SDL2 (fetched automatically if not already installed — see below)
 
 ## FetchContent
 ``` cmake
@@ -75,17 +74,29 @@ add_executable(MyApp src/main.cpp)
 target_link_libraries(MyApp PRIVATE Sparkle::SparkleInput)
 ```
 
+SDL2 and Sparkle Events are fetched automatically as part of the build 
+(FetchContent, falling back to find_package if either is already installed on the system) 
+— no manual setup required.
+
+### Building the examples/tests standalone
+
+```bash
+git clone https://gitlab.com/sparkle-game-engine/sparkle-input.git
+cd sparkle-input
+cmake -B build -DSPARKLE_INPUT_BUILD_EXAMPLES=ON
+cmake --build build
+```
+
 # Overview
 
 How to use Sparkle Input:
 
-- Initialize SDL2 in your app (video/events subsystem)
-- Run the input loop. Call `UpdateEvent` when Polling SDL events and `Update` once per frame.
-- Create a PlayerInputController for each player and assign devices to it.
-- Define Game Actions.
-- Create an InputMap (probably one for each player).
-- Use the map to bind Actions to Device Input through Triggers.
-- Use PlayerInputController to bind Actions to a Method.
+1. Initialize SDL2 in your app (video/events subsystem)
+2. Run the input loop. Call `UpdateEvent` when Polling SDL events and `Update` once per frame.
+3. Create a PlayerInputController for each player and assign devices to it.
+4. Define Game Actions.
+5. Create an InputMap and bind Actions to Device Input through Triggers.
+6. Bind callbacks to actions on the PlayerInputController.
 
 # Examples
 
@@ -185,7 +196,7 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
 
 void PrintAction(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
-    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.Input.ButtonPressed ? "PRESSED" : "RELEASED");
+    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.GetButton() ? "PRESSED" : "RELEASED");
 }
 
 int main(int argc, char* argv[])
@@ -206,22 +217,24 @@ int main(int argc, char* argv[])
 
     return InitializeSDLAndRunInput(input);
 }
+}
 ```
 
 # Roadmap
 
-- MOUSE support
 - KEYBOARD Text input support
 - GAMEPAD Text input support
 - Save/Load key mapping
-- More devices Support (Wheel, VR, Touch, etc.)
-- Device/PlayerInputController Reassignment
+- More device support (Wheel, VR, Touch, etc.)
+- Runtime device/PlayerInputController reassignment
 - Rumble/Vibration support
 - Battery level support/notification
+- Per-action configurable dead zone
+- Unit test suite
+- Fuller API documentation
+- SDL3 migration
+- Device/PlayerInputController Reassignment
 - Tests
-- Documentation
-- Examples
-- Device metadata support
 
 # Changelog
 
