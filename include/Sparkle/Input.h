@@ -73,18 +73,22 @@ namespace Sparkle
         explicit Input();
         ~Input();
 
-        // TODO: Throw exceptions if in debug mode (like when trying to get a controller index that doesn't exist)
-
-        // TODO: Documentation
-
         // Next Version:
         // TODO: Add Mouse movement relative to last frame
         // TODO: Add Specific input support: DoubleClick, Drag, HoldingFor, maybe specific combination sequence (down, forward, X = PowerBall)
         // TODO: Add Modifier keys (SHIFT, ALT, CTRL, LeftTrigger, etc), so when we are pressing a combination (CTRL + A) we can check trigger a different action
         // TODO: Add Keyboard text function - capture text/character instead of action trigger
+        // TODO: Add Gamepad text function - how to write using gamepad - depending on platform
         // TODO: A way to check for Specific Controller Type/Layout (playstation, xbox, etc)
         // TODO: Connection/Disconnection of multiple gamepads test. It should always be reassigned to the assigned player.
         // TODO: Touch/Pad support
+        // TODO: Save/Load key mapping
+        // TODO: Runtime device/PlayerInputController reassignment
+        // TODO: Rumble/Vibration support
+        // TODO: Battery level support/notification
+        // TODO: Configurable dead zone
+        // TODO: SDL3 support
+        // TODO: Tests
 
         [[maybe_unused]] EventBinder<const std::weak_ptr<class PlayerInputController>&, const InputAction&, const InputState&>& OnAnyPlayerAction() { return OnAnyActionEvent.GetBinder(); }
         [[maybe_unused]] EventBinder<const std::weak_ptr<class GamepadController>&, const InputState&>& OnAnyGamepadStickMoved() { return OnAnyGamepadStickMovedEvent.GetBinder(); }
