@@ -40,9 +40,9 @@ namespace Sparkle
     private:
         unsigned int PlayerInputIndex = -1;
 
-        std::weak_ptr<KeyboardController> KeyboardDeviceController;
-        std::weak_ptr<GamepadController> GamepadDeviceController;
-        std::weak_ptr<MouseController> MouseDeviceController;
+        std::shared_ptr<KeyboardController> KeyboardController = nullptr;
+        std::shared_ptr<GamepadController> GamepadController = nullptr;
+        std::shared_ptr<MouseController> MouseController = nullptr;
 
         std::map<InputAction, Event<const std::weak_ptr<PlayerInputController>&, const InputAction&, const InputState&>> ActionEventMap;
 
@@ -79,13 +79,23 @@ namespace Sparkle
         /// \param gamepadController to assign
         void SetGamepadController(const std::weak_ptr<Sparkle::GamepadController>& gamepadController);
 
+        /// Disconnects from events and sets the GamepadController to null (reset)
+        /// Raises `OnGamepadDisconnectedEvent`
+        void RemoveGamepadController();
+
         /// Assigns the keyboardController and connects to the events.
         /// \param keyboardController to assign
         void SetKeyboardController(const std::weak_ptr<Sparkle::KeyboardController>& keyboardController);
 
+        /// Disconnects from events and sets the KeyboardController to null (reset)
+        void RemoveKeyboardController();
+
         /// Assigns the mouseController and connects to the events.
         /// \param mouseController to assign
         void SetMouseController(const std::weak_ptr<Sparkle::MouseController>& mouseController);
+
+        /// Disconnects from events and sets the MouseController to null (reset)
+        void RemoveMouseController();
 
     public:
         /// Bind to the action
@@ -152,6 +162,20 @@ namespace Sparkle
         inline void AssignGamepad()
         {
             RequestGamepad = true;
+        }
+
+        /// Requests a keyboard to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController
+        inline void AssignKeyboard()
+        {
+            RequestKeyboard = true;
+        }
+
+        /// Requests a Mouse to the Input.
+        /// When a controller is available it will be assign to this PlayerInputController
+        inline void AssignMouse()
+        {
+            RequestMouse = true;
         }
 
         /// Is this PlayerInputController's Gamepad assigned active and connected

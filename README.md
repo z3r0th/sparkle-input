@@ -12,6 +12,32 @@ Sparkle Input helps keep input handling organized, portable, and straightforward
 [Sparkle Project](https://gitlab.com/sparkle-game-engine/) is a small personal project to learn to design and build a UI engine.
 The project is currently private.
 
+# Summary
+
+### Controller
+Controller is the physical input device used to control the game (gamepad, keyboard, mouse, etc.)
+### GAMEPAD
+GAMEPAD is a game input controller (like xbox or playstation controller) 
+### KEYBOARD
+KEYBOARD is the computer keyboard
+### MOUSE
+MOUSE is the computer mouse
+### Map
+Map is how we bind a *Controller* and *Action* to a *Trigger*
+### Trigger
+Trigger is how we trigger a physical input. Like a button pressed, released, holding, etc.
+### Action
+Action is the logical action that the game can take (jump, pause, reload, etc.). We bind the action to 
+a physical input through a *Trigger*
+### AXIS
+AXIS is a one-dimensional floating input. Like Horizontal *AXIS* for a GAMEPAD *STICK* or GAMEPAD *Trigger*.
+### STICK
+STICK is a two-dimensional floating input. Like Horizontal and Vertical AXIS for a GAMEPAD *STICK*.
+### Digital Trigger
+Digital Trigger is a trigger that can be pressed or released. Like a BUTTON.
+### Analog Trigger
+Analog Trigger is a trigger that represents a floating value. Like an AXIS.
+
 # Features
 - Abstraction — input handled through clean device abstractions (Gamepad, Keyboard, Mouse).
 - Action mapping — map logical actions to physical inputs through triggers.
@@ -221,7 +247,7 @@ int InitializeSDLAndRunInput(Sparkle::Input& input, std::function<void(Sparkle::
 
 void PrintAction(const std::weak_ptr<Sparkle::PlayerInputController>&, const Sparkle::InputAction& action, Sparkle::InputState buttonState)
 {
-    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.GetButton() ? "PRESSED" : "RELEASED");
+    SDL_Log(">> Action[%s] - BUTTON PRESSED: [%s]", action.GetName().c_str(), buttonState.Input.ButtonPressed ? "PRESSED" : "RELEASED");
 }
 
 int main(int argc, char* argv[])
@@ -247,6 +273,7 @@ int main(int argc, char* argv[])
 
 # Roadmap
 
+- MOUSE support
 - KEYBOARD Text input support
 - GAMEPAD Text input support
 - Save/Load key mapping

@@ -12,50 +12,39 @@ namespace Sparkle
         {
             const auto event = ButtonAction.first;
 
-            if (auto gamepadController = GamepadDeviceController.lock(); gamepadController != nullptr)
+            if (GamepadController != nullptr && GamepadController->IsActive())
             {
-                if (gamepadController != nullptr && gamepadController->IsActive())
+                if (const auto Result = GamepadController->ProcessEvent(event); Result.IsActive)
                 {
-                    if (const auto Result = gamepadController->ProcessEvent(event); Result.IsActive)
-                    {
-                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                        auto it = ActionEventMap.find(ButtonAction.second);
-                        if (it == ActionEventMap.end()) continue;
-                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                        continue;
-                    }
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
                 }
             }
 
-
-            if (auto keyboardController = KeyboardDeviceController.lock(); keyboardController != nullptr)
+            if (KeyboardController != nullptr && KeyboardController->IsActive())
             {
-                if (keyboardController != nullptr && keyboardController->IsActive())
+                if (const auto Result = KeyboardController->ProcessEvent(event); Result.IsActive)
                 {
-                    if (const auto Result = keyboardController->ProcessEvent(event); Result.IsActive)
-                    {
-                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                        auto it = ActionEventMap.find(ButtonAction.second);
-                        if (it == ActionEventMap.end()) continue;
-                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                        continue;
-                    }
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
                 }
             }
 
-
-            if (auto mouseController = MouseDeviceController.lock(); mouseController != nullptr)
+            if (MouseController != nullptr && MouseController->IsActive())
             {
-                if (mouseController != nullptr && mouseController->IsActive())
+                if (const auto Result = MouseController->ProcessEvent(event); Result.IsActive)
                 {
-                    if (const auto Result = mouseController->ProcessEvent(event); Result.IsActive)
-                    {
-                        OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
-                        auto it = ActionEventMap.find(ButtonAction.second);
-                        if (it == ActionEventMap.end()) continue;
-                        it->second(weak_from_this(), ButtonAction.second, Result.InputState);
-                        continue;
-                    }
+                    OnAnyActionEvent(weak_from_this(), ButtonAction.second, Result.InputState);
+                    auto it = ActionEventMap.find(ButtonAction.second);
+                    if (it == ActionEventMap.end()) continue;
+                    it->second(weak_from_this(), ButtonAction.second, Result.InputState);
+                    continue;
                 }
             }
         }
@@ -131,5 +120,16 @@ namespace Sparkle
     void PlayerInputController::RemoveMouseController()
     {
         MouseDeviceController.reset();
+    }
+
+    void PlayerInputController::SetMouseController(const std::weak_ptr<Sparkle::MouseController> &mouseController)
+    {
+        assert(MouseController == nullptr);
+        MouseController = mouseController.lock();
+    }
+
+    void PlayerInputController::RemoveMouseController()
+    {
+        MouseController.reset();
     }
 } // Sparkle

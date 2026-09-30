@@ -21,8 +21,8 @@ namespace Sparkle
         friend class Sparkle::Input;
 
     private:
-        std::array<bool, (int)KeyboardButtonType::Count> ButtonsValue;
-        std::array<bool, (int)KeyboardButtonType::Count> LastButtonsValue;
+        std::array<bool, (int)KeyboardButtonType::Count> Buttons;
+        std::array<bool, (int)KeyboardButtonType::Count> LastButtons;
 
     protected:
         void Update() override;
@@ -72,10 +72,10 @@ namespace Sparkle
         {
             for(std::size_t i = 0 ; i < ButtonsValue.size() ; ++i)
             {
-                if (ButtonsValue[i] && !LastButtonsValue[i]) return {KeyboardButtonType(i)};
+                if (Buttons[i] && !LastButtons[i]) return KeyboardButtonType(KeyboardButtonType::KeyboardButtonEnum(i));
             }
 
-            return {KeyboardButtonType::KEY_NONE};
+            return {KeyboardButtonType::KeyboardButtonEnum::KEY_NONE};
         }
 
         /// Get the current Keyboard axis value
