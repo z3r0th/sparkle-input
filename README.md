@@ -46,6 +46,40 @@ How to use Sparkle Input:
 5. Create an InputMap and bind Actions to Device Input through Triggers.
 6. Bind callbacks to actions on the PlayerInputController.
 
+## Architecture
+
+Sparkle Input is layered, from raw SDL events up to gameplay-facing actions:
+
+```
+SDL2 events
+   │
+   ▼
+Controller (Gamepad / Keyboard / Mouse)   — per-device raw state (pressed, axis value, ...)
+   │
+   ▼
+PlayerInputController                     — owns one player's devices, evaluates their InputMap
+   │
+   ▼
+InputMap (Trigger → Action)               — declarative bindings: "GamepadButtonType::BUTTON_A
+   │                                          JUST_PRESSED" maps to the "Jump" InputAction
+   ▼
+InputAction                               — the logical, device-agnostic thing your game reacts to
+```
+
+- **Controller** — the physical input device (`GamepadController`, `KeyboardController`,
+  `MouseController`). Each one polls SDL2 state once per frame and exposes it uniformly
+  (`IsButtonPressed`, `GetAxis`, `AnyJustPressedButton`, ...).
+- **Trigger** — how a physical input fires: a `Digital` trigger (`JUST_PRESSED`,
+  `JUST_RELEASED`, `HOLDING_DOWN`) for buttons, or an `Analog` trigger (`MOVEMENT`,
+  `FULL_POSITIVE`, `FULL_NEGATIVE`) for axes/sticks.
+- **InputMap** — a table of `Trigger → Action` bindings. One `InputMap` is typically owned
+  per player, and can be swapped at runtime.
+- **InputAction** — the logical, device-agnostic action your game code actually cares about
+  (`Jump`, `Pause`, `Fire`). Game logic binds callbacks to actions, never to raw device codes.
+- **PlayerInputController** — owns a player's assigned devices (Gamepad/Keyboard/Mouse can be
+  assigned independently) and evaluates its `InputMap` every frame, firing `InputAction`
+  callbacks when a binding's trigger condition is met.
+
 # Installation
 
 ## Requirements
